@@ -15,6 +15,12 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 CORPUS_VALIDOS = ("demo", "completo")
 
 
+def _ruta(valor: str) -> Path:
+    """Rutas relativas se interpretan desde la raíz del repo, no desde el cwd."""
+    path = Path(valor).expanduser()
+    return path if path.is_absolute() else REPO_ROOT / path
+
+
 def _bool(valor: str) -> bool:
     return valor.strip().lower() in {"1", "true", "yes", "si", "sí", "on"}
 
@@ -31,6 +37,12 @@ class Settings:
     data_dir: Path
     chunk_size: int
     chunk_overlap: int
+    embedding_device: str
+    index_dir: Path
+    retrieval_k: int
+    llm_num_ctx: int
+    llm_temperature: float
+    llm_think: bool
 
     @property
     def raw_dir(self) -> Path:
@@ -70,6 +82,10 @@ def load_settings(env_file: Path | None = None) -> Settings:
         d.strip() for d in env("WEB_SEARCH_ALLOWLIST", "rockwellautomation.com").split(",") if d.strip()
     )
 
+    embedding_device = env("EMBEDDING_DEVICE", "auto").strip().lower()
+    if embedding_device not in ("auto", "cuda", "cpu"):
+        raise ValueError(f"EMBEDDING_DEVICE={embedding_device!r} no es válido; usar auto, cuda o cpu")
+
     return Settings(
         llm_model=env("LLM_MODEL", "qwen3.5:4b"),
         ollama_base_url=env("OLLAMA_BASE_URL", "http://localhost:11434"),
@@ -78,7 +94,13 @@ def load_settings(env_file: Path | None = None) -> Settings:
         use_qdrant=_bool(env("USE_QDRANT", "true")),
         corpus=corpus,
         web_search_allowlist=allowlist,
-        data_dir=Path(env("DATA_DIR", str(REPO_ROOT / "data"))),
+        data_dir=_ruta(env("DATA_DIR", "data")),
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap,
+        embedding_device=embedding_device,
+        index_dir=_ruta(env("INDEX_DIR", "artifacts/index")),
+        retrieval_k=int(env("RETRIEVAL_K", "6")),
+        llm_num_ctx=int(env("LLM_NUM_CTX", "8192")),
+        llm_temperature=float(env("LLM_TEMPERATURE", "0.2")),
+        llm_think=_bool(env("LLM_THINK", "false")),
     )

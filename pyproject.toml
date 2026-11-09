@@ -5,8 +5,14 @@ description = "Agente local de troubleshooting de mantenimiento industrial (oil 
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
+    "langgraph>=1.2.20",
+    "numpy>=2.5.4",
+    "ollama>=0.6.3",
     "pymupdf>=1.24",
     "python-dotenv>=1.0",
+    "qdrant-client>=1.20.0",
+    "sentence-transformers>=6.2.0",
+    "torch>=2.6",
 ]
 
 [dependency-groups]
@@ -20,6 +26,16 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/troubleshooting_agent"]
+
+# torch de PyPI viene compilado para la última CUDA y exige drivers muy nuevos.
+# cu126 funciona con drivers NVIDIA >= 560 (CUDA 12.6+), incluido el de desarrollo (575).
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cu126", marker = "sys_platform == 'linux'" }]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -1,0 +1,30 @@
+{
+  "nota": "BORRADOR para el hito 1 (revisión manual). Reemplazar/ajustar por las preguntas de evaluación reales. 'esperado' = doc/páginas donde debería estar la respuesta (a completar al revisar).",
+  "preguntas": [
+    {
+      "id": "h1-01",
+      "pregunta": "El variador PowerFlex 700 paró por sobretensión en el bus DC (OverVoltage). ¿Qué reviso?",
+      "esperado": [{"doc_id": "rok-20b-um001-en", "paginas": null}]
+    },
+    {
+      "id": "h1-02",
+      "pregunta": "¿Qué significa la alarma Decel Inhibit del PowerFlex 700 y cómo la soluciono?",
+      "esperado": [{"doc_id": "rok-20b-um001-en", "paginas": [85]}]
+    },
+    {
+      "id": "h1-03",
+      "pregunta": "¿Cómo reseteo una falla en un variador PowerFlex 750?",
+      "esperado": [{"doc_id": "rok-750-rm002-en", "paginas": null}]
+    },
+    {
+      "id": "h1-04",
+      "pregunta": "Un PowerFlex 700 muestra falla HW OverCurrent. ¿Cuáles son las causas probables?",
+      "esperado": [{"doc_id": "rok-20b-um001-en", "paginas": null}]
+    },
+    {
+      "id": "h1-05",
+      "pregunta": "¿Qué parámetro define el tiempo de aceleración en el PowerFlex 700?",
+      "esperado": [{"doc_id": "rok-pflex-um-es", "paginas": null}]
+    }
+  ]
+}

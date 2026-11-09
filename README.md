@@ -28,7 +28,7 @@ Python 3.12 · uv · Ollama (Qwen 3.5) · LangGraph · sentence-transformers (BG
 - [Ollama](https://ollama.com/)
 - Tesseract + OCRmyPDF (solo para la ingesta de documentos escaneados):
   `sudo apt install tesseract-ocr tesseract-ocr-spa ocrmypdf`
-- GPU NVIDIA recomendada. La configuración por defecto entra en **8 GB de VRAM**; sin GPU funciona más lento o en modo simulado.
+- GPU NVIDIA recomendada, con driver **≥ 560** (CUDA 12.6+): en Linux `uv` instala torch `cu126` desde el índice de PyTorch. La configuración por defecto entra en **8 GB de VRAM**; sin GPU funciona más lento (embeddings en CPU) o en modo simulado.
 
 ## Instalación
 
@@ -84,11 +84,18 @@ Detalle de campos y taxonomía del catálogo: [CLAUDE.md](CLAUDE.md) §4.
 ## Uso
 
 ```bash
-uv run python -m troubleshooting_agent.ingest --ocr        # OCR + extracción + chunking
-uv run python -m troubleshooting_agent.retrieval.index     # embeddings + índice Qdrant
-uv run python -m troubleshooting_agent.agent                # CLI del agente
-uv run pytest                                               # tests (sin red ni GPU)
+uv run python -m troubleshooting_agent.catalog list         # qué documentos entran según CORPUS
+uv run python -m troubleshooting_agent.ingest               # extracción + chunking → data/chunks/chunks.jsonl
+uv run python -m troubleshooting_agent.retrieval.index      # embeddings BGE-M3 + índice Qdrant local
+uv run python -m troubleshooting_agent.agent "el PowerFlex 700 paró por OverVoltage"   # una consulta
+uv run python -m troubleshooting_agent.agent --contexto     # modo interactivo, mostrando fragmentos
+uv run python scripts/probar_hito1.py                       # preguntas de prueba → artifacts/hito1_respuestas.md
+uv run pytest                                               # tests (sin red, GPU ni Ollama)
 ```
+
+Para usar el LLM real: `USE_REAL_LLM=true` en `.env` y Ollama corriendo con el modelo de `LLM_MODEL`. Si Ollama no responde o falta el modelo, el agente avisa y responde en modo simulado (lista los fragmentos recuperados con su cita). La primera indexación descarga BGE-M3 (~2,3 GB) en la cache de Hugging Face.
+
+> Todavía no implementado: OCR (`--ocr`), DOCX/XLSX, retrieval híbrido y re-ranking.
 
 ## Estructura
 

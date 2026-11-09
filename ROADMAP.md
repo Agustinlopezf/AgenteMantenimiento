@@ -15,10 +15,10 @@ Para Claude Code: trabajar solo sobre la etapa en curso. Al terminar una tarea, 
 - [x] Base: `pyproject.toml` (uv), `config.py` (lee `.env`), pytest corriendo
 - [x] `catalog.py` mínimo: carga el catálogo y filtra por `CORPUS` / `indexar`
 - [x] Ingesta ingenua: PyMuPDF por página, chunks de tamaño fijo, **solo docs con texto del corpus demo**
-- [ ] Embeddings BGE-M3 + Qdrant local
-- [ ] Grafo LangGraph mínimo: `retrieve → answer` (respuesta en español con cita `doc_id` + página)
-- [ ] CLI: `uv run python -m troubleshooting_agent.agent "pregunta"`
-- [ ] Probar 5 preguntas sobre PowerFlex y revisar a mano
+- [x] Embeddings BGE-M3 + Qdrant local
+- [x] Grafo LangGraph mínimo: `retrieve → answer` (respuesta en español con cita `doc_id` + página)
+- [x] CLI: `uv run python -m troubleshooting_agent.agent "pregunta"`
+- [ ] Probar 5 preguntas sobre PowerFlex y revisar a mano — corridas en `artifacts/hito1_respuestas.md`; **falta la revisión manual (Agustín)** y reemplazar las preguntas borrador de `eval/preguntas_hito1.json`
 
 **Riesgos que valida el hito 1:**
 - ¿Qwen 3.5 4B responde bien en español a partir de manuales en inglés y cita correctamente?
@@ -76,3 +76,8 @@ Para Claude Code: trabajar solo sobre la etapa en curso. Al terminar una tarea, 
 - 09/11 · Herencia doc → sección (incl. overrides) adelantada al hito 1 en `catalog.metadata_para_pagina` · costo mínimo y el payload queda completo desde el inicio. El chunking *por sección* sigue en semana 2.
 - 09/11 · `ingest --ocr` se acepta pero no hace nada (avisa); docs OCR/DOCX/XLSX se saltean con aviso · OCR es tarea del resto de la semana.
 - 09/11 · Ingesta demo: 6 docs, 1763 páginas con texto, 3936 chunks (1200 car., overlap 200), ~3 s.
+- 09/11 · torch fijado al índice PyTorch `cu126` (`[tool.uv.sources]`) · el wheel de PyPI (cu132) no anda con el driver 575 (CUDA 12.9). Requisito para el profesor: driver NVIDIA ≥ 560.
+- 09/11 · Índice demo: 3936 puntos BGE-M3 fp16 en Qdrant local, 129 s en GPU (+ ~6 min de descarga del modelo la primera vez). VRAM pico embeddings 1,5 GB.
+- 09/11 · **Riesgo VRAM: OK.** Consulta con `qwen3.5:4b` (num_ctx 8192, think=false) + BGE-M3 cargados a la vez: pico 5,4 / 8 GB (nvidia-smi). LLM 5–16 s por respuesta.
+- 09/11 · **Riesgo citas: a revisar.** 5 preguntas: responde en español y la mayoría de las citas son válidas, pero: (a) inventó un parámetro con cita válida ("parámetro 375 [Bus Reg Level]" que no está en el fragmento) → se endureció el prompt; el chequeo actual solo verifica doc/página, no el contenido; (b) h1-03 cita páginas no recuperadas (probablemente referencias "see page N" del texto) y h1-02 deforma un doc_id; ambas cosas las marca el chequeo como inválidas; (c) agrega consejos genéricos (LOTO) sin fuente. Ver `artifacts/hito1_respuestas.md`.
+- 09/11 · **Cuello de botella principal: retrieval denso solo.** Para "Decel Inhibit del PowerFlex 700" no recuperó la p. 85 de `rok-20b-um001-en` (donde está), y mezcla manuales 750 con preguntas del 700 → semana 2 (BM25 para códigos/nombres de falla, filtro por `modelos`, re-ranker).
