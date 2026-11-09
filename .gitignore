@@ -1,0 +1,61 @@
+# ── Python ─────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# ── Entorno (uv) ───────────────────────────────────
+.venv/
+# uv.lock SÍ se versiona (reproducibilidad)
+
+# ── Secretos / config local ────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── Datos ──────────────────────────────────────────
+# Manuales originales: propietarios/confidenciales (NOV, Waukesha, etc.). NO subir.
+data/raw/*
+!data/raw/.gitkeep
+
+# Derivados regenerables
+data/ocr_cache/*
+!data/ocr_cache/.gitkeep
+data/chunks/*
+!data/chunks/.gitkeep
+
+# El catálogo SÍ se versiona (data/catalog/catalogo_documentos.json),
+# pero no los datos internos derivados (historial de fallas con nombres de pozos)
+data/catalog/*.jsonl
+
+# ── Índices y artefactos ───────────────────────────
+qdrant_storage/
+artifacts/index/
+artifacts/*.sqlite
+artifacts/*.db
+# Reportes de evaluación (json/md) en artifacts/ sí se versionan
+
+# ── Modelos / caches de HF ─────────────────────────
+models/
+.cache/
+hf_cache/
+
+# ── Notebooks ──────────────────────────────────────
+.ipynb_checkpoints/
+
+# ── IDE / SO ───────────────────────────────────────
+.vscode/
+.idea/
+.kiro/
+.DS_Store
+Thumbs.db
+
+# ── Claude Code (config local del usuario) ─────────
+.claude/settings.local.json
+CLAUDE.local.md

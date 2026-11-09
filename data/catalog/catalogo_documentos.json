@@ -1,0 +1,1488 @@
+{
+  "version": "0.3",
+  "fecha": "2026-11-09",
+  "convenciones": {
+    "paginas": "Páginas físicas del PDF, base 1 (no la numeración impresa del manual).",
+    "herencia": "Cada chunk hereda los metadatos del documento; si cae dentro de una 'seccion', los campos definidos en la sección (clase_equipo, fabricante, modelos, tipo_contenido) pisan los del documento.",
+    "indexar": "false = no entra al vector store (duplicado, sin valor para troubleshooting, etc.). Se mantiene en el catálogo para trazabilidad.",
+    "carpetas": "La estructura de carpetas no afecta el retrieval. La pertenencia a un paquete de equipo se registra en 'conjunto' (taxonomia.conjunto) y la ruta original en 'ruta_origen'.",
+    "multiparte": "Documento partido en varios PDFs: 'archivo' = null y cada PDF va en 'partes' con su propio archivo/ruta_origen. El doc_id es único para todas las partes.",
+    "nombres_archivo": "Nombres sin el prefijo hexadecimal que agrega la subida de archivos (ej. '16117ae0-').",
+    "distribucion": "publico = descargable gratis desde el sitio oficial del fabricante (scripts/descargar_manuales_publicos.py lo baja a data/raw/). propietario = documentación del fabricante con restricción de copia o venta. interno_pae = documentos de la empresa. Solo 'publico' entra al corpus de demo (CORPUS=demo)."
+  },
+  "taxonomia": {
+    "clase_equipo": {
+      "variador_frecuencia": {
+        "nombre": "Variador de frecuencia (VDF / VFD / AC drive)",
+        "sinonimos": [
+          "VDF",
+          "VFD",
+          "variador",
+          "drive",
+          "convertidor de frecuencia",
+          "inverter"
+        ]
+      },
+      "tablero_electrico": {
+        "nombre": "Tablero eléctrico de potencia/control",
+        "sinonimos": [
+          "tablero",
+          "TCR",
+          "panel"
+        ]
+      },
+      "controlador_pozo": {
+        "nombre": "Controlador de pozo / RPC (rod pump controller)",
+        "sinonimos": [
+          "SAM",
+          "SAM V2",
+          "SAMV2",
+          "POC",
+          "RPC",
+          "controlador de bombeo"
+        ]
+      },
+      "motor_electrico": {
+        "nombre": "Motor eléctrico",
+        "sinonimos": [
+          "motor",
+          "motor AC",
+          "motor DC"
+        ]
+      },
+      "top_drive": {
+        "nombre": "Top drive (sistema de rotación superior de perforación)",
+        "sinonimos": [
+          "TDS",
+          "top drive",
+          "TDS-10RR"
+        ]
+      },
+      "bop": {
+        "nombre": "Preventor de reventones (BOP)",
+        "sinonimos": [
+          "BOP",
+          "preventor",
+          "ram BOP",
+          "esclusa",
+          "blowout preventer"
+        ]
+      },
+      "caudalimetro": {
+        "nombre": "Caudalímetro",
+        "sinonimos": [
+          "caudalímetro",
+          "flowmeter",
+          "medidor de caudal",
+          "ultrasónico"
+        ]
+      },
+      "medidor_corte_agua": {
+        "nombre": "Medidor de corte de agua (water cut)",
+        "sinonimos": [
+          "water cut",
+          "WC",
+          "OWM",
+          "corte de agua"
+        ]
+      },
+      "motor_gas": {
+        "nombre": "Motor de combustión a gas",
+        "sinonimos": [
+          "motor",
+          "engine",
+          "Waukesha",
+          "VHP",
+          "motor a gas"
+        ]
+      },
+      "compresor_reciprocante": {
+        "nombre": "Compresor reciprocante de gas",
+        "sinonimos": [
+          "compresor",
+          "Ariel",
+          "JGH",
+          "JGE",
+          "JGK",
+          "JGT",
+          "frame"
+        ]
+      },
+      "panel_control": {
+        "nombre": "Panel de control / anunciador de unidad",
+        "sinonimos": [
+          "panel",
+          "Murphy",
+          "Centurion",
+          "Centurion Plus",
+          "PLC de unidad",
+          "anunciador"
+        ]
+      }
+    },
+    "contexto_operativo": [
+      "produccion_bombeo_mecanico",
+      "perforacion",
+      "medicion_fiscal_proceso",
+      "general",
+      "compresion_gas"
+    ],
+    "tipo_documento": [
+      "manual_usuario",
+      "manual_referencia",
+      "manual_programacion",
+      "manual_servicio",
+      "manual_iom",
+      "norma_practica_recomendada",
+      "plano_electrico",
+      "certificado",
+      "instructivo_interno",
+      "historial_fallas",
+      "lista_repuestos",
+      "secuencia_operacion"
+    ],
+    "tipo_contenido": [
+      "troubleshooting",
+      "codigos_falla",
+      "mantenimiento",
+      "parametros",
+      "instalacion",
+      "puesta_en_marcha",
+      "operacion",
+      "configuracion",
+      "repuestos",
+      "planos",
+      "seguridad",
+      "general"
+    ],
+    "componente": {
+      "descripcion": "Subsistema dentro de la clase (opcional), p. ej. ESM en motor_gas, lubricación forzada en compresor.",
+      "ejemplos": [
+        "ESM",
+        "Extender",
+        "lubricacion_forzada",
+        "DNFT",
+        "encendido",
+        "combustible"
+      ]
+    },
+    "conjunto": {
+      "motocompresor_waukesha_ariel": {
+        "nombre": "Motocompresor Waukesha VHP + Ariel JG* (unidades Valerus V6624–V6628)",
+        "clases": [
+          "motor_gas",
+          "compresor_reciprocante",
+          "panel_control"
+        ]
+      },
+      "equipo_perforacion_rapid_rig_17": {
+        "nombre": "Equipo de perforación Rapid Rig 17",
+        "clases": [
+          "top_drive",
+          "bop",
+          "motor_electrico"
+        ]
+      },
+      "pozo_aib_sam_v2": {
+        "nombre": "Pozo con AIB + VDF + controlador SAM V2",
+        "clases": [
+          "controlador_pozo",
+          "variador_frecuencia",
+          "tablero_electrico"
+        ]
+      }
+    },
+    "distribucion": [
+      "publico",
+      "propietario",
+      "interno_pae"
+    ]
+  },
+  "documentos": [
+    {
+      "doc_id": "rok-20b-um001-en",
+      "archivo": "20b-um001_-en-p.pdf",
+      "ruta_origen": "20b-um001_-en-p.pdf",
+      "distribucion": "publico",
+      "fuente_publica": {
+        "url": "https://literature.rockwellautomation.com/idc/groups/literature/documents/um/20b-um001_-en-p.pdf",
+        "sha256": "994858fd633877ffc241a7fe0ccad18cd74e106195a18a4a141a25b43074d192",
+        "nota": "sha256 de la versión usada al armar el catálogo; si el fabricante publicó otra revisión, el hash no coincide (el script avisa, no falla)."
+      },
+      "titulo": "PowerFlex 700 AC Drives User Manual – Series A, Frames 0…6",
+      "tipo_documento": "manual_usuario",
+      "clase_equipo": "variador_frecuencia",
+      "fabricante": "Rockwell Automation (Allen-Bradley)",
+      "modelos": [
+        "PowerFlex 700"
+      ],
+      "serie": "A",
+      "idioma": "en",
+      "paginas": 148,
+      "contexto_operativo": [
+        "general"
+      ],
+      "extraccion": {
+        "metodo": "texto",
+        "requiere_ocr": false
+      },
+      "indexar": true,
+      "secciones": [
+        {
+          "titulo": "Chapter 1 – Installation / Start-up",
+          "paginas": [
+            13,
+            80
+          ],
+          "tipo_contenido": "instalacion"
+        },
+        {
+          "titulo": "Chapter 2 – Troubleshooting",
+          "paginas": [
+            81,
+            96
+          ],
+          "tipo_contenido": "troubleshooting"
+        },
+        {
+          "titulo": "Appendices A–C",
+          "paginas": [
+            97,
+            132
+          ],
+          "tipo_contenido": "general"
+        }
+      ],
+      "relacionados": [
+        "rok-pflex-um-es",
+        "rok-pflex-rm001-en"
+      ],
+      "conjunto": null
+    },
+    {
+      "doc_id": "rok-pflex-um-es",
+      "archivo": "power-flex-700.pdf",
+      "ruta_origen": "power-flex-700.pdf",
+      "distribucion": "publico",
+      "fuente_publica": {
+        "url": "https://literature.rockwellautomation.com/idc/groups/literature/documents/um/20b-um002_-es-p.pdf",
+        "sha256": "f0e0b658aa3a17ad8a588955096e96e080cf209e0fdf4bb30741582efb918a12",
+        "nota": "sha256 de la versión usada al armar el catálogo; si el fabricante publicó otra revisión, el hash no coincide (el script avisa, no falla)."
+      },
+      "titulo": "PowerFlex 700 – Variador de Frecuencia Ajustable de CA, Serie B, Manual del Usuario (FW 4.001)",
+      "tipo_documento": "manual_usuario",
+      "clase_equipo": "variador_frecuencia",
+      "fabricante": "Rockwell Automation (Allen-Bradley)",
+      "modelos": [
+        "PowerFlex 700"
+      ],
+      "serie": "B",
+      "firmware": "4.001",
+      "idioma": "es",
+      "paginas": 238,
+      "contexto_operativo": [
+        "general"
+      ],
+      "extraccion": {
+        "metodo": "texto",
+        "requiere_ocr": false,
+        "nota": "Sin marcadores (bookmarks); secciones detectadas por encabezado de página."
+      },
+      "indexar": true,
+      "secciones": [
+        {
+          "titulo": "Capítulo 1 – Instalación/Cableado",
+          "paginas": [
+            11,
+            36
+          ],
+          "tipo_contenido": "instalacion"
+        },
+        {
+          "titulo": "Capítulo 2 – Puesta en marcha",
+          "paginas": [
+            37,
+            40
+          ],
+          "tipo_contenido": "puesta_en_marcha"
+        },
+        {
+          "titulo": "Capítulo 3 – Programación y parámetros",
+          "paginas": [
+            41,
+            118
+          ],
+          "tipo_contenido": "parametros"
+        },
+        {
+          "titulo": "Capítulo 4 – Resolución de problemas (fallos y alarmas)",
+          "paginas": [
+            119,
+            134
+          ],
+          "tipo_contenido": "troubleshooting"
+        },
+        {
+          "titulo": "Apéndice B – HIM",
+          "paginas": [
+            167,
+            174
+          ],
+          "tipo_contenido": "operacion"
+        }
+      ],
+      "relacionados": [
+        "rok-20b-um001-en"
+      ],
+      "conjunto": null,
+      "notas": "Archivo original local: 'power-flex-700.pdf'. Corresponde a la publicación 20B-UM002 (Serie B) en español; URL oficial deducida del patrón de Rockwell: verificar en la primera descarga."
+    },
+    {
+      "doc_id": "rok-pflex-rm001-en",
+      "archivo": "pflex-rm001_-en-e_1.pdf",
+      "ruta_origen": "pflex-rm001_-en-e_1.pdf",
+      "distribucion": "publico",
+      "fuente_publica": {
+        "url": "https://literature.rockwellautomation.com/idc/groups/literature/documents/rm/pflex-rm001_-en-e.pdf",
+        "sha256": "a1bc1d5388638c0119189067bb159f7d459abf683eb9a3da8dcd4e12608d4e98",
+        "nota": "sha256 de la versión usada al armar el catálogo; si el fabricante publicó otra revisión, el hash no coincide (el script avisa, no falla)."
+      },
+      "titulo": "PowerFlex 70/700 Adjustable Frequency AC Drives Reference Manual",
+      "tipo_documento": "manual_referencia",
+      "clase_equipo": "variador_frecuencia",
+      "fabricante": "Rockwell Automation (Allen-Bradley)",
+      "modelos": [
+        "PowerFlex 70",
+        "PowerFlex 700"
+      ],
+      "idioma": "en",
+      "paginas": 214,
+      "contexto_operativo": [
+        "general"
+      ],
+      "extraccion": {
+        "metodo": "texto",
+        "requiere_ocr": false
+      },
+      "indexar": true,
+      "secciones": [
+        {
+          "titulo": "Chapter 2 – Detailed Drive Operation (temas en orden alfabético)",
+          "paginas": [
+            11,
+            208
+          ],
+          "tipo_contenido": "general"
+        }
+      ],
+      "notas": "No tiene capítulo de troubleshooting propio; los temas de fallas/alarmas están dentro del capítulo 2. Útil como contexto de 'por qué' más que de 'qué hacer'.",
+      "relacionados": [
+        "rok-20b-um001-en",
+        "rok-pflex-um-es"
+      ],
+      "conjunto": null
+    },
+    {
+      "doc_id": "rok-750-rm002-en",
+      "archivo": "750-rm002_-en-p.pdf",
+      "ruta_origen": "750-rm002_-en-p.pdf",
+      "distribucion": "publico",
+      "fuente_publica": {
+        "url": "https://literature.rockwellautomation.com/idc/groups/literature/documents/rm/750-rm002_-en-p.pdf",
+        "sha256": "e61f1c455f27c31339393735bd1ded145625b2d866de207ae2a3b266f5d27c6a",
+        "nota": "sha256 de la versión usada al armar el catálogo; si el fabricante publicó otra revisión, el hash no coincide (el script avisa, no falla)."
+      },
+      "titulo": "PowerFlex 750-Series AC Drives Reference Manual",
+      "tipo_documento": "manual_referencia",
+      "clase_equipo": "variador_frecuencia",
+      "fabricante": "Rockwell Automation (Allen-Bradley)",
+      "modelos": [
+        "PowerFlex 753",
+        "PowerFlex 755"
+      ],
+      "idioma": "en",
+      "paginas": 432,
+      "contexto_operativo": [
+        "general"
+      ],
+      "extraccion": {
+        "metodo": "texto",
+        "requiere_ocr": false
+      },
+      "indexar": true,
+      "secciones": [
+        {
+          "titulo": "1 – Drive Configuration",
+          "paginas": [
+            15,
+            104
+          ],
+          "tipo_contenido": "configuracion"
+        },
+        {
+          "titulo": "2 – Feedback and I/O",
+          "paginas": [
+            105,
+            154
+          ],
+          "tipo_contenido": "configuracion"
+        },
+        {
+          "titulo": "3 – Diagnostics and Protection",
+          "paginas": [
+            155,
+            194
+          ],
+          "tipo_contenido": "troubleshooting"
+        },
+        {
+          "titulo": "4 – Motor Control",
+          "paginas": [
+            195,
+            276
+          ],
+          "tipo_contenido": "general"
+        },
+        {
+          "titulo": "5 – Drive Features",
+          "paginas": [
+            277,
+            298
+          ],
+          "tipo_contenido": "general"
+        },
+        {
+          "titulo": "6 – Integrated Motion on EtherNet/IP",
+          "paginas": [
+            299,
+            418
+          ],
+          "tipo_contenido": "configuracion"
+        }
+      ],
+      "relacionados": [
+        "rok-750-pm001-en"
+      ],
+      "conjunto": null
+    },
+    {
+      "doc_id": "rok-750-pm001-en",
+      "archivo": "750-pm001_-en-p.pdf",
+      "ruta_origen": "750-pm001_-en-p.pdf",
+      "distribucion": "publico",
+      "fuente_publica": {
+        "url": "https://literature.rockwellautomation.com/idc/groups/literature/documents/pm/750-pm001_-en-p.pdf",
+        "sha256": "b781ddba4c98ab31b932036919d0bef56243e7f779baec4d4dbdf6b5a82a8733",
+        "nota": "sha256 de la versión usada al armar el catálogo; si el fabricante publicó otra revisión, el hash no coincide (el script avisa, no falla)."
+      },
+      "titulo": "Programming Manual, PowerFlex 750-Series AC Drives",
+      "tipo_documento": "manual_programacion",
+      "clase_equipo": "variador_frecuencia",
+      "fabricante": "Rockwell Automation (Allen-Bradley)",
+      "modelos": [
+        "PowerFlex 753",
+        "PowerFlex 755"
+      ],
+      "idioma": "en",
+      "paginas": 562,
+      "contexto_operativo": [
+        "general"
+      ],
+      "extraccion": {
+        "metodo": "texto",
+        "requiere_ocr": false
+      },
+      "indexar": true,
+      "secciones": [
+        {
+          "titulo": "1 – Startup",
+          "paginas": [
+            15,
+            20
+          ],
+          "tipo_contenido": "puesta_en_marcha"
+        },
+        {
+          "titulo": "2–5 – Parámetros (Port 0, 10/11, opciones)",
+          "paginas": [
+            21,
+            306
+          ],
+          "tipo_contenido": "parametros"
+        },
+        {
+          "titulo": "6 – Troubleshooting (fallas y alarmas)",
+          "paginas": [
+            307,
+            370
+          ],
+          "tipo_contenido": "troubleshooting"
+        },
+        {
+          "titulo": "A/B – Control Block Diagrams",
+          "paginas": [
+            371,
+            450
+          ],
+          "tipo_contenido": "general"
+        },
+        {
+          "titulo": "C – Application Notes",
+          "paginas": [
+            451,
+            490
+          ],
+          "tipo_contenido": "general"
+        }
+      ],
+      "relacionados": [
+        "rok-750-rm002-en"
+      ],
+      "conjunto": null
+    },
+    {
+      "doc_id": "weg-prj-10012507102",
+      "archivo": "10012507102-PRJ-03-R0_MODIFICADO.pdf",
+      "ruta_origen": "10012507102-PRJ-03-R0_MODIFICADO.pdf",
+      "distribucion": "interno_pae",
+      "titulo": "Proyecto eléctrico WEG – Tablero eléctrico convertidor de frecuencia para AIB (Pan American Energy)",
+      "tipo_documento": "plano_electrico",
+      "clase_equipo": "tablero_electrico",
+      "clases_relacionadas": [
+        "variador_frecuencia"
+      ],
+      "fabricante": "WEG Equipamientos Eléctricos S.A.",
+      "modelos": [
+        "Tablero TCR con convertidor de frecuencia WEG"
+      ],
+      "revision": "0 – Plano conforme a fabricación (08/05/25)",
+      "idioma": "es",
+      "paginas": 39,
+      "contexto_operativo": [
+        "produccion_bombeo_mecanico"
+      ],
+      "extraccion": {
+        "metodo": "ocr",
+        "requiere_ocr": true,
+        "nota": "Planos CAD rasterizados (~15 caracteres/pág de texto). El OCR de esquemas rinde poco; evaluar indexar solo listas de materiales/borneras o usar un VLM para describir cada hoja."
+      },
+      "indexar": true,
+      "prioridad": "media",
+      "notas": "Es el tablero de los VDF en pozos con AIB. Relevante para fallas de cableado/borneras (ver historial SAM V2).",
+      "relacionados": [
+        "pae-instr-sam-v2",
+        "pae-fallas-sam-v2"
+      ],
+      "conjunto": "pozo_aib_sam_v2"
+    },
+    {
+      "doc_id": "pae-instr-sam-v2",
+      "archivo": "INSTRUCTIVO_DE_CONFIGURACION_R_PIDA_DE_IO_SAM_V2_REV3.docx",
+      "ruta_origen": "INSTRUCTIVO_DE_CONFIGURACION_R_PIDA_DE_IO_SAM_V2_REV3.docx",
+      "distribucion": "interno_pae",
+      "titulo": "Instructivo de configuración rápida de I/O SAM V2 (Rev 3)",
+      "tipo_documento": "instructivo_interno",
+      "clase_equipo": "controlador_pozo",
+      "clases_relacionadas": [
+        "variador_frecuencia",
+        "tablero_electrico"
+      ],
+      "fabricante": "Lufkin",
+      "modelos": [
+        "SAM V2"
+      ],
+      "idioma": "es",
+      "contexto_operativo": [
+        "produccion_bombeo_mecanico"
+      ],
+      "extraccion": {
+        "metodo": "docx",
+        "requiere_ocr": false,
+        "nota": "Muchas capturas de pantalla embebidas (~7,9 MB); el texto sale limpio con pandoc/python-docx. Las imágenes podrían describirse con un VLM en una segunda etapa."
+      },
+      "indexar": true,
+      "prioridad": "alta",
+      "secciones": [
+        {
+          "titulo": "Arquitectura de red y comunicación (MOXA, IP)",
+          "tipo_contenido": "configuracion"
+        },
+        {
+          "titulo": "Entradas analógicas / DIO / pseudo-DI / I/O especiales (celda de carga, posición)",
+          "tipo_contenido": "configuracion"
+        },
+        {
+          "titulo": "Modbus RS-485 VDF↔GTW1 y PTC VDF",
+          "tipo_contenido": "configuracion",
+          "clase_equipo": "variador_frecuencia"
+        },
+        {
+          "titulo": "Anexos A–C (prueba de referencia de velocidad, reset celda de carga, señales RPC)",
+          "tipo_contenido": "troubleshooting"
+        },
+        {
+          "titulo": "Troubleshooting",
+          "tipo_contenido": "troubleshooting"
+        }
+      ],
+      "notas": "Docx sin páginas fijas: segmentar por encabezados (Heading) en lugar de rango de páginas.",
+      "relacionados": [
+        "pae-fallas-sam-v2",
+        "weg-prj-10012507102"
+      ],
+      "conjunto": "pozo_aib_sam_v2"
+    },
+    {
+      "doc_id": "pae-fallas-sam-v2",
+      "archivo": "FALLAS_POZOS_SAMV2.xlsx",
+      "ruta_origen": "FALLAS_POZOS_SAMV2.xlsx",
+      "distribucion": "interno_pae",
+      "titulo": "Historial de fallas de pozos con SAM V2",
+      "tipo_documento": "historial_fallas",
+      "clase_equipo": "controlador_pozo",
+      "clases_relacionadas": [
+        "variador_frecuencia",
+        "tablero_electrico"
+      ],
+      "fabricante": "Lufkin",
+      "modelos": [
+        "SAM V2",
+        "SAM V1"
+      ],
+      "idioma": "es",
+      "contexto_operativo": [
+        "produccion_bombeo_mecanico"
+      ],
+      "extraccion": {
+        "metodo": "xlsx",
+        "requiere_ocr": false,
+        "salida": "fallas_sam_v2.jsonl (un registro = un chunk)"
+      },
+      "indexar": true,
+      "prioridad": "alta",
+      "notas": "Casos reales falla→causa→solución: es el mejor material few-shot para el agente. La columna 'POC V3' parece ser una lista aparte (pozo + estado de comunicación), no relacionada fila a fila; quedó fuera del JSONL. Revisar: fecha 2026-12-29 (¿2026-01-29?) y una fila con 'SAMV2' en la columna Equipo.",
+      "relacionados": [
+        "pae-instr-sam-v2"
+      ],
+      "conjunto": "pozo_aib_sam_v2"
+    },
+    {
+      "doc_id": "nov-3om00200-r01",
+      "archivo": "3OM00200_-_Rev_01_-_3OM00200_-_FINAL_New_01.pdf",
+      "ruta_origen": "3OM00200_-_Rev_01_-_3OM00200_-_FINAL_New_01.pdf",
+      "distribucion": "propietario",
+      "titulo": "NOV TDS-10RR Top Drive Drilling System – Owner's Manual (3OM00200 Rev 01)",
+      "tipo_documento": "manual_servicio",
+      "clase_equipo": "top_drive",
+      "fabricante": "National Oilwell Varco (NOV)",
+      "modelos": [
+        "TDS-10RR",
+        "TDS-10SRR"
+      ],
+      "revision": "01 (08.04.2014)",
+      "idioma": "en",
+      "paginas": 345,
+      "contexto_operativo": [
+        "perforacion"
+      ],
+      "extraccion": {
+        "metodo": "texto",
+        "requiere_ocr": false,
+        "nota": "Texto disponible (~790 car/pág) pero con mucho plano; el paquete de planos aporta poco al RAG."
+      },
+      "indexar": true,
+      "notas": "Es un compendio: tiene secciones de otras clases de equipo (motores Reliance). Por eso el tagging tiene que poder hacerse por sección.",
+      "secciones": [
+        {
+          "titulo": "3TDP0327 – Technical Drawing Package",
+          "paginas": [
+            4,
+            117
+          ],
+          "tipo_contenido": "planos"
+        },
+        {
+          "titulo": "SM01096 – Service Manual TDS-10RR",
+          "paginas": [
+            118,
+            177
+          ],
+          "tipo_contenido": "operacion"
+        },
+        {
+          "titulo": "SM01096 cap. 5 – Maintenance & Troubleshooting",
+          "paginas": [
+            178,
+            241
+          ],
+          "tipo_contenido": "mantenimiento"
+        },
+        {
+          "titulo": "SM01053 – Service Manual Washpipe Assembly",
+          "paginas": [
+            242,
+            301
+          ],
+          "tipo_contenido": "mantenimiento"
+        },
+        {
+          "titulo": "VDR00029 – Reliance Manual (180-449)",
+          "paginas": [
+            302,
+            318
+          ],
+          "clase_equipo": "motor_electrico",
+          "fabricante": "Reliance Electric",
+          "modelos": [
+            "Frames 180-449"
+          ],
+          "tipo_contenido": "mantenimiento"
+        },
+        {
+          "titulo": "VDR00030 – Reliance Manual (L210-L400)",
+          "paginas": [
+            319,
+            338
+          ],
+          "clase_equipo": "motor_electrico",
+          "fabricante": "Reliance Electric",
+          "modelos": [
+            "Frames L210-L400"
+          ],
+          "tipo_contenido": "mantenimiento"
+        },
+        {
+          "titulo": "30179142 / 30181930 – Spares lists (control y mecánico)",
+          "paginas": [
+            339,
+            345
+          ],
+          "tipo_contenido": "repuestos"
+        }
+      ],
+      "relacionados": [
+        "nov-3om00200-r00",
+        "nov-coc-gpk1002043"
+      ],
+      "conjunto": "equipo_perforacion_rapid_rig_17"
+    },
+    {
+      "doc_id": "nov-3om00200-r00",
+      "archivo": "3OM00200_-_Rev_0_-_3OM00200.pdf",
+      "ruta_origen": "3OM00200_-_Rev_0_-_3OM00200.pdf",
+      "distribucion": "propietario",
+      "titulo": "NOV TDS-10RR Owner's Manual (3OM00200 Rev 0)",
+      "tipo_documento": "manual_servicio",
+      "clase_equipo": "top_drive",
+      "fabricante": "National Oilwell Varco (NOV)",
+      "modelos": [
+        "TDS-10RR"
+      ],
+      "revision": "0",
+      "idioma": "en",
+      "paginas": 343,
+      "contexto_operativo": [
+        "perforacion"
+      ],
+      "extraccion": {
+        "metodo": "texto",
+        "requiere_ocr": false
+      },
+      "indexar": false,
+      "motivo_exclusion": "Duplicado: Rev 01 es el mismo contenido más 2 hojas de carátula. Indexar ambos duplica los resultados del retrieval.",
+      "relacionados": [
+        "nov-3om00200-r01"
+      ],
+      "conjunto": "equipo_perforacion_rapid_rig_17"
+    },
+    {
+      "doc_id": "nov-coc-gpk1002043",
+      "archivo": "7297424-013-AK1_-_Rev_0_-_Top_Drive_COC_GPK1002043.pdf",
+      "ruta_origen": "7297424-013-AK1_-_Rev_0_-_Top_Drive_COC_GPK1002043.pdf",
+      "distribucion": "propietario",
+      "titulo": "NOV Certificate of Conformance – TDS-10RR Top Drive Repair (S/N 7297424-013-AK1)",
+      "tipo_documento": "certificado",
+      "clase_equipo": "top_drive",
+      "fabricante": "National Oilwell Varco (NOV)",
+      "modelos": [
+        "TDS-10RR"
+      ],
+      "numero_serie": "7297424-013-AK1",
+      "idioma": "en",
+      "paginas": 1,
+      "fecha_documento": "2013-04-19",
+      "contexto_operativo": [
+        "perforacion"
+      ],
+      "extraccion": {
+        "metodo": "ocr",
+        "requiere_ocr": true
+      },
+      "indexar": false,
+      "motivo_exclusion": "Certificado de reparación sin contenido técnico de troubleshooting. Conviene guardarlo como metadato del activo (historial), no como chunk.",
+      "relacionados": [
+        "nov-3om00200-r01"
+      ],
+      "conjunto": "equipo_perforacion_rapid_rig_17"
+    },
+    {
+      "doc_id": "nov-shaffer-lxt-bop",
+      "archivo": "BOP_perfora.pdf",
+      "ruta_origen": "BOP_perfora.pdf",
+      "distribucion": "propietario",
+      "titulo": "Shaffer 11\" 3,000/5,000 psi LXT Ram BOP – User's Manual (Rapid Rig 17)",
+      "tipo_documento": "manual_usuario",
+      "clase_equipo": "bop",
+      "fabricante": "National Oilwell Varco (Shaffer)",
+      "modelos": [
+        "LXT Ram BOP 11\" 3,000/5,000 psi"
+      ],
+      "idioma": "en",
+      "paginas": 85,
+      "contexto_operativo": [
+        "perforacion"
+      ],
+      "equipo_instalado": "Rapid Rig 17 (PAE)",
+      "extraccion": {
+        "metodo": "ocr",
+        "requiere_ocr": true,
+        "nota": "PDF escaneado/rasterizado (~2 car/pág) pero de buena calidad: OCR en inglés debería rendir bien."
+      },
+      "indexar": true,
+      "secciones": [
+        {
+          "titulo": "1 – General Information / Safety",
+          "paginas": [
+            5,
+            12
+          ],
+          "tipo_contenido": "seguridad"
+        },
+        {
+          "titulo": "2 – Introduction",
+          "paginas": [
+            13,
+            18
+          ],
+          "tipo_contenido": "general"
+        },
+        {
+          "titulo": "3 – Installation and Operation",
+          "paginas": [
+            19,
+            34
+          ],
+          "tipo_contenido": "operacion"
+        },
+        {
+          "titulo": "4 – Maintenance (incluye troubleshooting)",
+          "paginas": [
+            35,
+            64
+          ],
+          "tipo_contenido": "mantenimiento"
+        },
+        {
+          "titulo": "4 – Troubleshooting LXT",
+          "paginas": [
+            47,
+            49
+          ],
+          "tipo_contenido": "troubleshooting"
+        },
+        {
+          "titulo": "5 – Parts Lists",
+          "paginas": [
+            65,
+            85
+          ],
+          "tipo_contenido": "repuestos"
+        }
+      ],
+      "notas": "Rangos de secciones estimados a partir de miniaturas: confirmar después del OCR.",
+      "relacionados": [
+        "api-rp-53-1997"
+      ],
+      "conjunto": "equipo_perforacion_rapid_rig_17"
+    },
+    {
+      "doc_id": "api-rp-53-1997",
+      "archivo": "API_RP_53_1.pdf",
+      "ruta_origen": "API_RP_53_1.pdf",
+      "distribucion": "propietario",
+      "titulo": "API RP 53 – Recommended Practices for Blowout Prevention Equipment Systems for Drilling Wells (3rd ed., March 1997)",
+      "tipo_documento": "norma_practica_recomendada",
+      "clase_equipo": "bop",
+      "fabricante": "API (American Petroleum Institute)",
+      "modelos": [],
+      "revision": "3rd edition, 1997",
+      "idioma": "en",
+      "paginas": 88,
+      "contexto_operativo": [
+        "perforacion"
+      ],
+      "extraccion": {
+        "metodo": "ocr",
+        "requiere_ocr": true,
+        "nota": "Escaneo sin capa de texto."
+      },
+      "indexar": true,
+      "prioridad": "baja",
+      "notas": "Edición 1997; API reemplazó RP 53 por API Std 53. Útil para criterios de inspección/pruebas, no para diagnosticar un equipo puntual. Marcar como 'norma' para que el agente no la confunda con instrucciones del fabricante.",
+      "relacionados": [
+        "nov-shaffer-lxt-bop"
+      ],
+      "conjunto": null
+    },
+    {
+      "doc_id": "flexim-fluxus-f532wd-es",
+      "archivo": "manual-flexim-fluxus-f532wd-ultrasonic-flowmeter-es-10650910.pdf",
+      "ruta_origen": "manual-flexim-fluxus-f532wd-ultrasonic-flowmeter-es-10650910.pdf",
+      "distribucion": "publico",
+      "fuente_publica": {
+        "url": "https://www.emerson.com/documents/automation/manual-flexim-fluxus-f532wd-ultrasonic-flowmeter-es-10650910.pdf",
+        "sha256": "16fad05a653356c9a4c0b345b5f7cc912fdb37b5f9aad4f5785fe9018275508e",
+        "nota": "sha256 de la versión usada al armar el catálogo; si el fabricante publicó otra revisión, el hash no coincide (el script avisa, no falla)."
+      },
+      "titulo": "FLEXIM FLUXUS F532WD – Caudalímetro ultrasónico (manual de usuario)",
+      "tipo_documento": "manual_usuario",
+      "clase_equipo": "caudalimetro",
+      "fabricante": "FLEXIM",
+      "modelos": [
+        "FLUXUS F532WD"
+      ],
+      "tecnologia": "ultrasónico clamp-on",
+      "idioma": "es",
+      "paginas": 176,
+      "contexto_operativo": [
+        "medicion_fiscal_proceso"
+      ],
+      "extraccion": {
+        "metodo": "texto",
+        "requiere_ocr": false
+      },
+      "indexar": true,
+      "secciones": [
+        {
+          "titulo": "2 – Advertencias de seguridad",
+          "paginas": [
+            8,
+            10
+          ],
+          "tipo_contenido": "seguridad"
+        },
+        {
+          "titulo": "6–7 – Montaje y conexión",
+          "paginas": [
+            25,
+            70
+          ],
+          "tipo_contenido": "instalacion"
+        },
+        {
+          "titulo": "8–9 – Arranque y medición",
+          "paginas": [
+            71,
+            94
+          ],
+          "tipo_contenido": "operacion"
+        },
+        {
+          "titulo": "10 – Localización y resolución de problemas",
+          "paginas": [
+            95,
+            98
+          ],
+          "tipo_contenido": "troubleshooting"
+        },
+        {
+          "titulo": "11 – Mantenimiento y limpieza",
+          "paginas": [
+            99,
+            100
+          ],
+          "tipo_contenido": "mantenimiento"
+        },
+        {
+          "titulo": "17.3 – Diagnóstico con función snap",
+          "paginas": [
+            134,
+            142
+          ],
+          "tipo_contenido": "troubleshooting"
+        },
+        {
+          "titulo": "18 / Anexo A – Ajustes y estructura de menú",
+          "paginas": [
+            143,
+            163
+          ],
+          "tipo_contenido": "parametros"
+        }
+      ],
+      "conjunto": null
+    },
+    {
+      "doc_id": "agar-ow200-man017-r04",
+      "archivo": "ACI-A-7.5.1-MAN-017_04_OW200_Product_Manual_with_OWMWin_Released_May_2....pdf",
+      "ruta_origen": "ACI-A-7.5.1-MAN-017_04_OW200_Product_Manual_with_OWMWin_Released_May_2....pdf",
+      "distribucion": "propietario",
+      "titulo": "Agar OW-200 Series Water Cut Meter – Installation, Operation and Maintenance Manual (OWMWin)",
+      "tipo_documento": "manual_iom",
+      "clase_equipo": "medidor_corte_agua",
+      "fabricante": "Agar Corporation",
+      "modelos": [
+        "OW-200",
+        "OW-201",
+        "OW-202"
+      ],
+      "revision": "ACI-A-7.5.1-MAN-017 Rev 04 (2014-05-13)",
+      "idioma": "en",
+      "paginas": 110,
+      "contexto_operativo": [
+        "medicion_fiscal_proceso"
+      ],
+      "extraccion": {
+        "metodo": "texto",
+        "requiere_ocr": false
+      },
+      "indexar": true,
+      "secciones": [
+        {
+          "titulo": "5.8 – Output Tests",
+          "paginas": [
+            66,
+            69
+          ],
+          "tipo_contenido": "puesta_en_marcha"
+        },
+        {
+          "titulo": "7.2–7.18 – Troubleshooting (mensajes de error, comunicación, salida WC, PAMS)",
+          "paginas": [
+            70,
+            95
+          ],
+          "tipo_contenido": "troubleshooting"
+        },
+        {
+          "titulo": "7.20 – PAMS Calibration",
+          "paginas": [
+            96,
+            110
+          ],
+          "tipo_contenido": "mantenimiento"
+        }
+      ],
+      "conjunto": null
+    },
+    {
+      "doc_id": "ariel-jg-mrm-valerus",
+      "archivo": "4._Compressor_Manual.pdf",
+      "ruta_origen": "Motocompresores Waukesha ESM-Ariel/4._Compressor_Manual.pdf",
+      "distribucion": "propietario",
+      "titulo": "Ariel – Maintenance and Repair Manual, JGH:E:K:T Heavy Duty Balanced Opposed Compressors (sección 4 del manual de unidad Valerus)",
+      "tipo_documento": "manual_servicio",
+      "clase_equipo": "compresor_reciprocante",
+      "fabricante": "Ariel Corporation",
+      "modelos": [
+        "JGH",
+        "JGE",
+        "JGK",
+        "JGT"
+      ],
+      "revision": "3/11",
+      "idioma": "en",
+      "paginas": 133,
+      "extraccion": {
+        "metodo": "texto",
+        "requiere_ocr": false
+      },
+      "indexar": true,
+      "prioridad": "alta",
+      "secciones": [
+        {
+          "titulo": "Section 1 – Tools",
+          "paginas": [
+            15,
+            18
+          ],
+          "tipo_contenido": "general"
+        },
+        {
+          "titulo": "Section 2 – Instrumentation (Proflo, DNFT, no-flow, proximity)",
+          "paginas": [
+            19,
+            31
+          ],
+          "tipo_contenido": "configuracion",
+          "componente": "lubricacion_forzada"
+        },
+        {
+          "titulo": "Section 3 – Maintenance (lubricación, divisores, enfriamiento de packing)",
+          "paginas": [
+            32,
+            58
+          ],
+          "tipo_contenido": "mantenimiento"
+        },
+        {
+          "titulo": "Section 4 – Part Replacement",
+          "paginas": [
+            59,
+            101
+          ],
+          "tipo_contenido": "mantenimiento"
+        },
+        {
+          "titulo": "Section 5 – Start Up",
+          "paginas": [
+            102,
+            111
+          ],
+          "tipo_contenido": "puesta_en_marcha"
+        },
+        {
+          "titulo": "Section 6 – Troubleshooting",
+          "paginas": [
+            112,
+            115
+          ],
+          "tipo_contenido": "troubleshooting"
+        },
+        {
+          "titulo": "Appendix A – Fasteners and Torques",
+          "paginas": [
+            116,
+            121
+          ],
+          "tipo_contenido": "parametros"
+        },
+        {
+          "titulo": "Appendix B – Clearances",
+          "paginas": [
+            122,
+            127
+          ],
+          "tipo_contenido": "parametros"
+        },
+        {
+          "titulo": "Appendix C/D – Frame specifications / balancing record",
+          "paginas": [
+            128,
+            133
+          ],
+          "tipo_contenido": "parametros"
+        }
+      ],
+      "notas": "Troubleshooting propio corto (4 págs.); la sección 2 trae troubleshooting de DNFT y de la lubricación forzada.",
+      "conjunto": "motocompresor_waukesha_ariel",
+      "contexto_operativo": [
+        "compresion_gas"
+      ]
+    },
+    {
+      "doc_id": "wauk-esm-6295-5",
+      "archivo": "6295-5_VHP_ESM_Edici_n_5_-_02-2012.pdf",
+      "ruta_origen": "Motocompresores Waukesha ESM-Ariel/6295-5_VHP_ESM_Edici_n_5_-_02-2012.pdf",
+      "distribucion": "propietario",
+      "titulo": "Waukesha ESM – VHP Series Four & L7042GL/GSI Engine System Manager, Form 6295-5 (5ª ed., 02-2012)",
+      "tipo_documento": "manual_iom",
+      "clase_equipo": "motor_gas",
+      "componente": "ESM",
+      "fabricante": "Waukesha (GE / Dresser)",
+      "modelos": [
+        "VHP Series Four",
+        "L7042GL",
+        "L7042GSI"
+      ],
+      "revision": "Form 6295-5, 5th edition (02-2012)",
+      "idioma": "en",
+      "paginas": 242,
+      "extraccion": {
+        "metodo": "texto",
+        "requiere_ocr": false
+      },
+      "indexar": true,
+      "prioridad": "alta",
+      "secciones": [
+        {
+          "titulo": "1.00–1.10 – Safety, general information, description of operation",
+          "paginas": [
+            11,
+            60
+          ],
+          "tipo_contenido": "general"
+        },
+        {
+          "titulo": "2.00–2.35 – Packager's guide (alimentación, cableado, arranque, governing, válvula de combustible, safeties, Modbus)",
+          "paginas": [
+            61,
+            120
+          ],
+          "tipo_contenido": "instalacion"
+        },
+        {
+          "titulo": "2.30 – Safeties overview (shutdowns individuales)",
+          "paginas": [
+            105,
+            106
+          ],
+          "tipo_contenido": "codigos_falla"
+        },
+        {
+          "titulo": "3.00–3.10 – ESP (Electronic Service Program): paneles y programación",
+          "paginas": [
+            121,
+            200
+          ],
+          "tipo_contenido": "configuracion"
+        },
+        {
+          "titulo": "4.00 – Troubleshooting (códigos de falla ESM)",
+          "paginas": [
+            201,
+            220
+          ],
+          "tipo_contenido": "troubleshooting"
+        },
+        {
+          "titulo": "4.05 – ESM System Maintenance",
+          "paginas": [
+            221,
+            234
+          ],
+          "tipo_contenido": "mantenimiento"
+        }
+      ],
+      "relacionados": [
+        "wauk-esm-6295-4",
+        "wauk-om-6387-1",
+        "wauk-wd-s08685-4"
+      ],
+      "conjunto": "motocompresor_waukesha_ariel",
+      "contexto_operativo": [
+        "compresion_gas"
+      ]
+    },
+    {
+      "doc_id": "wauk-esm-6295-4",
+      "archivo": "6295-4_VHP_ESM_Edici_n_4_-_2007.pdf",
+      "ruta_origen": "Motocompresores Waukesha ESM-Ariel/6295-4_VHP_ESM_Edici_n_4_-_2007.pdf",
+      "distribucion": "propietario",
+      "titulo": "Waukesha ESM – VHP Series Four & 7042GL/GSI, Form 6295-4 (4ª ed., 2007)",
+      "tipo_documento": "manual_iom",
+      "clase_equipo": "motor_gas",
+      "componente": "ESM",
+      "fabricante": "Waukesha (Dresser)",
+      "modelos": [
+        "VHP Series Four",
+        "7042GL",
+        "7042GSI"
+      ],
+      "revision": "Form 6295-4, 4th edition (2007)",
+      "idioma": "en",
+      "paginas": 221,
+      "extraccion": {
+        "metodo": "texto",
+        "requiere_ocr": false
+      },
+      "indexar": false,
+      "motivo_exclusion": "Superado por la 5ª edición (6295-5). Indexar ambas duplica chunks casi iguales. Reactivar solo si alguna unidad tiene firmware ESM viejo que solo cubre la 4ª ed.",
+      "relacionados": [
+        "wauk-esm-6295-5"
+      ],
+      "conjunto": "motocompresor_waukesha_ariel",
+      "contexto_operativo": [
+        "compresion_gas"
+      ]
+    },
+    {
+      "doc_id": "wauk-om-6387-1",
+      "archivo": null,
+      "ruta_origen": null,
+      "partes": [
+        {
+          "archivo": "OM_7044Ext-ESM_Form_6387-1_a.pdf",
+          "paginas": 58,
+          "contenido": "Portada, índice, cap. 1 Safety and General Information",
+          "ruta_origen": "Motocompresores Waukesha ESM-Ariel/OM_7044Ext-ESM_Form_6387-1_a.pdf"
+        },
+        {
+          "archivo": "OM_7044Ext-ESM_Form_6387-1_b.pdf",
+          "paginas": 202,
+          "contenido": "Cap. 2 ESM (descripción de operación) y cap. 3 Engine Systems (combustible, etc.)",
+          "ruta_origen": "Motocompresores Waukesha ESM-Ariel/OM_7044Ext-ESM_Form_6387-1_b.pdf"
+        },
+        {
+          "archivo": "OM_7044Ext-ESM_Form_6387-1_c.pdf",
+          "paginas": 150,
+          "contenido": "Capítulos siguientes (a confirmar tras OCR: mantenimiento, troubleshooting)",
+          "ruta_origen": "Motocompresores Waukesha ESM-Ariel/OM_7044Ext-ESM_Form_6387-1_c.pdf"
+        },
+        {
+          "archivo": "OM_7044Ext-ESM_Form_6387-1_d.pdf",
+          "paginas": 1,
+          "contenido": "Diagrama de cableado VHP Series Four 12 cil. (hoja desplegable)",
+          "tipo_contenido": "planos",
+          "ruta_origen": "Motocompresores Waukesha ESM-Ariel/OM_7044Ext-ESM_Form_6387-1_d.pdf"
+        }
+      ],
+      "distribucion": "propietario",
+      "titulo": "Waukesha VHP Series Four 12-Cylinder with ESM & Extender Series – Operation & Maintenance, Form 6387-1 (partes a–d)",
+      "tipo_documento": "manual_iom",
+      "clase_equipo": "motor_gas",
+      "fabricante": "Waukesha (GE)",
+      "modelos": [
+        "VHP Series Four 12 cil.",
+        "7044GSI Extender"
+      ],
+      "revision": "Form 6387-1, 1st edition",
+      "idioma": "en",
+      "paginas": 411,
+      "extraccion": {
+        "metodo": "ocr",
+        "requiere_ocr": true,
+        "nota": "Las 4 partes son escaneos sin capa de texto. Tratar como un único documento lógico: el doc_id es uno solo y cada chunk guarda archivo + página."
+      },
+      "indexar": true,
+      "prioridad": "alta",
+      "notas": "Es el O&M específico del motor (mecánica, sistemas, mantenimiento); el 6295-5 es el del sistema de control ESM. Secciones por página a completar después del OCR.",
+      "relacionados": [
+        "wauk-esm-6295-5",
+        "wauk-wd-s08685-4"
+      ],
+      "conjunto": "motocompresor_waukesha_ariel",
+      "contexto_operativo": [
+        "compresion_gas"
+      ]
+    },
+    {
+      "doc_id": "wauk-wd-s08685-4",
+      "archivo": "S-08685-4_-_VHP12_EXT.pdf",
+      "ruta_origen": "Motocompresores Waukesha ESM-Ariel/S-08685-4_-_VHP12_EXT.pdf",
+      "distribucion": "propietario",
+      "titulo": "Waukesha/Dresser S-08685-4 – Diagrama de cableado ESM + Extender, VHP 12 cilindros",
+      "tipo_documento": "plano_electrico",
+      "clase_equipo": "motor_gas",
+      "componente": "ESM",
+      "fabricante": "Waukesha (Dresser / GE)",
+      "modelos": [
+        "VHP Series Four 12 cil. Extender"
+      ],
+      "revision": "S-08685-4",
+      "idioma": "en",
+      "paginas": 10,
+      "extraccion": {
+        "metodo": "ocr",
+        "requiere_ocr": true,
+        "nota": "Plano vectorial rasterizado; OCR de etiquetas de borneras/cables. Mejor describir cada hoja con un VLM."
+      },
+      "indexar": true,
+      "prioridad": "baja",
+      "relacionados": [
+        "wauk-esm-6295-5"
+      ],
+      "conjunto": "motocompresor_waukesha_ariel",
+      "contexto_operativo": [
+        "compresion_gas"
+      ]
+    },
+    {
+      "doc_id": "murphy-centurion-seq-0169",
+      "archivo": "Manual_Murphy_0169_001_1.pdf",
+      "ruta_origen": "Motocompresores Waukesha ESM-Ariel/Manual_Murphy_0169_001_1.pdf",
+      "distribucion": "propietario",
+      "titulo": "Murphy Centurion Plus – Secuencia de operación (Enerflex, dwg 52-30-10547, prog. 52-34-10547 Rev A, 04/2015)",
+      "tipo_documento": "secuencia_operacion",
+      "clase_equipo": "panel_control",
+      "fabricante": "Murphy (Enovation Controls) / Enerflex",
+      "modelos": [
+        "Centurion Plus"
+      ],
+      "revision": "Rev A (2015-04-01)",
+      "idioma": "en",
+      "paginas": 46,
+      "extraccion": {
+        "metodo": "ocr",
+        "requiere_ocr": true
+      },
+      "indexar": true,
+      "prioridad": "alta",
+      "secciones": [
+        {
+          "titulo": "1–5 – Tipo de sistema, secuencias de arranque, marcha, parada y shutdown",
+          "tipo_contenido": "operacion"
+        },
+        {
+          "titulo": "6 – Alarm sequence / 7 – Controller I/O / 8 – Settings",
+          "tipo_contenido": "configuracion"
+        },
+        {
+          "titulo": "11 – Shutdown/Event code list",
+          "tipo_contenido": "codigos_falla"
+        },
+        {
+          "titulo": "12 – Modbus address list",
+          "tipo_contenido": "configuracion"
+        }
+      ],
+      "notas": "OJO: armado por Enerflex; el panel de las unidades Valerus (doc murphy-centurion-valerus) también es Centurion Plus pero puede tener otro programa. Verificar que corresponda a las mismas unidades antes de mezclarlos en un mismo conjunto.",
+      "relacionados": [
+        "murphy-centurion-valerus"
+      ],
+      "conjunto": "motocompresor_waukesha_ariel",
+      "contexto_operativo": [
+        "compresion_gas"
+      ]
+    },
+    {
+      "doc_id": "murphy-centurion-valerus",
+      "archivo": "9._Control_Panel_Information.pdf",
+      "ruta_origen": "Motocompresores Waukesha ESM-Ariel/9._Control_Panel_Information.pdf",
+      "distribucion": "propietario",
+      "titulo": "Control Panel Information – Murphy Centurion Plus, diagramas de cableado (unidades Valerus V6624–V6628, 04/2014)",
+      "tipo_documento": "plano_electrico",
+      "clase_equipo": "panel_control",
+      "fabricante": "Murphy / Valerus",
+      "modelos": [
+        "Centurion Plus"
+      ],
+      "unidades": [
+        "V6624",
+        "V6625",
+        "V6626",
+        "V6627",
+        "V6628"
+      ],
+      "idioma": "en",
+      "paginas": 11,
+      "extraccion": {
+        "metodo": "ocr",
+        "requiere_ocr": true,
+        "nota": "Planos escaneados."
+      },
+      "indexar": true,
+      "prioridad": "baja",
+      "relacionados": [
+        "murphy-centurion-seq-0169",
+        "ariel-jg-mrm-valerus"
+      ],
+      "conjunto": "motocompresor_waukesha_ariel",
+      "contexto_operativo": [
+        "compresion_gas"
+      ]
+    }
+  ],
+  "faltantes_detectados": [
+    {
+      "descripcion": "Manual del VDF WEG CFW900 (manual de programación y de usuario)",
+      "motivo": "El historial de fallas SAM V2 cita fallas WEG (F22 sobretensión bus DC, F25 señales PWM) y remite a 'MANUAL WEG-CFW900 manual de programación, pág. 148'. Los VDF de los manuales PowerFlex no son los que aparecen en estos casos de pozo.",
+      "clase_equipo": "variador_frecuencia"
+    },
+    {
+      "descripcion": "Manual del fabricante del SAM Well Manager (Lufkin)",
+      "motivo": "Solo hay instructivo interno; códigos de alarma y menús del equipo quedarían sin respaldo del fabricante.",
+      "clase_equipo": "controlador_pozo"
+    }
+  ]
+}
