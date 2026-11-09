@@ -2,6 +2,8 @@
 
 Trabajo final del curso **AI Agent Developer (ITBA)**. Este archivo es la guía para Claude Code: qué es el proyecto, cómo está organizado y qué reglas seguir al tocar el código.
 
+**Plan y etapa actual: ver [ROADMAP.md](ROADMAP.md).** Trabajar solo sobre la etapa en curso y no romper el camino de punta a punta (ingesta → retrieval → respuesta) que existe desde el hito 1.
+
 ## 1. Qué es el proyecto
 
 Un agente que ayuda a técnicos de mantenimiento a diagnosticar fallas de equipos industriales (oil & gas) usando como fuente los **manuales de los fabricantes**, **instructivos internos** y el **historial de fallas resueltas**.
