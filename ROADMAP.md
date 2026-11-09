@@ -12,9 +12,9 @@ Para Claude Code: trabajar solo sobre la etapa en curso. Al terminar una tarea, 
 ## Semana 1 · 9–15 nov · Esqueleto de punta a punta + ingesta
 
 ### Hito 1 — jueves 12/11: el agente responde algo (ingenuo pero completo)
-- [ ] Base: `pyproject.toml` (uv), `config.py` (lee `.env`), pytest corriendo
-- [ ] `catalog.py` mínimo: carga el catálogo y filtra por `CORPUS` / `indexar`
-- [ ] Ingesta ingenua: PyMuPDF por página, chunks de tamaño fijo, **solo docs con texto del corpus demo**
+- [x] Base: `pyproject.toml` (uv), `config.py` (lee `.env`), pytest corriendo
+- [x] `catalog.py` mínimo: carga el catálogo y filtra por `CORPUS` / `indexar`
+- [x] Ingesta ingenua: PyMuPDF por página, chunks de tamaño fijo, **solo docs con texto del corpus demo**
 - [ ] Embeddings BGE-M3 + Qdrant local
 - [ ] Grafo LangGraph mínimo: `retrieve → answer` (respuesta en español con cita `doc_id` + página)
 - [ ] CLI: `uv run python -m troubleshooting_agent.agent "pregunta"`
@@ -72,3 +72,7 @@ Para Claude Code: trabajar solo sobre la etapa en curso. Al terminar una tarea, 
 
 ## Registro
 <!-- fecha · qué cambió respecto del plan · por qué -->
+- 09/11 · `pflex-rm001_-en-e 1.pdf` renombrado a mano a `pflex-rm001_-en-e_1.pdf` en `data/raw/` · coincidir con `archivo` del catálogo (no se infieren nombres en el código).
+- 09/11 · Herencia doc → sección (incl. overrides) adelantada al hito 1 en `catalog.metadata_para_pagina` · costo mínimo y el payload queda completo desde el inicio. El chunking *por sección* sigue en semana 2.
+- 09/11 · `ingest --ocr` se acepta pero no hace nada (avisa); docs OCR/DOCX/XLSX se saltean con aviso · OCR es tarea del resto de la semana.
+- 09/11 · Ingesta demo: 6 docs, 1763 páginas con texto, 3936 chunks (1200 car., overlap 200), ~3 s.
