@@ -10,6 +10,7 @@ import sys
 
 from troubleshooting_agent.catalog import load_catalog
 from troubleshooting_agent.config import load_settings
+from troubleshooting_agent.ingest.historial import chunks_historial, escribir_jsonl
 from troubleshooting_agent.ingest.pipeline import ingerir
 
 
@@ -24,8 +25,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.ocr:
         print("AVISO: --ocr todavía no está implementado; los documentos escaneados se saltean.")
 
+    catalog = load_catalog(settings.catalog_path)
     resultado = ingerir(
-        catalog=load_catalog(settings.catalog_path),
+        catalog=catalog,
         corpus=corpus,
         raw_dir=settings.raw_dir,
         salida=settings.chunks_path,
@@ -38,6 +40,13 @@ def main(argv: list[str] | None = None) -> int:
     for doc_id, motivo in resultado.saltados.items():
         print(f"AVISO: salteado {doc_id}: {motivo}")
     print(f"Páginas con texto: {resultado.paginas} · chunks: {resultado.chunks} → {settings.chunks_path}")
+
+    casos, saltados_hist = chunks_historial(catalog, corpus, settings.catalog_dir)
+    for doc_id, motivo in saltados_hist.items():
+        print(f"AVISO: historial salteado {doc_id}: {motivo}")
+    escribir_jsonl(casos, settings.historial_chunks_path)
+    sinteticos = sum(c["sintetico"] for c in casos)
+    print(f"Historial de fallas: {len(casos)} casos ({sinteticos} sintéticos) → {settings.historial_chunks_path}")
     if not resultado.procesados:
         print("ERROR: no se procesó ningún documento.", file=sys.stderr)
         return 1

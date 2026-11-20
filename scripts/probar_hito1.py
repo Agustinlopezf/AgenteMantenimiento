@@ -16,7 +16,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from troubleshooting_agent.agent.graph import crear_agente
+from troubleshooting_agent.agent.graph import crear_agente, iniciar, nuevo_thread_id, pendiente, reanudar
 from troubleshooting_agent.config import REPO_ROOT, load_settings
 
 
@@ -63,7 +63,10 @@ def main() -> int:
     resumen = []
     for q in preguntas:
         print(f"[{q['id']}] {q['pregunta']}")
-        r = grafo.invoke({"pregunta": q["pregunta"], "k": k, "avisos": [], "tiempos": {}})
+        thread_id = nuevo_thread_id()
+        r = iniciar(grafo, q["pregunta"], thread_id, k)
+        while pendiente(r) is not None:  # batch: no hay técnico; se responde vacío y el agente sigue
+            r = reanudar(grafo, "", thread_id)
         vram = vram_usada_mb()
         t = r.get("tiempos", {})
         validas, invalidas = r.get("citas_validas", []), r.get("citas_invalidas", [])
@@ -71,6 +74,8 @@ def main() -> int:
         print(f"    citas válidas {len(validas)} · inválidas {len(invalidas)} · LLM {t.get('llm_s', 0):.1f} s · VRAM {vram}")
 
         md += [f"## {q['id']} — {q['pregunta']}", ""]
+        decisiones = [f"{t['accion']} ({t['origen']})" for t in r.get("traza") or [] if t.get("tipo") == "decision"]
+        md.append(f"**Decisiones:** {' → '.join(decisiones)}  ")
         for aviso in r.get("avisos") or []:
             md.append(f"> ⚠ {aviso}")
         md += [

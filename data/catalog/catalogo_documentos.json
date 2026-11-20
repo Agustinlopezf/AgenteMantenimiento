@@ -1,6 +1,6 @@
 {
   "version": "0.3",
-  "fecha": "2026-11-09",
+  "fecha": "2026-11-20",
   "convenciones": {
     "paginas": "Páginas físicas del PDF, base 1 (no la numeración impresa del manual).",
     "herencia": "Cada chunk hereda los metadatos del documento; si cae dentro de una 'seccion', los campos definidos en la sección (clase_equipo, fabricante, modelos, tipo_contenido) pisan los del documento.",
@@ -656,7 +656,8 @@
       "extraccion": {
         "metodo": "xlsx",
         "requiere_ocr": false,
-        "salida": "fallas_sam_v2.jsonl (un registro = un chunk)"
+        "salida": "fallas_sam_v2.jsonl (un registro = un chunk)",
+        "registros": "fallas_sam_v2.jsonl"
       },
       "indexar": true,
       "prioridad": "alta",
@@ -1471,6 +1472,39 @@
       "contexto_operativo": [
         "compresion_gas"
       ]
+    },
+    {
+      "doc_id": "hist-sintetico-demo",
+      "archivo": null,
+      "ruta_origen": null,
+      "distribucion": "publico",
+      "titulo": "Historial de fallas sintético (demo)",
+      "tipo_documento": "historial_fallas",
+      "clase_equipo": "variador_frecuencia",
+      "clases_relacionadas": [
+        "caudalimetro"
+      ],
+      "fabricante": "Varios",
+      "modelos": [
+        "PowerFlex 700",
+        "PowerFlex 753",
+        "PowerFlex 755",
+        "FLUXUS F532WD"
+      ],
+      "idioma": "es",
+      "contexto_operativo": [
+        "produccion_bombeo_mecanico",
+        "medicion_fiscal_proceso"
+      ],
+      "extraccion": {
+        "metodo": "jsonl",
+        "requiere_ocr": false,
+        "registros": "fallas_sinteticas.jsonl"
+      },
+      "indexar": true,
+      "prioridad": "media",
+      "conjunto": null,
+      "notas": "Casos sintéticos (no reales) sobre los equipos del corpus demo, con códigos de falla tomados de los manuales públicos. Un registro = un chunk; cada registro trae su propia clase_equipo/modelo. Se versiona (data/catalog/fallas_sinteticas.jsonl)."
     }
   ],
   "faltantes_detectados": [

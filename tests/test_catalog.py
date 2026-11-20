@@ -81,4 +81,5 @@ def test_catalogo_real_demo():
         "rok-750-rm002-en",
         "rok-750-pm001-en",
         "flexim-fluxus-f532wd-es",
+        "hist-sintetico-demo",
     }

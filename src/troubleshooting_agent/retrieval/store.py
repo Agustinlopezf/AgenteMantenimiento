@@ -209,8 +209,19 @@ class NumpyStore:
         return len(self._payloads)
 
 
-def abrir_store(settings: Settings, corpus: str | None = None) -> VectorStore:
+COLECCIONES = ("chunks", "historial")
+
+
+def abrir_store(settings: Settings, corpus: str | None = None, coleccion: str = "chunks") -> VectorStore:
+    """`coleccion`: "chunks" (manuales) o "historial" (casos de fallas).
+
+    Qdrant local bloquea su carpeta por cliente, así que cada colección vive en su
+    propia carpeta para poder abrir las dos a la vez.
+    """
+    if coleccion not in COLECCIONES:
+        raise ValueError(f"coleccion={coleccion!r} no es válida; usar una de {COLECCIONES}")
     corpus = corpus or settings.corpus
+    sufijo = "" if coleccion == "chunks" else f"_{coleccion}"
     if settings.use_qdrant:
-        return QdrantStore(settings.index_dir / "qdrant", coleccion=f"chunks_{corpus}")
-    return NumpyStore(settings.index_dir / f"numpy_{corpus}")
+        return QdrantStore(settings.index_dir / f"qdrant{sufijo}", coleccion=f"{coleccion}_{corpus}")
+    return NumpyStore(settings.index_dir / f"numpy{sufijo}_{corpus}")

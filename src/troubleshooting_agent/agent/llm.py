@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+import json
 import re
-from typing import TYPE_CHECKING, Protocol
+from typing import TYPE_CHECKING, Any, Protocol
 
 from troubleshooting_agent.agent.prompts import SEPARADOR_FRAGMENTO
 
@@ -16,6 +17,10 @@ class LLM(Protocol):
     simulado: bool
 
     def generar(self, system: str, user: str) -> str: ...
+
+    def generar_json(self, system: str, user: str, schema: dict[str, Any]) -> dict[str, Any]:
+        """Salida estructurada que respeta `schema` (JSON Schema). Puede lanzar ValueError."""
+        ...
 
 
 class OllamaLLM:
@@ -38,6 +43,22 @@ class OllamaLLM:
         )
         return (respuesta.message.content or "").strip()
 
+    def generar_json(self, system: str, user: str, schema: dict[str, Any]) -> dict[str, Any]:
+        respuesta = self._cliente.chat(
+            model=self.nombre,
+            messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
+            options={**self._options, "temperature": 0},
+            think=self._think,
+            format=schema,
+        )
+        try:
+            datos = json.loads(respuesta.message.content or "")
+        except json.JSONDecodeError as e:
+            raise ValueError(f"JSON inválido del LLM: {e}") from e
+        if not isinstance(datos, dict):
+            raise ValueError("El LLM no devolvió un objeto JSON")
+        return datos
+
 
 _ENCABEZADO = re.compile(r"^(\[[^\]]+\])\s*(.*)$")
 
@@ -59,6 +80,9 @@ class LLMSimulado:
             extracto = " ".join(texto.split())[:240]
             lineas.append(f"- {m[1]} {m[2]}: {extracto}…")
         return "\n".join(lineas)
+
+    def generar_json(self, system: str, user: str, schema: dict[str, Any]) -> dict[str, Any]:
+        raise NotImplementedError("El LLM simulado no decide: el router usa reglas.")
 
 
 def _modelo_disponible(nombre: str, disponibles: list[str]) -> bool:

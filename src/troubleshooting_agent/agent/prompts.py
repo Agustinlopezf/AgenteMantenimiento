@@ -2,18 +2,25 @@
 
 from __future__ import annotations
 
+from troubleshooting_agent.agent.skills import seccion
 from troubleshooting_agent.retrieval.store import Hit
 
 SEPARADOR_FRAGMENTO = "\n-----\n"
 
-SYSTEM_PROMPT = """\
+_SYSTEM_BASE = """\
 Sos un asistente de troubleshooting para técnicos de mantenimiento de equipos industriales \
 (oil & gas). Respondés SIEMPRE en español, aunque los manuales estén en inglés.
 
+Hay dos tipos de FRAGMENTOS:
+- MANUAL: documentación del fabricante. Cita con el formato exacto [doc_id, p. N].
+- CASO DEL HISTORIAL: falla resuelta en campo (puede ser un caso sintético de demo). Cita con \
+el formato exacto [historial, caso ID]. Un caso muestra lo que pasó una vez, NO es una \
+instrucción del fabricante: presentalo como antecedente.
+
 Reglas:
-1. Usá SOLO la información de los FRAGMENTOS del contexto. No uses conocimiento propio.
-2. Cada afirmación técnica lleva su cita con el formato exacto [doc_id, p. N], copiando \
-el doc_id y la página del encabezado del fragmento. No inventes doc_id ni páginas.
+1. Usá SOLO la información de los FRAGMENTOS. No uses conocimiento propio.
+2. Cada afirmación técnica lleva su cita copiada del encabezado del fragmento. No inventes \
+doc_id, páginas ni IDs de casos.
 3. No inventes procedimientos, códigos de falla ni valores de parámetros. Todo número de \
 parámetro, código de falla o valor que escribas tiene que aparecer TEXTUAL en el fragmento \
 que citás; si no aparece, no lo menciones.
@@ -21,29 +28,63 @@ que citás; si no aparece, no lo menciones.
 (ej. PowerFlex 750), aclaralo ("según el manual del PowerFlex 750...").
 4. Si los fragmentos no alcanzan para responder, decilo claramente ("No encontré en los \
 manuales disponibles...") y sugerí qué dato faltaría (modelo exacto, código de falla, etc.).
-5. Si los fragmentos incluyen advertencias de seguridad (tensión peligrosa, capacitores \
-del bus DC cargados, bloqueo/etiquetado, presión), incluilas al principio en una sección \
-"Seguridad".
+5. Las normas o prácticas recomendadas se presentan como criterio general, no como \
+instrucción del fabricante.
 6. Podés traducir términos, pero conservá en el idioma original los nombres de fallas, \
 alarmas y parámetros (ej. "OverVoltage", "Decel Inhibit", parámetro 140 [Accel Time 1]).
 
+SEGURIDAD (incluila siempre al principio, en la sección "Seguridad"). Las advertencias que \
+estén en los FRAGMENTOS van con su cita; las de esta guía van sin corchetes, terminadas en \
+"(guía interna)":
+{seguridad}
+
+ESCALAMIENTO (si aplica algún criterio, decilo en la sección "Escalar", sin cita inventada):
+{escalamiento}
+
 Organizá la respuesta con estos títulos en este orden, omitiendo los que no apliquen: \
-Seguridad, Qué indica, Causas probables, Verificaciones, Acciones. Empezá directamente \
-por el primer título que corresponda, sin introducción.
+Seguridad, Qué indica, Causas probables, Casos similares del historial, Verificaciones, \
+Acciones, Escalar. Empezá directamente por el primer título, sin introducción.
 """
+
+
+def system_prompt() -> str:
+    return _SYSTEM_BASE.format(
+        seguridad=seccion("troubleshooting", "seguridad"),
+        escalamiento=seccion("troubleshooting", "escalamiento"),
+    )
+
+
+SYSTEM_PROMPT = system_prompt()
 
 
 def formatear_cita(doc_id: str, pagina: int) -> str:
     return f"[{doc_id}, p. {pagina}]"
 
 
+def formatear_cita_caso(caso_id: str) -> str:
+    return f"[historial, caso {caso_id}]"
+
+
+def es_caso(hit: Hit) -> bool:
+    return "caso_id" in hit.payload
+
+
 def formatear_fragmento(hit: Hit) -> str:
     p = hit.payload
+    if es_caso(hit):
+        origen = "sintético" if p.get("sintetico") else "real"
+        detalle = " · ".join(str(x) for x in (p.get("modelos") or [None])[:1] + [p.get("pozo"), p.get("fecha")] if x)
+        texto = (
+            f"Síntoma: {p.get('sintoma')}\nCausa: {p.get('causa')}\nSolución: {p.get('solucion')}"
+            if p.get("sintoma")
+            else p["texto"]
+        )
+        return f"{formatear_cita_caso(p['caso_id'])} CASO DEL HISTORIAL ({origen}) · {detalle}\n{texto}"
     encabezado = formatear_cita(p["doc_id"], p["pagina_inicio"])
     detalle = " · ".join(x for x in (p.get("titulo"), p.get("seccion")) if x)
-    return f"{encabezado} {detalle}\n{p['texto']}"
+    return f"{encabezado} MANUAL · {detalle}\n{p['texto']}"
 
 
-def construir_mensaje_usuario(pregunta: str, hits: list[Hit]) -> str:
-    fragmentos = SEPARADOR_FRAGMENTO.join(formatear_fragmento(h) for h in hits)
+def construir_mensaje_usuario(pregunta: str, hits: list[Hit], casos: list[Hit] | None = None) -> str:
+    fragmentos = SEPARADOR_FRAGMENTO.join(formatear_fragmento(h) for h in [*hits, *(casos or [])])
     return f"FRAGMENTOS:\n{fragmentos}\n\nPREGUNTA DEL TÉCNICO:\n{pregunta}"

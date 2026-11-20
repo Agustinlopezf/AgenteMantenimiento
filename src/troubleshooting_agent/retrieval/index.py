@@ -68,6 +68,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     chunks = leer_chunks(settings.chunks_path)
+    casos = leer_chunks(settings.historial_chunks_path) if settings.historial_chunks_path.exists() else []
     print(f"{len(chunks)} chunks de {len({c['doc_id'] for c in chunks})} documentos")
     for doc_id, n in sorted(Counter(c["doc_id"] for c in chunks).items()):
         print(f"  {doc_id:28} {n}")
@@ -81,6 +82,14 @@ def main(argv: list[str] | None = None) -> int:
     indexar(chunks, store, embedder, corpus, progreso=True)
     backend = "Qdrant local" if settings.use_qdrant else "numpy"
     print(f"Indexados {store.count()} puntos en {backend} ({settings.index_dir}) · {time.perf_counter() - t1:.1f} s")
+
+    store_hist = abrir_store(settings, corpus, coleccion="historial")
+    if casos:
+        t2 = time.perf_counter()
+        indexar(casos, store_hist, embedder, corpus)
+        print(f"Historial: {store_hist.count()} casos indexados · {time.perf_counter() - t2:.1f} s")
+    else:
+        print(f"AVISO: no hay {settings.historial_chunks_path}; la tool buscar_historial no tendrá casos.")
 
     vram = _vram_pico_mb()
     if vram is not None:

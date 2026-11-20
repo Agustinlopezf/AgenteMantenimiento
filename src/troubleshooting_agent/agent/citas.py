@@ -1,4 +1,8 @@
-"""Extracción y verificación de citas [doc_id, p. N] en la respuesta del LLM."""
+"""Extracción y verificación de citas en la respuesta del LLM.
+
+- Manual: [doc_id, p. N]
+- Historial: [historial, caso ID]
+"""
 
 from __future__ import annotations
 
@@ -13,6 +17,7 @@ _CITA = re.compile(
     r"(?:p(?:ág|ag|age)?s?\.?|página|pagina)\s*(?P<ini>\d+)(?:\s*[-–]\s*(?P<fin>\d+))?\s*$",
     re.IGNORECASE,
 )
+_CITA_CASO = re.compile(r"^\s*historial\s*,\s*caso\s+(?P<caso>[\w.\-]+)\s*$", re.IGNORECASE)
 
 
 @dataclass(frozen=True)
@@ -24,36 +29,59 @@ class Cita:
         return f"[{self.doc_id}, p. {self.pagina}]"
 
 
-def extraer_citas(texto: str) -> list[Cita]:
+@dataclass(frozen=True)
+class CitaCaso:
+    caso_id: str
+
+    def __str__(self) -> str:
+        return f"[historial, caso {self.caso_id}]"
+
+
+CitaAny = Cita | CitaCaso
+
+
+def extraer_citas(texto: str) -> list[CitaAny]:
     """Citas en orden de aparición, sin repetir. Acepta varias en un corchete separadas por ';'.
 
     Un rango [doc, p. 5-6] se registra por su página inicial.
     """
-    vistas: dict[Cita, None] = {}
+    vistas: dict[CitaAny, None] = {}
     for contenido in _CORCHETES.findall(texto):
         for parte in contenido.split(";"):
-            m = _CITA.match(parte)
-            if m:
+            if m := _CITA_CASO.match(parte):
+                vistas[CitaCaso(m["caso"])] = None
+            elif m := _CITA.match(parte):
                 vistas[Cita(m["doc"], int(m["ini"]))] = None
     return list(vistas)
 
 
-def clasificar_citas(citas: list[Cita], hits: list[Hit]) -> tuple[list[Cita], list[Cita]]:
-    """(válidas, inválidas): válida = (doc_id, página) está entre los fragmentos recuperados."""
-    recuperadas = {(h.payload["doc_id"], h.payload["pagina_inicio"]) for h in hits}
-    validas = [c for c in citas if (c.doc_id, c.pagina) in recuperadas]
-    invalidas = [c for c in citas if (c.doc_id, c.pagina) not in recuperadas]
+def _clave(hit: Hit) -> CitaAny:
+    p = hit.payload
+    if "caso_id" in p:
+        return CitaCaso(str(p["caso_id"]))
+    return Cita(p["doc_id"], p["pagina_inicio"])
+
+
+def clasificar_citas(citas: list[CitaAny], hits: list[Hit]) -> tuple[list[CitaAny], list[CitaAny]]:
+    """(válidas, inválidas): válida = la página o el caso está entre los fragmentos recuperados."""
+    recuperadas = {_clave(h) for h in hits}
+    validas = [c for c in citas if c in recuperadas]
+    invalidas = [c for c in citas if c not in recuperadas]
     return validas, invalidas
 
 
-def armar_fuentes(citas: list[Cita], hits: list[Hit]) -> list[str]:
+def armar_fuentes(citas: list[CitaAny], hits: list[Hit]) -> list[str]:
     """Líneas 'Fuentes' armadas desde el payload (no desde el texto del LLM)."""
-    por_clave = {(h.payload["doc_id"], h.payload["pagina_inicio"]): h.payload for h in hits}
+    por_clave = {_clave(h): h.payload for h in hits}
     lineas = []
     for c in citas:
-        p = por_clave.get((c.doc_id, c.pagina))
+        p = por_clave.get(c)
         if p is None:
             continue
-        detalle = " · ".join(x for x in (p.get("titulo"), p.get("seccion")) if x)
-        lineas.append(f"{c} {detalle}")
+        if isinstance(c, CitaCaso):
+            origen = "caso sintético" if p.get("sintetico") else "caso real"
+            partes = [p.get("titulo"), p.get("pozo"), p.get("fecha"), origen]
+        else:
+            partes = [p.get("titulo"), p.get("seccion")]
+        lineas.append(f"{c} " + " · ".join(str(x) for x in partes if x))
     return lineas
