@@ -7,6 +7,16 @@ Dedicación: ~10 h/semana.
 
 Para Claude Code: trabajar solo sobre la etapa en curso. Al terminar una tarea, marcarla `[x]` y anotar desvíos en "Registro".
 
+### Devolución del profesor (20/11) (archivo local `devolucion_profesor.txt`, no versionado)
+Replanificación a partir de la semana 2. Prioridades:
+1. **Parte agéntica primero:** el agente **decide** la acción (consultar manual, buscar historial de fallas, pedir datos al técnico). Dos tools diferenciadas + Skill de troubleshooting (procedimiento, chequeos de seguridad, criterios de escalamiento).
+2. **HITL = aprobación humana de una acción preparada por el agente** (propuesta de intervención → aprobar / modificar / rechazar → OT simulada). Pedir datos faltantes es agéntico pero **no** cuenta como HITL. Estado persistente entre interacciones.
+3. **RAG medido:** BM25 + RRF vs. denso con set de preguntas con doc + página esperados. Re-ranker **solo si la medición lo justifica**.
+4. **Fidelidad:** una cita a una página recuperada no garantiza que la afirmación esté respaldada → chequeo por afirmación.
+5. **Opcionales (solo si sobra tiempo):** OCR, búsqueda web, lectura de planos.
+
+Objetivo de cierre: identificar equipo → decidir fuente → pedir datos si faltan → recomendación con evidencia → validación humana; con estado persistente, tests y demo reproducible.
+
 ---
 
 ## Semana 1 · 9–15 nov · Esqueleto de punta a punta + ingesta
@@ -27,42 +37,47 @@ Para Claude Code: trabajar solo sobre la etapa en curso. Al terminar una tarea, 
 **Punto de decisión (15/11):** si el 4B no cita bien o inventa → probar otro modelo que entre en 8 GB (cuantizado) o ajustar prompt/contexto. Se decide antes de seguir.
 
 ### Resto de la semana
-- [ ] Lanzar OCR (OCRmyPDF) de los 11 escaneados en segundo plano
+- ~~Lanzar OCR (OCRmyPDF) de los 11 escaneados en segundo plano~~ → movido a diciembre (opcional, devolución 20/11)
 - [ ] Correr `scripts/descargar_manuales_publicos.py` y confirmar URLs (sobre todo 20B-UM002 ES)
 - [ ] `catalog.py validate` completo (taxonomía, archivos existentes) + tests
 - [ ] **(Agustín)** Borrador de 10 preguntas de evaluación con doc + página esperados (≥ 5 respondibles con corpus demo)
 
 ---
 
-## Semana 2 · 16–22 nov · Ingesta completa + retrieval medido
+## Semana 2 · 16–22 nov · Agente que decide (sobre el retrieval actual)
 
-### Hito 2 — domingo 22/11: retrieval evaluado con números, corpus completo indexado
-- [ ] Chunking por sección con herencia doc → sección → chunk; `chunk_id` estable
-- [ ] DOCX por encabezados; XLSX → `fallas_sam_v2.jsonl`
-- [ ] Indexar docs con OCR; completar rangos de `secciones` pendientes en el catálogo
-- [ ] Filtros por payload (clase_equipo, conjunto, tipo_contenido…)
-- [ ] BM25 + RRF + re-ranker
-- [ ] **(Agustín)** Set de evaluación a 20–30 preguntas
-- [ ] Métricas hit@k / MRR: denso vs. híbrido, con vs. sin filtros → `artifacts/eval_retrieval.json`
-- [ ] El agente del hito 1 sigue funcionando con el retrieval nuevo
-
-**Punto de decisión (22/11):** si hit@5 es bajo (orientativo < 0,7) → revisar chunking/OCR antes de sumar lógica al agente.
+### Hito 2 — domingo 22/11: el agente elige qué fuente consultar
+- [ ] Historial **sintético** `data/catalog/fallas_sinteticas.jsonl` (`distribucion: publico`, ~20–30 casos sobre equipos del corpus demo, mismo esquema que §4.6 de CLAUDE.md)
+- [ ] Tool `buscar_manual(consulta, filtros)` — documentación del fabricante
+- [ ] Tool `buscar_historial(consulta, clase_equipo)` — fallas resueltas (colección o filtro separado)
+- [ ] Grafo con decisión: `identificar_equipo` (sinónimos de la taxonomía) → router (`pedir_datos` | `buscar_manual` | `buscar_historial` | ambas) → `chequeo_suficiencia` (puede volver a buscar o pedir datos) → `respuesta`
+- [ ] Skill `troubleshooting` versionada (`src/troubleshooting_agent/agent/skills/troubleshooting.md`): procedimiento de diagnóstico, chequeos de seguridad (LOTO, presión, energía), criterios de escalamiento; se carga en router y respuesta
+- [ ] Respuesta distingue manual del fabricante vs. caso del historial vs. norma; incluye advertencias de seguridad recuperadas
+- [ ] El CLI y el camino de punta a punta siguen funcionando; tests sin red
 
 ---
 
-## Semana 3 · 23–30 nov · Agente completo + cierre
+## Semana 3 · 23–30 nov · HITL + retrieval medido + fidelidad + demo
 
 ### Hito 3 — lunes 30/11: entregable
-- [ ] Grafo: identificar equipo (sinónimos de la taxonomía) → pedir datos faltantes (HITL) → retrieve con filtros → chequeo de suficiencia → respuesta con citas
-- [ ] Respuesta distingue manual del fabricante vs. caso del historial vs. norma; incluye advertencias de seguridad recuperadas
+- [ ] **HITL:** el agente arma una `propuesta_intervencion` (verificaciones, intervención, riesgos, citas) y pausa con `interrupt()`; el técnico responsable aprueba / modifica / rechaza; si aprueba → **orden de trabajo simulada** en `artifacts/ordenes/`
+- [ ] **Estado persistente:** checkpointer SQLite con `thread_id` por caso; el CLI puede reanudar un diagnóstico pendiente
+- [ ] BM25 + RRF + filtro por `modelos`
+- [ ] **(Agustín)** Set de evaluación de 15–20 preguntas con doc + página esperados (≥ la mitad respondibles con corpus demo)
+- [ ] hit@k / MRR denso vs. híbrido → `artifacts/eval_retrieval.json`; re-ranker **solo si la medición lo justifica**
+- [ ] **Fidelidad por afirmación** (extender `agent/citas.py`: ¿la página recuperada respalda la frase? LLM juez o solapamiento de términos clave como códigos/parámetros) → `artifacts/eval_agente.json`
 - [ ] Modo simulado sin Ollama
-- [ ] Evaluación end-to-end (faithfulness, citas correctas) → `artifacts/eval_agente.json`
-- [ ] Prueba desde clon limpio siguiendo el README (como el profesor)
+- [ ] Prueba desde clon limpio siguiendo el README (como el profesor), con guion de demo que incluya el circuito HITL
 - [ ] README final: resultados, limitaciones
+
+Si no entra en ~10 h: la fidelidad con LLM juez pasa a la primera semana de diciembre.
 
 ---
 
 ## Diciembre · colchón hasta 21/12 (solo si sobra)
+- [ ] OCR de los 11 escaneados (OCRmyPDF) + completar `secciones` + indexar corpus completo
+- [ ] DOCX por encabezados; XLSX → `fallas_sam_v2.jsonl` (historial real, no se versiona)
+- [ ] Re-ranker (si no entró en semana 3)
 - [ ] Búsqueda web restringida a allowlist (MCP)
 - [ ] Modelo grande opcional + comparación vs. 4B
 - [ ] Descripción de planos con VLM
@@ -81,3 +96,4 @@ Para Claude Code: trabajar solo sobre la etapa en curso. Al terminar una tarea, 
 - 09/11 · **Riesgo VRAM: OK.** Consulta con `qwen3.5:4b` (num_ctx 8192, think=false) + BGE-M3 cargados a la vez: pico 5,4 / 8 GB (nvidia-smi). LLM 5–16 s por respuesta.
 - 09/11 · **Riesgo citas: a revisar.** 5 preguntas: responde en español y la mayoría de las citas son válidas, pero: (a) inventó un parámetro con cita válida ("parámetro 375 [Bus Reg Level]" que no está en el fragmento) → se endureció el prompt; el chequeo actual solo verifica doc/página, no el contenido; (b) h1-03 cita páginas no recuperadas (probablemente referencias "see page N" del texto) y h1-02 deforma un doc_id; ambas cosas las marca el chequeo como inválidas; (c) agrega consejos genéricos (LOTO) sin fuente. Ver `artifacts/hito1_respuestas.md`.
 - 09/11 · **Cuello de botella principal: retrieval denso solo.** Para "Decel Inhibit del PowerFlex 700" no recuperó la p. 85 de `rok-20b-um001-en` (donde está), y mezcla manuales 750 con preguntas del 700 → semana 2 (BM25 para códigos/nombres de falla, filtro por `modelos`, re-ranker).
+- 20/11 · Replanificación por devolución del profesor (`devolucion_profesor.txt`) · prioridad agéntica (router + 2 tools + skill) en semana 2; HITL de aprobación con OT simulada + checkpointer, retrieval medido y fidelidad en semana 3; OCR, DOCX/XLSX reales, web y planos pasan a diciembre (opcionales). Historial sintético público para demo y tests.

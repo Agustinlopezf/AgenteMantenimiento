@@ -11,9 +11,11 @@ Un agente que ayuda a técnicos de mantenimiento a diagnosticar fallas de equipo
 Flujo típico:
 1. El técnico describe un síntoma en español ("el pozo para por F-22", "el compresor no levanta presión de aceite").
 2. El agente identifica equipo / clase / conjunto (pregunta si falta información).
-3. Recupera evidencia del corpus filtrando por metadatos (clase de equipo, fabricante, modelo, tipo de contenido).
-4. Responde en español con causas probables, pasos de verificación y **citas** (`doc_id` + página).
-5. Si el corpus no alcanza, puede buscar en la web **solo en dominios/páginas permitidas** (empezando por Rockwell Automation).
+3. **Decide** qué acción ejecutar: consultar documentación del fabricante, buscar fallas similares en el historial, o pedir más datos al técnico. Lo guía la Skill de troubleshooting (procedimiento, chequeos de seguridad, criterios de escalamiento).
+4. Recupera evidencia filtrando por metadatos (clase de equipo, fabricante, modelo, tipo de contenido) y chequea si alcanza.
+5. Responde en español con causas probables, pasos de verificación y **citas** (`doc_id` + página).
+6. **HITL:** arma una propuesta de verificaciones / intervención y la deja **pendiente de aprobación** (aprobar / modificar / rechazar) por un técnico responsable; si se aprueba, genera una **orden de trabajo simulada**. El estado del diagnóstico persiste entre interacciones. (Pedir datos faltantes es comportamiento agéntico, no es el HITL.)
+7. *(Opcional)* Si el corpus no alcanza, puede buscar en la web **solo en dominios/páginas permitidas** (empezando por Rockwell Automation).
 
 Requisitos no negociables:
 - **Corre 100 % local** con modelos open source. Nada sale de la máquina por defecto.
@@ -27,15 +29,15 @@ Requisitos no negociables:
 |---|---|---|
 | Lenguaje / entorno | Python 3.12, `uv` | `uv sync`, `uv run ...` |
 | LLM local | Ollama | Default `qwen3.5:4b` (modelo canónico del curso). Modelo grande opcional vía `LLM_MODEL`. |
-| Orquestación del agente | LangGraph | Estado, checkpoints, human-in-the-loop (clase 11). |
+| Orquestación del agente | LangGraph | Router con decisión de acción, `interrupt()` para aprobación humana, checkpointer SQLite (estado persistente por `thread_id`) (clase 11). |
 | Embeddings | `sentence-transformers` — BGE-M3 (multilingüe) | Corpus mezcla EN/ES y las consultas son en ES: el modelo tiene que ser cross-lingual. Mismo modelo para indexar y consultar. |
 | Vector store | Qdrant (local mode) | Payload = metadatos del catálogo (ver §4). Fallback in-memory con el mismo contrato. |
-| Retrieval | Híbrido denso + BM25, fusión RRF, re-ranking | Clase 8. Filtros por payload antes del ranking. |
+| Retrieval | Híbrido denso + BM25, fusión RRF | Clase 8. Filtros por payload antes del ranking. Re-ranker **solo si la evaluación lo justifica**. |
 | Extracción PDF | PyMuPDF | Texto por página, conservando número de página física. |
-| OCR | OCRmyPDF / Tesseract (`eng`, `spa`) | Solo docs con `requiere_ocr: true`. Se cachea el resultado. |
+| OCR *(opcional)* | OCRmyPDF / Tesseract (`eng`, `spa`) | Solo docs con `requiere_ocr: true`. Se cachea el resultado. |
 | DOCX / XLSX | python-docx / openpyxl | DOCX se segmenta por encabezados; XLSX → JSONL (un registro = un chunk). |
 | Tools externas | MCP (opcional) | Búsqueda web restringida a allowlist de dominios (clase 13). |
-| Evaluación | RAGAS / métricas propias | Faithfulness, context precision, hit@k sobre preguntas de troubleshooting. |
+| Evaluación | RAGAS / métricas propias | hit@k / MRR con doc + página esperados; fidelidad **por afirmación** (que la página citada respalde la frase, no solo que exista). |
 | Tests | pytest | Sin red ni GPU por defecto (providers y embeddings determinísticos). |
 
 ## 3. Estructura del repo
@@ -48,15 +50,16 @@ Requisitos no negociables:
 │   ├── raw/                      # PDFs/DOCX/XLSX originales (solo lectura, puede tener subcarpetas)
 │   ├── catalog/
 │   │   ├── catalogo_documentos.json   # FUENTE DE VERDAD de metadatos
-│   │   └── fallas_sam_v2.jsonl        # historial de fallas (interno_pae: NO se versiona)
+│   │   ├── fallas_sam_v2.jsonl        # historial de fallas real (interno_pae: NO se versiona)
+│   │   └── fallas_sinteticas.jsonl    # historial sintético (publico: demo y tests)
 │   ├── ocr_cache/                # PDFs con capa de texto generada por OCR
 │   └── chunks/                   # chunks.jsonl generados por la ingesta
-├── artifacts/                    # índices, reportes de evaluación
+├── artifacts/                    # índices, reportes de evaluación, ordenes/ (OT simuladas)
 ├── src/troubleshooting_agent/
 │   ├── catalog.py                # carga + validación del catálogo, herencia doc → sección → chunk
 │   ├── ingest/                   # extracción, OCR, chunking
 │   ├── retrieval/                # embeddings, Qdrant, BM25, RRF, reranker
-│   ├── agent/                    # grafo LangGraph, prompts, tools
+│   ├── agent/                    # grafo LangGraph, prompts, tools, citas, skills/ (troubleshooting.md)
 │   └── config.py                 # settings vía env vars
 ├── tests/
 ├── scripts/
@@ -158,7 +161,11 @@ Campos indexados como **filtro** en Qdrant: `clase_equipo`, `conjunto`, `fabrica
 
 ### 4.6 Historial de fallas
 
-`fallas_sam_v2.jsonl`: un registro por caso (`sintoma`, `causa`, `solucion`, `pozo`, `fecha`, `clase_equipo`, `clases_relacionadas`, `observaciones_calidad`). Se embebe `texto_para_embedding`. Se usa como evidencia de casos reales y como ejemplos few-shot; en la respuesta se distingue de lo que dice el manual del fabricante.
+Dos fuentes con el mismo esquema, consultadas por una tool propia (`buscar_historial`), separada de la de manuales:
+- `fallas_sam_v2.jsonl` — casos reales (`interno_pae`, no se versiona; solo con `CORPUS=completo`).
+- `fallas_sinteticas.jsonl` — casos sintéticos (`publico`) sobre equipos del corpus demo; se usan en demo y tests.
+
+Esquema: un registro por caso (`sintoma`, `causa`, `solucion`, `pozo`, `fecha`, `clase_equipo`, `clases_relacionadas`, `observaciones_calidad`). Se embebe `texto_para_embedding`. Se usa como evidencia de casos reales y como ejemplos few-shot; en la respuesta se distingue de lo que dice el manual del fabricante.
 
 ## 5. Reglas para Claude Code
 
@@ -190,9 +197,15 @@ uv run pytest
 
 ## 7. Pendientes conocidos
 
+Prioridad actual (devolución del profesor, 20/11): agente que decide + HITL de aprobación + retrieval medido + fidelidad. Ver ROADMAP.
+
+- Crear el historial sintético `fallas_sinteticas.jsonl`.
+- Definir el set de preguntas de evaluación con doc + página esperados (troubleshooting real por clase de equipo). Incluir un subset que se pueda responder solo con el corpus de demo.
+- Verificar en la primera descarga la URL de `rok-pflex-um-es` (20B-UM002 en español), que se dedujo del patrón de Rockwell.
+
+Opcionales / diciembre:
+
 - OCR de 11 documentos escaneados (BOP Shaffer, API RP 53, planos WEG, O&M Waukesha 6387-1 a–d, Murphy, planos S-08685-4) y completar rangos de `secciones` después del OCR.
 - Faltan manuales: **WEG CFW900** (citado en el historial de fallas) y **Lufkin SAM Well Manager**.
 - Confirmar que la secuencia Murphy Centurion Plus (Enerflex) corresponda al programa de las unidades Valerus V6624–V6628.
 - Limpieza del historial SAM V2: fecha 2026-12-29 dudosa y una fila con columnas corridas.
-- Definir el set de preguntas de evaluación (troubleshooting real por clase de equipo). Incluir un subset que se pueda responder solo con el corpus de demo.
-- Verificar en la primera descarga la URL de `rok-pflex-um-es` (20B-UM002 en español), que se dedujo del patrón de Rockwell.
