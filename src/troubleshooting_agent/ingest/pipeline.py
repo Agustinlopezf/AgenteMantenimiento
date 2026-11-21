@@ -11,6 +11,7 @@ from typing import Any
 from troubleshooting_agent.catalog import Doc, documentos_a_indexar, metadata_para_pagina, resolver_archivos
 from troubleshooting_agent.ingest.chunking import chunk_id, chunk_texto
 from troubleshooting_agent.ingest.extract import extraer_paginas_pdf
+from troubleshooting_agent.ingest.historial import es_historial
 
 METODOS_SOPORTADOS = {"texto"}
 
@@ -65,6 +66,8 @@ def ingerir(
     with tmp.open("w", encoding="utf-8") as f:
         for doc in documentos_a_indexar(catalog, corpus):
             doc_id = doc["doc_id"]
+            if es_historial(doc):
+                continue  # va a su propia colección (ingest/historial.py)
             motivo = motivo_no_soportado(doc)
             if motivo:
                 resultado.saltados[doc_id] = motivo

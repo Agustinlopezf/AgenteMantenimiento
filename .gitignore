@@ -33,6 +33,8 @@ data/chunks/*
 # El catálogo SÍ se versiona (data/catalog/catalogo_documentos.json),
 # pero no los datos internos derivados (historial de fallas con nombres de pozos)
 data/catalog/*.jsonl
+# Historial sintético (publico): sí se versiona
+!data/catalog/fallas_sinteticas.jsonl
 
 # ── Índices y artefactos ───────────────────────────
 qdrant_storage/

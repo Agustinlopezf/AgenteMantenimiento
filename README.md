@@ -85,17 +85,21 @@ Detalle de campos y taxonomía del catálogo: [CLAUDE.md](CLAUDE.md) §4.
 
 ```bash
 uv run python -m troubleshooting_agent.catalog list         # qué documentos entran según CORPUS
-uv run python -m troubleshooting_agent.ingest               # extracción + chunking → data/chunks/chunks.jsonl
-uv run python -m troubleshooting_agent.retrieval.index      # embeddings BGE-M3 + índice Qdrant local
-uv run python -m troubleshooting_agent.agent "el PowerFlex 700 paró por OverVoltage"   # una consulta
-uv run python -m troubleshooting_agent.agent --contexto     # modo interactivo, mostrando fragmentos
+uv run python -m troubleshooting_agent.ingest               # manuales → data/chunks/chunks.jsonl; historial → data/chunks/historial.jsonl
+uv run python -m troubleshooting_agent.retrieval.index      # embeddings BGE-M3 + índices Qdrant local (manuales + historial)
+uv run python -m troubleshooting_agent.agent "el PowerFlex 700 paró por F5 OverVoltage"   # una consulta
+uv run python -m troubleshooting_agent.agent --contexto     # modo interactivo, mostrando la evidencia
 uv run python scripts/probar_hito1.py                       # preguntas de prueba → artifacts/hito1_respuestas.md
 uv run pytest                                               # tests (sin red, GPU ni Ollama)
 ```
 
 Para usar el LLM real: `USE_REAL_LLM=true` en `.env` y Ollama corriendo con el modelo de `LLM_MODEL`. Si Ollama no responde o falta el modelo, el agente avisa y responde en modo simulado (lista los fragmentos recuperados con su cita). La primera indexación descarga BGE-M3 (~2,3 GB) en la cache de Hugging Face.
 
-> Todavía no implementado: OCR (`--ocr`), DOCX/XLSX, retrieval híbrido y re-ranking.
+El agente muestra su traza: qué equipo identificó y, en cada paso, qué acción decidió (`buscar_historial`, `buscar_manual`, `pedir_datos` o `responder`), quién la decidió (LLM, reglas o guarda) y por qué. Si falta un dato (por ejemplo, el modelo), pregunta en la terminal y continúa con la respuesta. En modo simulado decide con reglas. Ejemplos de corridas en [`artifacts/hito2_respuestas.md`](artifacts/hito2_respuestas.md).
+
+Con `CORPUS=demo` el historial de fallas es **sintético** (`data/catalog/fallas_sinteticas.jsonl`, 24 casos sobre los equipos del corpus demo): no son eventos reales.
+
+> Todavía no implementado: aprobación humana de la propuesta de intervención (HITL), estado persistente en SQLite, retrieval híbrido (BM25 + RRF) y chequeo de fidelidad por afirmación (hito 3); OCR (`--ocr`) y DOCX/XLSX (opcionales).
 
 ## Estructura
 
@@ -111,7 +115,8 @@ src/troubleshooting_agent/
   catalog.py    validación y herencia de metadatos
   ingest/       extracción, OCR, chunking
   retrieval/    embeddings, Qdrant, BM25, RRF, reranker
-  agent/        grafo LangGraph, prompts, tools
+  agent/        grafo LangGraph, router, tools, identificación de equipo, citas
+    skills/     skill de troubleshooting (procedimiento, seguridad, escalamiento)
 tests/
 notebooks/
 artifacts/      reportes de evaluación
@@ -122,9 +127,11 @@ artifacts/      reportes de evaluación
 - [x] Catálogo de documentos y taxonomía de tags
 - [x] Historial de fallas SAM V2 en JSONL
 - [x] Corpus de demo con manuales públicos (script de descarga)
-- [ ] Ingesta (extracción + OCR + chunking)
-- [ ] Índice híbrido y re-ranking
-- [ ] Agente LangGraph
+- [x] Ingesta de PDFs con texto (OCR pendiente, opcional)
+- [x] Historial de fallas sintético + tool de búsqueda separada
+- [x] Agente LangGraph que decide qué fuente consultar y pide datos faltantes (hito 2)
+- [ ] Aprobación humana (HITL) + estado persistente (hito 3)
+- [ ] Índice híbrido (BM25 + RRF); re-ranker solo si la evaluación lo justifica
 - [ ] Búsqueda web restringida
 - [ ] Evaluación (set de preguntas de troubleshooting)
 

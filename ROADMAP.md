@@ -47,13 +47,13 @@ Objetivo de cierre: identificar equipo → decidir fuente → pedir datos si fal
 ## Semana 2 · 16–22 nov · Agente que decide (sobre el retrieval actual)
 
 ### Hito 2 — domingo 22/11: el agente elige qué fuente consultar
-- [ ] Historial **sintético** `data/catalog/fallas_sinteticas.jsonl` (`distribucion: publico`, ~20–30 casos sobre equipos del corpus demo, mismo esquema que §4.6 de CLAUDE.md)
-- [ ] Tool `buscar_manual(consulta, filtros)` — documentación del fabricante
-- [ ] Tool `buscar_historial(consulta, clase_equipo)` — fallas resueltas (colección o filtro separado)
-- [ ] Grafo con decisión: `identificar_equipo` (sinónimos de la taxonomía) → router (`pedir_datos` | `buscar_manual` | `buscar_historial` | ambas) → `chequeo_suficiencia` (puede volver a buscar o pedir datos) → `respuesta`
-- [ ] Skill `troubleshooting` versionada (`src/troubleshooting_agent/agent/skills/troubleshooting.md`): procedimiento de diagnóstico, chequeos de seguridad (LOTO, presión, energía), criterios de escalamiento; se carga en router y respuesta
-- [ ] Respuesta distingue manual del fabricante vs. caso del historial vs. norma; incluye advertencias de seguridad recuperadas
-- [ ] El CLI y el camino de punta a punta siguen funcionando; tests sin red
+- [x] Historial **sintético** `data/catalog/fallas_sinteticas.jsonl` (`distribucion: publico`, ~20–30 casos sobre equipos del corpus demo, mismo esquema que §4.6 de CLAUDE.md)
+- [x] Tool `buscar_manual(consulta, filtros)` — documentación del fabricante
+- [x] Tool `buscar_historial(consulta, clase_equipo)` — fallas resueltas (colección o filtro separado)
+- [x] Grafo con decisión: `identificar_equipo` (sinónimos de la taxonomía) → router (`pedir_datos` | `buscar_manual` | `buscar_historial` | ambas) → vuelve a `decidir` → `responder`. El chequeo de suficiencia quedó dentro del router (ve qué se buscó y cuánto se encontró) con guardas: no repetir búsquedas, ≤ 2 pedidos de datos, ≤ 4 pasos
+- [x] Skill `troubleshooting` versionada (`src/troubleshooting_agent/agent/skills/troubleshooting.md`): procedimiento de diagnóstico, chequeos de seguridad (LOTO, presión, energía), criterios de escalamiento; se carga en router y respuesta
+- [x] Respuesta distingue manual del fabricante vs. caso del historial vs. norma; incluye advertencias de seguridad recuperadas
+- [x] El CLI y el camino de punta a punta siguen funcionando; tests sin red
 
 ---
 
@@ -97,3 +97,5 @@ Si no entra en ~10 h: la fidelidad con LLM juez pasa a la primera semana de dici
 - 09/11 · **Riesgo citas: a revisar.** 5 preguntas: responde en español y la mayoría de las citas son válidas, pero: (a) inventó un parámetro con cita válida ("parámetro 375 [Bus Reg Level]" que no está en el fragmento) → se endureció el prompt; el chequeo actual solo verifica doc/página, no el contenido; (b) h1-03 cita páginas no recuperadas (probablemente referencias "see page N" del texto) y h1-02 deforma un doc_id; ambas cosas las marca el chequeo como inválidas; (c) agrega consejos genéricos (LOTO) sin fuente. Ver `artifacts/hito1_respuestas.md`.
 - 09/11 · **Cuello de botella principal: retrieval denso solo.** Para "Decel Inhibit del PowerFlex 700" no recuperó la p. 85 de `rok-20b-um001-en` (donde está), y mezcla manuales 750 con preguntas del 700 → semana 2 (BM25 para códigos/nombres de falla, filtro por `modelos`, re-ranker).
 - 20/11 · Replanificación por devolución del profesor (`devolucion_profesor.txt`) · prioridad agéntica (router + 2 tools + skill) en semana 2; HITL de aprobación con OT simulada + checkpointer, retrieval medido y fidelidad en semana 3; OCR, DOCX/XLSX reales, web y planos pasan a diciembre (opcionales). Historial sintético público para demo y tests.
+- 20/11 · Hito 2 implementado (rama `feat/hito2-agente`). Router LLM con salida JSON (Ollama `format=`) + router de reglas (modo simulado / JSON inválido) + guardas; `chequeo_suficiencia` no es un nodo aparte sino parte de `decidir`. `pedir_datos` usa `interrupt()` + `InMemorySaver` (pasa a SQLite en hito 3). Identificación de equipo determinística (sinónimos de la taxonomía + `modelos` del catálogo; código de falla opcional). Historial: 24 casos sintéticos con códigos tomados de los manuales públicos, colección Qdrant propia (`artifacts/index/qdrant_historial`, porque Qdrant local bloquea la carpeta por cliente); citas `[historial, caso S-NNN]`. Ver `artifacts/hito2_respuestas.md`.
+- 20/11 · **Hallazgos hito 2:** (a) sin la línea "FUENTES SIN CONSULTAR" el 4B salteaba el historial; (b) pedía datos de clases sin manuales → guarda; (c) el retrieval denso sigue sin traer las tablas de fallas (p. 87 PF700, p. 96 FLEXIM) y el LLM cita páginas no relacionadas con citas "válidas" → BM25 + RRF y fidelidad por afirmación son lo más urgente del hito 3. Router: +2–8 s por consulta.

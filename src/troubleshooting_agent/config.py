@@ -61,6 +61,14 @@ class Settings:
         return self.chunks_dir / "chunks.jsonl"
 
     @property
+    def historial_chunks_path(self) -> Path:
+        return self.chunks_dir / "historial.jsonl"
+
+    @property
+    def catalog_dir(self) -> Path:
+        return self.data_dir / "catalog"
+
+    @property
     def ocr_cache_dir(self) -> Path:
         return self.data_dir / "ocr_cache"
 
