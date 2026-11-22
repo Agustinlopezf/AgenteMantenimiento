@@ -4,7 +4,9 @@
 - `buscar_historial`: casos de fallas resueltas (colección `historial_*`).
 
 Ambas filtran por el equipo identificado. Si el filtro por modelo deja sin
-resultados, `buscar_manual` reintenta solo con la clase y lo avisa.
+resultados, `buscar_manual` reintenta solo con la clase y lo avisa. Si hay código de
+falla, `buscar_manual` busca primero en las secciones de troubleshooting / códigos de
+falla (tipo_contenido del catálogo) y completa con el resto del manual.
 """
 
 from __future__ import annotations
@@ -14,6 +16,9 @@ from dataclasses import dataclass, field
 from troubleshooting_agent.agent.equipo import Equipo
 from troubleshooting_agent.retrieval.retriever import Retriever
 from troubleshooting_agent.retrieval.store import Filtros, Hit
+
+
+TIPOS_FALLAS = ["troubleshooting", "codigos_falla"]
 
 
 @dataclass
@@ -34,7 +39,9 @@ class ResultadoBusqueda:
         return " · ".join(partes)
 
 
-def buscar_manual(retriever: Retriever | None, consulta: str, equipo: Equipo, k: int) -> ResultadoBusqueda:
+def buscar_manual(
+    retriever: Retriever | None, consulta: str, equipo: Equipo, k: int, *, priorizar_fallas: bool = True
+) -> ResultadoBusqueda:
     if retriever is None:
         return ResultadoBusqueda([], avisos=["No hay índice de manuales: buscar_manual no devolvió nada."])
     filtros: Filtros = {}
@@ -42,15 +49,26 @@ def buscar_manual(retriever: Retriever | None, consulta: str, equipo: Equipo, k:
         filtros["clase_equipo"] = equipo.clase_equipo
     if equipo.modelo:
         filtros["modelos"] = equipo.modelo
-    hits = retriever.buscar(consulta, k, filtros or None)
+    priorizar = priorizar_fallas and bool(equipo.codigo_falla)
+
+    def _buscar(f: Filtros) -> list[Hit]:
+        hits = retriever.buscar(consulta, k, {**f, "tipo_contenido": TIPOS_FALLAS}) if priorizar else []
+        if len(hits) < k:  # completar con el resto del manual
+            vistos = {h.payload["chunk_id"] for h in hits}
+            hits += [h for h in retriever.buscar(consulta, k, f or None) if h.payload["chunk_id"] not in vistos]
+        return hits[:k]
+
     avisos: list[str] = []
+    hits = _buscar(filtros)
     if not hits and "modelos" in filtros:
         avisos.append(
             f"No hay fragmentos indexados del modelo {equipo.modelo}; se usan manuales de otros modelos "
             f"de la misma clase ({equipo.clase_equipo})."
         )
         filtros.pop("modelos")
-        hits = retriever.buscar(consulta, k, filtros or None)
+        hits = _buscar(filtros)
+    if priorizar:
+        filtros = {**filtros, "prioridad": "secciones de fallas"}
     return ResultadoBusqueda(hits, filtros, avisos)
 
 

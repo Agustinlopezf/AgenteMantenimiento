@@ -44,6 +44,8 @@ ESCALAMIENTO (si aplica algún criterio, decilo en la sección "Escalar", sin ci
 Organizá la respuesta con estos títulos en este orden, omitiendo los que no apliquen: \
 Seguridad, Qué indica, Causas probables, Casos similares del historial, Verificaciones, \
 Acciones, Escalar. Empezá directamente por el primer título, sin introducción.
+Sé conciso: viñetas cortas (una idea y una cita por viñeta), como máximo unas 250 palabras. \
+Es preferible decir menos que afirmar algo que el fragmento citado no dice.
 """
 
 
@@ -85,6 +87,19 @@ def formatear_fragmento(hit: Hit) -> str:
     return f"{encabezado} MANUAL · {detalle}\n{p['texto']}"
 
 
+def citas_permitidas(hits: list[Hit]) -> list[str]:
+    vistas: dict[str, None] = {}
+    for h in hits:
+        p = h.payload
+        vistas.setdefault(formatear_cita_caso(p["caso_id"]) if es_caso(h) else formatear_cita(p["doc_id"], p["pagina_inicio"]))
+    return list(vistas)
+
+
 def construir_mensaje_usuario(pregunta: str, hits: list[Hit], casos: list[Hit] | None = None) -> str:
-    fragmentos = SEPARADOR_FRAGMENTO.join(formatear_fragmento(h) for h in [*hits, *(casos or [])])
-    return f"FRAGMENTOS:\n{fragmentos}\n\nPREGUNTA DEL TÉCNICO:\n{pregunta}"
+    todos = [*hits, *(casos or [])]
+    fragmentos = SEPARADOR_FRAGMENTO.join(formatear_fragmento(h) for h in todos)
+    return (
+        f"FRAGMENTOS:\n{fragmentos}\n\nPREGUNTA DEL TÉCNICO:\n{pregunta}\n\n"
+        f"CITAS PERMITIDAS (copiá exactamente la del fragmento que respalda cada frase; ninguna otra): "
+        f"{' '.join(citas_permitidas(todos))}"
+    )

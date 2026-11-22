@@ -192,3 +192,13 @@ def test_historial_respeta_corpus(tmp_path):
     assert [c["caso_id"] for c in demo] == ["pub-1"]
     assert sorted(c["caso_id"] for c in completo) == ["int-1", "pub-1"]
     assert demo[0]["clase_equipo"] == "bop"  # hereda del documento si el registro no trae
+
+
+def test_mensaje_lista_citas_permitidas():
+    from troubleshooting_agent.agent.prompts import construir_mensaje_usuario
+    from troubleshooting_agent.retrieval.store import Hit
+
+    hits = [Hit(1, {"chunk_id": f"m::p0316::c0{i}", "doc_id": "m", "pagina_inicio": 316, "texto": "x"}) for i in range(2)]
+    caso = Hit(1, {"chunk_id": "h::caso::S-001", "caso_id": "S-001", "texto": "y"})
+    msg = construir_mensaje_usuario("F5", hits, [caso])
+    assert msg.rstrip().endswith("ninguna otra): [m, p. 316] [historial, caso S-001]")

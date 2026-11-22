@@ -6,6 +6,7 @@ Contrato:
     buscar(vector, k, filtros=None)   -> list[Hit] ordenada por score desc
     meta() -> dict | None             -> metadatos del índice (modelo de embeddings, dim, ...)
     count() -> int
+    payloads() -> list[dict]          -> todos los payloads (para construir BM25 sobre lo indexado)
 
 Filtros: {campo: valor} o {campo: [v1, v2]} (cualquiera). Si el campo del payload es
 una lista (ej. `modelos`), matchea si algún elemento coincide.
@@ -40,6 +41,7 @@ class VectorStore(Protocol):
     def buscar(self, vector: np.ndarray, k: int, filtros: Filtros | None = None) -> list[Hit]: ...
     def meta(self) -> dict[str, Any] | None: ...
     def count(self) -> int: ...
+    def payloads(self) -> list[dict[str, Any]]: ...
 
 
 def punto_id(chunk_id: str) -> str:
@@ -49,6 +51,14 @@ def punto_id(chunk_id: str) -> str:
 
 def _como_lista(valor: Any) -> list[Any]:
     return list(valor) if isinstance(valor, (list, tuple, set)) else [valor]
+
+
+def cumple_filtros(payload: dict[str, Any], filtros: Filtros | None) -> bool:
+    """Misma semántica que el filtro de Qdrant: todos los campos, cualquiera de los valores."""
+    for campo, valor in (filtros or {}).items():
+        if not set(_como_lista(payload.get(campo))) & set(_como_lista(valor)):
+            return False
+    return True
 
 
 # ── Qdrant ──────────────────────────────────────────────────
@@ -130,6 +140,19 @@ class QdrantStore:
             return 0
         return int(self._cliente.count(self.coleccion, exact=True).count)
 
+    def payloads(self) -> list[dict[str, Any]]:
+        if not self._cliente.collection_exists(self.coleccion):
+            return []
+        salida: list[dict[str, Any]] = []
+        offset = None
+        while True:
+            puntos, offset = self._cliente.scroll(
+                self.coleccion, limit=1024, offset=offset, with_payload=True, with_vectors=False
+            )
+            salida.extend(dict(pt.payload or {}) for pt in puntos)
+            if offset is None:
+                return salida
+
     def cerrar(self) -> None:
         self._cliente.close()
 
@@ -183,19 +206,12 @@ class NumpyStore:
             self._payloads.extend(nuevos_p)
         self._guardar()
 
-    @staticmethod
-    def _cumple(payload: dict[str, Any], filtros: Filtros) -> bool:
-        for campo, valor in filtros.items():
-            if not set(_como_lista(payload.get(campo))) & set(_como_lista(valor)):
-                return False
-        return True
-
     def buscar(self, vector: np.ndarray, k: int, filtros: Filtros | None = None) -> list[Hit]:
         if not self._payloads:
             return []
         indices = np.arange(len(self._payloads))
         if filtros:
-            indices = np.array([i for i in indices if self._cumple(self._payloads[i], filtros)], dtype=int)
+            indices = np.array([i for i in indices if cumple_filtros(self._payloads[i], filtros)], dtype=int)
             if indices.size == 0:
                 return []
         scores = self._vectores[indices] @ np.asarray(vector, dtype=np.float32)
@@ -207,6 +223,9 @@ class NumpyStore:
 
     def count(self) -> int:
         return len(self._payloads)
+
+    def payloads(self) -> list[dict[str, Any]]:
+        return list(self._payloads)
 
 
 COLECCIONES = ("chunks", "historial")

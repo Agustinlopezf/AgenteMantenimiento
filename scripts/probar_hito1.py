@@ -65,7 +65,7 @@ def main() -> int:
         print(f"[{q['id']}] {q['pregunta']}")
         thread_id = nuevo_thread_id()
         r = iniciar(grafo, q["pregunta"], thread_id, k)
-        while pendiente(r) is not None:  # batch: no hay técnico; se responde vacío y el agente sigue
+        while (p := pendiente(r)) is not None and p["tipo"] == "pedir_datos":  # batch: sin técnico, respuesta vacía
             r = reanudar(grafo, "", thread_id)
         vram = vram_usada_mb()
         t = r.get("tiempos", {})
