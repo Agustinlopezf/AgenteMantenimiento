@@ -1,0 +1,1253 @@
+{
+  "fecha": "2026-11-21T14:49:54+00:00",
+  "corpus": "demo",
+  "embedding_model": "BAAI/bge-m3",
+  "n_preguntas": 20,
+  "preguntas_revisadas": 0,
+  "metricas": {
+    "hibrido": {
+      "hit@1": 0.35,
+      "hit@3": 0.45,
+      "hit@6": 0.45,
+      "hit@10": 0.55,
+      "mrr@10": 0.411
+    },
+    "hibrido+fallas": {
+      "hit@1": 0.6,
+      "hit@3": 0.8,
+      "hit@6": 0.85,
+      "hit@10": 0.95,
+      "mrr@10": 0.717
+    },
+    "denso": {
+      "hit@1": 0.3,
+      "hit@3": 0.35,
+      "hit@6": 0.4,
+      "hit@10": 0.55,
+      "mrr@10": 0.355
+    },
+    "denso+fallas": {
+      "hit@1": 0.4,
+      "hit@3": 0.65,
+      "hit@6": 0.65,
+      "hit@10": 0.85,
+      "mrr@10": 0.533
+    },
+    "bm25": {
+      "hit@1": 0.2,
+      "hit@3": 0.4,
+      "hit@6": 0.55,
+      "hit@10": 0.7,
+      "mrr@10": 0.344
+    },
+    "bm25+fallas": {
+      "hit@1": 0.4,
+      "hit@3": 0.7,
+      "hit@6": 0.85,
+      "hit@10": 0.9,
+      "mrr@10": 0.575
+    }
+  },
+  "detalle": [
+    {
+      "id": "E-01",
+      "variante": "hibrido",
+      "rango": null,
+      "top3": [
+        "rok-pflex-rm001-en p9",
+        "rok-20b-um001-en p117",
+        "rok-pflex-rm001-en p83"
+      ]
+    },
+    {
+      "id": "E-02",
+      "variante": "hibrido",
+      "rango": null,
+      "top3": [
+        "rok-pflex-rm001-en p186",
+        "rok-pflex-rm001-en p1",
+        "rok-pflex-rm001-en p178"
+      ]
+    },
+    {
+      "id": "E-03",
+      "variante": "hibrido",
+      "rango": null,
+      "top3": [
+        "rok-pflex-um-es p5",
+        "rok-pflex-um-es p12",
+        "rok-pflex-um-es p23"
+      ]
+    },
+    {
+      "id": "E-04",
+      "variante": "hibrido",
+      "rango": null,
+      "top3": [
+        "rok-pflex-um-es p190",
+        "rok-pflex-rm001-en p186",
+        "rok-pflex-rm001-en p119"
+      ]
+    },
+    {
+      "id": "E-05",
+      "variante": "hibrido",
+      "rango": 10,
+      "top3": [
+        "rok-pflex-rm001-en p105",
+        "rok-pflex-rm001-en p186",
+        "rok-pflex-rm001-en p66"
+      ]
+    },
+    {
+      "id": "E-06",
+      "variante": "hibrido",
+      "rango": null,
+      "top3": [
+        "rok-pflex-rm001-en p1",
+        "rok-pflex-um-es p36",
+        "rok-pflex-rm001-en p205"
+      ]
+    },
+    {
+      "id": "E-07",
+      "variante": "hibrido",
+      "rango": null,
+      "top3": [
+        "rok-pflex-rm001-en p186",
+        "rok-pflex-rm001-en p1",
+        "rok-pflex-rm001-en p83"
+      ]
+    },
+    {
+      "id": "E-08",
+      "variante": "hibrido",
+      "rango": null,
+      "top3": [
+        "rok-20b-um001-en p121",
+        "rok-pflex-rm001-en p83",
+        "rok-pflex-rm001-en p129"
+      ]
+    },
+    {
+      "id": "E-09",
+      "variante": "hibrido",
+      "rango": 2,
+      "top3": [
+        "rok-pflex-um-es p185",
+        "rok-20b-um001-en p95",
+        "rok-pflex-rm001-en p70"
+      ]
+    },
+    {
+      "id": "E-10",
+      "variante": "hibrido",
+      "rango": null,
+      "top3": [
+        "rok-pflex-um-es p37",
+        "rok-pflex-um-es p39",
+        "rok-pflex-rm001-en p186"
+      ]
+    },
+    {
+      "id": "E-11",
+      "variante": "hibrido",
+      "rango": 8,
+      "top3": [
+        "rok-pflex-um-es p8",
+        "rok-pflex-um-es p125",
+        "rok-pflex-um-es p133"
+      ]
+    },
+    {
+      "id": "E-12",
+      "variante": "hibrido",
+      "rango": 2,
+      "top3": [
+        "rok-750-pm001-en p540",
+        "rok-750-pm001-en p462",
+        "rok-750-pm001-en p492"
+      ]
+    },
+    {
+      "id": "E-13",
+      "variante": "hibrido",
+      "rango": 1,
+      "top3": [
+        "rok-750-pm001-en p462",
+        "rok-750-pm001-en p540",
+        "rok-750-rm002-en p74"
+      ]
+    },
+    {
+      "id": "E-14",
+      "variante": "hibrido",
+      "rango": null,
+      "top3": [
+        "rok-750-pm001-en p540",
+        "rok-750-pm001-en p105",
+        "rok-750-pm001-en p220"
+      ]
+    },
+    {
+      "id": "E-15",
+      "variante": "hibrido",
+      "rango": 1,
+      "top3": [
+        "rok-750-rm002-en p49",
+        "rok-750-rm002-en p45",
+        "rok-750-rm002-en p46"
+      ]
+    },
+    {
+      "id": "E-16",
+      "variante": "hibrido",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p96",
+        "flexim-fluxus-f532wd-es p1",
+        "flexim-fluxus-f532wd-es p109"
+      ]
+    },
+    {
+      "id": "E-17",
+      "variante": "hibrido",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p97",
+        "flexim-fluxus-f532wd-es p110",
+        "flexim-fluxus-f532wd-es p158"
+      ]
+    },
+    {
+      "id": "E-18",
+      "variante": "hibrido",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p96",
+        "flexim-fluxus-f532wd-es p127",
+        "flexim-fluxus-f532wd-es p73"
+      ]
+    },
+    {
+      "id": "E-19",
+      "variante": "hibrido",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p95",
+        "flexim-fluxus-f532wd-es p96",
+        "flexim-fluxus-f532wd-es p6"
+      ]
+    },
+    {
+      "id": "E-20",
+      "variante": "hibrido",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p97",
+        "flexim-fluxus-f532wd-es p151",
+        "flexim-fluxus-f532wd-es p12"
+      ]
+    },
+    {
+      "id": "E-01",
+      "variante": "hibrido+fallas",
+      "rango": 2,
+      "top3": [
+        "rok-20b-um001-en p81",
+        "rok-20b-um001-en p87",
+        "rok-pflex-um-es p119"
+      ]
+    },
+    {
+      "id": "E-02",
+      "variante": "hibrido+fallas",
+      "rango": 1,
+      "top3": [
+        "rok-20b-um001-en p89",
+        "rok-pflex-um-es p119",
+        "rok-20b-um001-en p81"
+      ]
+    },
+    {
+      "id": "E-03",
+      "variante": "hibrido+fallas",
+      "rango": 2,
+      "top3": [
+        "rok-pflex-um-es p119",
+        "rok-20b-um001-en p85",
+        "rok-20b-um001-en p81"
+      ]
+    },
+    {
+      "id": "E-04",
+      "variante": "hibrido+fallas",
+      "rango": 4,
+      "top3": [
+        "rok-20b-um001-en p81",
+        "rok-pflex-um-es p119",
+        "rok-pflex-um-es p129"
+      ]
+    },
+    {
+      "id": "E-05",
+      "variante": "hibrido+fallas",
+      "rango": 1,
+      "top3": [
+        "rok-20b-um001-en p86",
+        "rok-20b-um001-en p88",
+        "rok-20b-um001-en p81"
+      ]
+    },
+    {
+      "id": "E-06",
+      "variante": "hibrido+fallas",
+      "rango": 1,
+      "top3": [
+        "rok-20b-um001-en p85",
+        "rok-pflex-um-es p119",
+        "rok-20b-um001-en p81"
+      ]
+    },
+    {
+      "id": "E-07",
+      "variante": "hibrido+fallas",
+      "rango": 1,
+      "top3": [
+        "rok-20b-um001-en p84",
+        "rok-20b-um001-en p81",
+        "rok-pflex-um-es p119"
+      ]
+    },
+    {
+      "id": "E-08",
+      "variante": "hibrido+fallas",
+      "rango": 8,
+      "top3": [
+        "rok-20b-um001-en p87",
+        "rok-20b-um001-en p89",
+        "rok-20b-um001-en p87"
+      ]
+    },
+    {
+      "id": "E-09",
+      "variante": "hibrido+fallas",
+      "rango": 1,
+      "top3": [
+        "rok-20b-um001-en p95",
+        "rok-20b-um001-en p85",
+        "rok-pflex-um-es p123"
+      ]
+    },
+    {
+      "id": "E-10",
+      "variante": "hibrido+fallas",
+      "rango": null,
+      "top3": [
+        "rok-pflex-um-es p37",
+        "rok-pflex-um-es p39",
+        "rok-pflex-rm001-en p186"
+      ]
+    },
+    {
+      "id": "E-11",
+      "variante": "hibrido+fallas",
+      "rango": 8,
+      "top3": [
+        "rok-pflex-um-es p8",
+        "rok-pflex-um-es p125",
+        "rok-pflex-um-es p133"
+      ]
+    },
+    {
+      "id": "E-12",
+      "variante": "hibrido+fallas",
+      "rango": 3,
+      "top3": [
+        "rok-750-pm001-en p313",
+        "rok-750-pm001-en p332",
+        "rok-750-pm001-en p316"
+      ]
+    },
+    {
+      "id": "E-13",
+      "variante": "hibrido+fallas",
+      "rango": 1,
+      "top3": [
+        "rok-750-pm001-en p316",
+        "rok-750-pm001-en p360",
+        "rok-750-pm001-en p315"
+      ]
+    },
+    {
+      "id": "E-14",
+      "variante": "hibrido+fallas",
+      "rango": 2,
+      "top3": [
+        "rok-750-pm001-en p313",
+        "rok-750-pm001-en p317",
+        "rok-750-pm001-en p307"
+      ]
+    },
+    {
+      "id": "E-15",
+      "variante": "hibrido+fallas",
+      "rango": 1,
+      "top3": [
+        "rok-750-rm002-en p49",
+        "rok-750-rm002-en p45",
+        "rok-750-rm002-en p46"
+      ]
+    },
+    {
+      "id": "E-16",
+      "variante": "hibrido+fallas",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p96",
+        "flexim-fluxus-f532wd-es p1",
+        "flexim-fluxus-f532wd-es p109"
+      ]
+    },
+    {
+      "id": "E-17",
+      "variante": "hibrido+fallas",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p97",
+        "flexim-fluxus-f532wd-es p110",
+        "flexim-fluxus-f532wd-es p158"
+      ]
+    },
+    {
+      "id": "E-18",
+      "variante": "hibrido+fallas",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p96",
+        "flexim-fluxus-f532wd-es p127",
+        "flexim-fluxus-f532wd-es p73"
+      ]
+    },
+    {
+      "id": "E-19",
+      "variante": "hibrido+fallas",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p95",
+        "flexim-fluxus-f532wd-es p96",
+        "flexim-fluxus-f532wd-es p6"
+      ]
+    },
+    {
+      "id": "E-20",
+      "variante": "hibrido+fallas",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p97",
+        "flexim-fluxus-f532wd-es p151",
+        "flexim-fluxus-f532wd-es p12"
+      ]
+    },
+    {
+      "id": "E-01",
+      "variante": "denso",
+      "rango": null,
+      "top3": [
+        "rok-pflex-um-es p190",
+        "rok-pflex-rm001-en p55",
+        "rok-pflex-rm001-en p134"
+      ]
+    },
+    {
+      "id": "E-02",
+      "variante": "denso",
+      "rango": null,
+      "top3": [
+        "rok-pflex-rm001-en p134",
+        "rok-pflex-rm001-en p133",
+        "rok-pflex-rm001-en p186"
+      ]
+    },
+    {
+      "id": "E-03",
+      "variante": "denso",
+      "rango": null,
+      "top3": [
+        "rok-pflex-um-es p11",
+        "rok-pflex-um-es p23",
+        "rok-pflex-um-es p17"
+      ]
+    },
+    {
+      "id": "E-04",
+      "variante": "denso",
+      "rango": null,
+      "top3": [
+        "rok-pflex-um-es p190",
+        "rok-20b-um001-en p81",
+        "rok-pflex-rm001-en p55"
+      ]
+    },
+    {
+      "id": "E-05",
+      "variante": "denso",
+      "rango": null,
+      "top3": [
+        "rok-pflex-rm001-en p55",
+        "rok-pflex-um-es p190",
+        "rok-pflex-rm001-en p105"
+      ]
+    },
+    {
+      "id": "E-06",
+      "variante": "denso",
+      "rango": 10,
+      "top3": [
+        "rok-pflex-um-es p12",
+        "rok-pflex-um-es p190",
+        "rok-pflex-um-es p17"
+      ]
+    },
+    {
+      "id": "E-07",
+      "variante": "denso",
+      "rango": null,
+      "top3": [
+        "rok-pflex-rm001-en p186",
+        "rok-20b-um001-en p81",
+        "rok-pflex-rm001-en p106"
+      ]
+    },
+    {
+      "id": "E-08",
+      "variante": "denso",
+      "rango": null,
+      "top3": [
+        "rok-20b-um001-en p121",
+        "rok-pflex-rm001-en p129",
+        "rok-pflex-rm001-en p133"
+      ]
+    },
+    {
+      "id": "E-09",
+      "variante": "denso",
+      "rango": 9,
+      "top3": [
+        "rok-pflex-um-es p185",
+        "rok-pflex-um-es p210",
+        "rok-pflex-um-es p190"
+      ]
+    },
+    {
+      "id": "E-10",
+      "variante": "denso",
+      "rango": null,
+      "top3": [
+        "rok-pflex-um-es p11",
+        "rok-pflex-um-es p37",
+        "rok-pflex-rm001-en p186"
+      ]
+    },
+    {
+      "id": "E-11",
+      "variante": "denso",
+      "rango": 1,
+      "top3": [
+        "rok-pflex-rm001-en p59",
+        "rok-pflex-um-es p8",
+        "rok-pflex-um-es p133"
+      ]
+    },
+    {
+      "id": "E-12",
+      "variante": "denso",
+      "rango": 4,
+      "top3": [
+        "rok-750-pm001-en p529",
+        "rok-750-pm001-en p530",
+        "rok-750-rm002-en p53"
+      ]
+    },
+    {
+      "id": "E-13",
+      "variante": "denso",
+      "rango": 1,
+      "top3": [
+        "rok-750-pm001-en p462",
+        "rok-750-pm001-en p540",
+        "rok-750-rm002-en p74"
+      ]
+    },
+    {
+      "id": "E-14",
+      "variante": "denso",
+      "rango": null,
+      "top3": [
+        "rok-750-pm001-en p540",
+        "rok-750-pm001-en p307",
+        "rok-750-pm001-en p225"
+      ]
+    },
+    {
+      "id": "E-15",
+      "variante": "denso",
+      "rango": 1,
+      "top3": [
+        "rok-750-rm002-en p46",
+        "rok-750-rm002-en p49",
+        "rok-750-rm002-en p45"
+      ]
+    },
+    {
+      "id": "E-16",
+      "variante": "denso",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p96",
+        "flexim-fluxus-f532wd-es p83",
+        "flexim-fluxus-f532wd-es p7"
+      ]
+    },
+    {
+      "id": "E-17",
+      "variante": "denso",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p96",
+        "flexim-fluxus-f532wd-es p151",
+        "flexim-fluxus-f532wd-es p81"
+      ]
+    },
+    {
+      "id": "E-18",
+      "variante": "denso",
+      "rango": 2,
+      "top3": [
+        "flexim-fluxus-f532wd-es p127",
+        "flexim-fluxus-f532wd-es p96",
+        "flexim-fluxus-f532wd-es p153"
+      ]
+    },
+    {
+      "id": "E-19",
+      "variante": "denso",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p95",
+        "flexim-fluxus-f532wd-es p6",
+        "flexim-fluxus-f532wd-es p155"
+      ]
+    },
+    {
+      "id": "E-20",
+      "variante": "denso",
+      "rango": 7,
+      "top3": [
+        "flexim-fluxus-f532wd-es p109",
+        "flexim-fluxus-f532wd-es p151",
+        "flexim-fluxus-f532wd-es p6"
+      ]
+    },
+    {
+      "id": "E-01",
+      "variante": "denso+fallas",
+      "rango": 2,
+      "top3": [
+        "rok-20b-um001-en p85",
+        "rok-pflex-um-es p125",
+        "rok-20b-um001-en p95"
+      ]
+    },
+    {
+      "id": "E-02",
+      "variante": "denso+fallas",
+      "rango": 3,
+      "top3": [
+        "rok-20b-um001-en p81",
+        "rok-pflex-um-es p119",
+        "rok-20b-um001-en p89"
+      ]
+    },
+    {
+      "id": "E-03",
+      "variante": "denso+fallas",
+      "rango": 3,
+      "top3": [
+        "rok-pflex-um-es p119",
+        "rok-pflex-um-es p123",
+        "rok-20b-um001-en p85"
+      ]
+    },
+    {
+      "id": "E-04",
+      "variante": "denso+fallas",
+      "rango": null,
+      "top3": [
+        "rok-20b-um001-en p81",
+        "rok-20b-um001-en p85",
+        "rok-pflex-um-es p119"
+      ]
+    },
+    {
+      "id": "E-05",
+      "variante": "denso+fallas",
+      "rango": 1,
+      "top3": [
+        "rok-20b-um001-en p86",
+        "rok-20b-um001-en p85",
+        "rok-20b-um001-en p91"
+      ]
+    },
+    {
+      "id": "E-06",
+      "variante": "denso+fallas",
+      "rango": 1,
+      "top3": [
+        "rok-20b-um001-en p85",
+        "rok-20b-um001-en p88",
+        "rok-20b-um001-en p84"
+      ]
+    },
+    {
+      "id": "E-07",
+      "variante": "denso+fallas",
+      "rango": 2,
+      "top3": [
+        "rok-20b-um001-en p81",
+        "rok-20b-um001-en p84",
+        "rok-pflex-um-es p119"
+      ]
+    },
+    {
+      "id": "E-08",
+      "variante": "denso+fallas",
+      "rango": null,
+      "top3": [
+        "rok-20b-um001-en p81",
+        "rok-20b-um001-en p87",
+        "rok-20b-um001-en p88"
+      ]
+    },
+    {
+      "id": "E-09",
+      "variante": "denso+fallas",
+      "rango": 1,
+      "top3": [
+        "rok-20b-um001-en p95",
+        "rok-20b-um001-en p85",
+        "rok-pflex-um-es p123"
+      ]
+    },
+    {
+      "id": "E-10",
+      "variante": "denso+fallas",
+      "rango": null,
+      "top3": [
+        "rok-pflex-um-es p11",
+        "rok-pflex-um-es p37",
+        "rok-pflex-rm001-en p186"
+      ]
+    },
+    {
+      "id": "E-11",
+      "variante": "denso+fallas",
+      "rango": 1,
+      "top3": [
+        "rok-pflex-rm001-en p59",
+        "rok-pflex-um-es p8",
+        "rok-pflex-um-es p133"
+      ]
+    },
+    {
+      "id": "E-12",
+      "variante": "denso+fallas",
+      "rango": 9,
+      "top3": [
+        "rok-750-pm001-en p332",
+        "rok-750-pm001-en p318",
+        "rok-750-pm001-en p332"
+      ]
+    },
+    {
+      "id": "E-13",
+      "variante": "denso+fallas",
+      "rango": 10,
+      "top3": [
+        "rok-750-rm002-en p165",
+        "rok-750-pm001-en p339",
+        "rok-750-pm001-en p307"
+      ]
+    },
+    {
+      "id": "E-14",
+      "variante": "denso+fallas",
+      "rango": 7,
+      "top3": [
+        "rok-750-pm001-en p307",
+        "rok-750-pm001-en p315",
+        "rok-750-pm001-en p332"
+      ]
+    },
+    {
+      "id": "E-15",
+      "variante": "denso+fallas",
+      "rango": 1,
+      "top3": [
+        "rok-750-rm002-en p46",
+        "rok-750-rm002-en p49",
+        "rok-750-rm002-en p45"
+      ]
+    },
+    {
+      "id": "E-16",
+      "variante": "denso+fallas",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p96",
+        "flexim-fluxus-f532wd-es p83",
+        "flexim-fluxus-f532wd-es p7"
+      ]
+    },
+    {
+      "id": "E-17",
+      "variante": "denso+fallas",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p96",
+        "flexim-fluxus-f532wd-es p151",
+        "flexim-fluxus-f532wd-es p81"
+      ]
+    },
+    {
+      "id": "E-18",
+      "variante": "denso+fallas",
+      "rango": 2,
+      "top3": [
+        "flexim-fluxus-f532wd-es p127",
+        "flexim-fluxus-f532wd-es p96",
+        "flexim-fluxus-f532wd-es p153"
+      ]
+    },
+    {
+      "id": "E-19",
+      "variante": "denso+fallas",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p95",
+        "flexim-fluxus-f532wd-es p6",
+        "flexim-fluxus-f532wd-es p155"
+      ]
+    },
+    {
+      "id": "E-20",
+      "variante": "denso+fallas",
+      "rango": 7,
+      "top3": [
+        "flexim-fluxus-f532wd-es p109",
+        "flexim-fluxus-f532wd-es p151",
+        "flexim-fluxus-f532wd-es p6"
+      ]
+    },
+    {
+      "id": "E-01",
+      "variante": "bm25",
+      "rango": null,
+      "top3": [
+        "rok-20b-um001-en p83",
+        "rok-pflex-um-es p121",
+        "rok-20b-um001-en p8"
+      ]
+    },
+    {
+      "id": "E-02",
+      "variante": "bm25",
+      "rango": null,
+      "top3": [
+        "rok-20b-um001-en p8",
+        "rok-pflex-um-es p33",
+        "rok-pflex-rm001-en p186"
+      ]
+    },
+    {
+      "id": "E-03",
+      "variante": "bm25",
+      "rango": 10,
+      "top3": [
+        "rok-pflex-um-es p6",
+        "rok-20b-um001-en p8",
+        "rok-pflex-um-es p5"
+      ]
+    },
+    {
+      "id": "E-04",
+      "variante": "bm25",
+      "rango": 10,
+      "top3": [
+        "rok-pflex-um-es p188",
+        "rok-pflex-um-es p189",
+        "rok-pflex-um-es p190"
+      ]
+    },
+    {
+      "id": "E-05",
+      "variante": "bm25",
+      "rango": 3,
+      "top3": [
+        "rok-pflex-rm001-en p66",
+        "rok-20b-um001-en p89",
+        "rok-20b-um001-en p86"
+      ]
+    },
+    {
+      "id": "E-06",
+      "variante": "bm25",
+      "rango": null,
+      "top3": [
+        "rok-pflex-um-es p136",
+        "rok-pflex-um-es p28",
+        "rok-pflex-rm001-en p186"
+      ]
+    },
+    {
+      "id": "E-07",
+      "variante": "bm25",
+      "rango": 7,
+      "top3": [
+        "rok-pflex-rm001-en p81",
+        "rok-pflex-rm001-en p83",
+        "rok-20b-um001-en p8"
+      ]
+    },
+    {
+      "id": "E-08",
+      "variante": "bm25",
+      "rango": null,
+      "top3": [
+        "rok-pflex-rm001-en p83",
+        "rok-pflex-rm001-en p73",
+        "rok-20b-um001-en p121"
+      ]
+    },
+    {
+      "id": "E-09",
+      "variante": "bm25",
+      "rango": 2,
+      "top3": [
+        "rok-pflex-um-es p185",
+        "rok-20b-um001-en p95",
+        "rok-pflex-um-es p228"
+      ]
+    },
+    {
+      "id": "E-10",
+      "variante": "bm25",
+      "rango": null,
+      "top3": [
+        "rok-pflex-um-es p218",
+        "rok-pflex-um-es p40",
+        "rok-pflex-um-es p5"
+      ]
+    },
+    {
+      "id": "E-11",
+      "variante": "bm25",
+      "rango": null,
+      "top3": [
+        "rok-pflex-um-es p188",
+        "rok-pflex-um-es p125",
+        "rok-pflex-um-es p8"
+      ]
+    },
+    {
+      "id": "E-12",
+      "variante": "bm25",
+      "rango": 4,
+      "top3": [
+        "rok-750-pm001-en p96",
+        "rok-750-pm001-en p540",
+        "rok-750-pm001-en p470"
+      ]
+    },
+    {
+      "id": "E-13",
+      "variante": "bm25",
+      "rango": 2,
+      "top3": [
+        "rok-750-pm001-en p470",
+        "rok-750-pm001-en p462",
+        "rok-750-rm002-en p74"
+      ]
+    },
+    {
+      "id": "E-14",
+      "variante": "bm25",
+      "rango": 5,
+      "top3": [
+        "rok-750-pm001-en p540",
+        "rok-750-pm001-en p219",
+        "rok-750-pm001-en p27"
+      ]
+    },
+    {
+      "id": "E-15",
+      "variante": "bm25",
+      "rango": 1,
+      "top3": [
+        "rok-750-rm002-en p50",
+        "rok-750-rm002-en p45",
+        "rok-750-rm002-en p49"
+      ]
+    },
+    {
+      "id": "E-16",
+      "variante": "bm25",
+      "rango": 2,
+      "top3": [
+        "flexim-fluxus-f532wd-es p98",
+        "flexim-fluxus-f532wd-es p96",
+        "flexim-fluxus-f532wd-es p109"
+      ]
+    },
+    {
+      "id": "E-17",
+      "variante": "bm25",
+      "rango": 4,
+      "top3": [
+        "flexim-fluxus-f532wd-es p163",
+        "flexim-fluxus-f532wd-es p140",
+        "flexim-fluxus-f532wd-es p110"
+      ]
+    },
+    {
+      "id": "E-18",
+      "variante": "bm25",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p96",
+        "flexim-fluxus-f532wd-es p73",
+        "flexim-fluxus-f532wd-es p123"
+      ]
+    },
+    {
+      "id": "E-19",
+      "variante": "bm25",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p95",
+        "flexim-fluxus-f532wd-es p158",
+        "flexim-fluxus-f532wd-es p122"
+      ]
+    },
+    {
+      "id": "E-20",
+      "variante": "bm25",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p97",
+        "flexim-fluxus-f532wd-es p97",
+        "flexim-fluxus-f532wd-es p11"
+      ]
+    },
+    {
+      "id": "E-01",
+      "variante": "bm25+fallas",
+      "rango": 4,
+      "top3": [
+        "rok-20b-um001-en p83",
+        "rok-pflex-um-es p121",
+        "rok-pflex-um-es p121"
+      ]
+    },
+    {
+      "id": "E-02",
+      "variante": "bm25+fallas",
+      "rango": 1,
+      "top3": [
+        "rok-20b-um001-en p89",
+        "rok-pflex-um-es p119",
+        "rok-20b-um001-en p92"
+      ]
+    },
+    {
+      "id": "E-03",
+      "variante": "bm25+fallas",
+      "rango": 2,
+      "top3": [
+        "rok-pflex-um-es p119",
+        "rok-20b-um001-en p85",
+        "rok-20b-um001-en p81"
+      ]
+    },
+    {
+      "id": "E-04",
+      "variante": "bm25+fallas",
+      "rango": 2,
+      "top3": [
+        "rok-pflex-um-es p129",
+        "rok-pflex-um-es p124",
+        "rok-pflex-um-es p127"
+      ]
+    },
+    {
+      "id": "E-05",
+      "variante": "bm25+fallas",
+      "rango": 2,
+      "top3": [
+        "rok-20b-um001-en p89",
+        "rok-20b-um001-en p86",
+        "rok-20b-um001-en p89"
+      ]
+    },
+    {
+      "id": "E-06",
+      "variante": "bm25+fallas",
+      "rango": 5,
+      "top3": [
+        "rok-pflex-um-es p134",
+        "rok-pflex-um-es p119",
+        "rok-20b-um001-en p81"
+      ]
+    },
+    {
+      "id": "E-07",
+      "variante": "bm25+fallas",
+      "rango": 1,
+      "top3": [
+        "rok-20b-um001-en p84",
+        "rok-pflex-um-es p121",
+        "rok-20b-um001-en p89"
+      ]
+    },
+    {
+      "id": "E-08",
+      "variante": "bm25+fallas",
+      "rango": 3,
+      "top3": [
+        "rok-20b-um001-en p89",
+        "rok-20b-um001-en p89",
+        "rok-20b-um001-en p86"
+      ]
+    },
+    {
+      "id": "E-09",
+      "variante": "bm25+fallas",
+      "rango": 1,
+      "top3": [
+        "rok-20b-um001-en p95",
+        "rok-20b-um001-en p89",
+        "rok-20b-um001-en p85"
+      ]
+    },
+    {
+      "id": "E-10",
+      "variante": "bm25+fallas",
+      "rango": null,
+      "top3": [
+        "rok-pflex-um-es p218",
+        "rok-pflex-um-es p40",
+        "rok-pflex-um-es p5"
+      ]
+    },
+    {
+      "id": "E-11",
+      "variante": "bm25+fallas",
+      "rango": null,
+      "top3": [
+        "rok-pflex-um-es p188",
+        "rok-pflex-um-es p125",
+        "rok-pflex-um-es p8"
+      ]
+    },
+    {
+      "id": "E-12",
+      "variante": "bm25+fallas",
+      "rango": 7,
+      "top3": [
+        "rok-750-pm001-en p313",
+        "rok-750-rm002-en p178",
+        "rok-750-rm002-en p177"
+      ]
+    },
+    {
+      "id": "E-13",
+      "variante": "bm25+fallas",
+      "rango": 3,
+      "top3": [
+        "rok-750-rm002-en p178",
+        "rok-750-rm002-en p177",
+        "rok-750-pm001-en p316"
+      ]
+    },
+    {
+      "id": "E-14",
+      "variante": "bm25+fallas",
+      "rango": 1,
+      "top3": [
+        "rok-750-pm001-en p317",
+        "rok-750-pm001-en p313",
+        "rok-750-pm001-en p341"
+      ]
+    },
+    {
+      "id": "E-15",
+      "variante": "bm25+fallas",
+      "rango": 1,
+      "top3": [
+        "rok-750-rm002-en p50",
+        "rok-750-rm002-en p45",
+        "rok-750-rm002-en p49"
+      ]
+    },
+    {
+      "id": "E-16",
+      "variante": "bm25+fallas",
+      "rango": 2,
+      "top3": [
+        "flexim-fluxus-f532wd-es p98",
+        "flexim-fluxus-f532wd-es p96",
+        "flexim-fluxus-f532wd-es p109"
+      ]
+    },
+    {
+      "id": "E-17",
+      "variante": "bm25+fallas",
+      "rango": 4,
+      "top3": [
+        "flexim-fluxus-f532wd-es p163",
+        "flexim-fluxus-f532wd-es p140",
+        "flexim-fluxus-f532wd-es p110"
+      ]
+    },
+    {
+      "id": "E-18",
+      "variante": "bm25+fallas",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p96",
+        "flexim-fluxus-f532wd-es p73",
+        "flexim-fluxus-f532wd-es p123"
+      ]
+    },
+    {
+      "id": "E-19",
+      "variante": "bm25+fallas",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p95",
+        "flexim-fluxus-f532wd-es p158",
+        "flexim-fluxus-f532wd-es p122"
+      ]
+    },
+    {
+      "id": "E-20",
+      "variante": "bm25+fallas",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p97",
+        "flexim-fluxus-f532wd-es p97",
+        "flexim-fluxus-f532wd-es p11"
+      ]
+    }
+  ]
+}

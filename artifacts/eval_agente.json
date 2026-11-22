@@ -1,0 +1,1641 @@
+{
+  "fecha": "2026-11-21T15:37:01+00:00",
+  "corpus": "demo",
+  "llm": "qwen3.5:4b",
+  "retrieval_mode": "hibrido",
+  "juez_llm": true,
+  "n_preguntas": 20,
+  "resumen": {
+    "evidencia_relevante": 0.85,
+    "cita_pagina_esperada": 0.65,
+    "respuestas_con_cita_invalida": 5,
+    "afirmaciones": {
+      "respaldada": 151,
+      "parcial": 4,
+      "no_respaldada": 43,
+      "no_verificable": 0,
+      "cita_invalida": 27
+    },
+    "tasa_respaldada": 0.671,
+    "propuestas_para_aprobar": 19,
+    "verificaciones_descartadas": 13,
+    "tiempo_medio_s": 39.0
+  },
+  "detalle": [
+    {
+      "id": "E-01",
+      "pregunta": "El PowerFlex 700 de la bomba de inyección para por F5 OverVoltage cuando desacelera",
+      "decisiones": [
+        "buscar_manual[llm]",
+        "buscar_historial[llm]",
+        "responder[llm]"
+      ],
+      "evidencia_relevante": true,
+      "citas_validas": [
+        "[rok-20b-um001-en, p. 89]",
+        "[historial, caso S-014]",
+        "[rok-pflex-um-es, p. 119]",
+        "[historial, caso S-002]",
+        "[historial, caso S-001]"
+      ],
+      "citas_invalidas": [],
+      "cita_pagina_esperada": false,
+      "fidelidad": {
+        "respaldada": 10,
+        "parcial": 0,
+        "no_respaldada": 6,
+        "no_verificable": 0,
+        "cita_invalida": 0
+      },
+      "tasa_respaldada": 0.625,
+      "afirmaciones_dudosas": [
+        {
+          "texto": "El bus DC queda cargado después de cortar la alimentación; esperar el tiempo de descarga que indique el manual y medir antes de tocar componentes internos [rok-20b-um001-en, p. 89].",
+          "citas": [
+            "[rok-20b-um001-en, p. 89]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto de la fuente describe alarmas y sus acciones pero no menciona el procedimiento para cargar un bus DC después de cortar la alimentación ni especificar tiempos de descarga."
+        },
+        {
+          "texto": "Según el manual de PowerFlex 700 Serie A (Frames 0…6), este código corresponde a una alarma donde la tensión del bus DC superó un límite superior definido por parámetros configurables [rok-20b-um001-en, p. 89].",
+          "citas": [
+            "[rok-20b-um001-en, p. 89]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto de la fuente no menciona ninguna alarma relacionada con el 'bus DC' ni un límite superior de tensión para ese bus."
+        },
+        {
+          "texto": "La causa más frecuente es la regeneración de energía en el motor durante la desaceleración (frenado dinámico), lo que eleva la tensión del bus DC por encima del límite [rok-pflex-um-es, p. 119].",
+          "citas": [
+            "[rok-pflex-um-es, p. 119]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto proporcionado describe los tipos y mecanismos de fallo en el variador pero no menciona la regeneración de energía, frenado dinámico ni elevaciones de tensión del bus DC."
+        },
+        {
+          "texto": "Revisar los parámetros relacionados con límites de velocidad y tiempos de frenado en el variador, específicamente [Overspeed Limit] o equivalentes según modelo exacto [rok-pflex-um-es, p. 119].",
+          "citas": [
+            "[rok-pflex-um-es, p. 119]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [
+            "Overspeed Limit"
+          ],
+          "motivo": "El texto describe tipos generales de fallos y alarmas pero no menciona específicamente los parámetros de límites de velocidad ni tiempos de frenado."
+        },
+        {
+          "texto": "Si la inercia es muy alta y no hay solución con ajustes, evaluar instalar una resistencia dinámica (dynamic brake) para absorber energía [rok-pflex-um-es, p. 119].",
+          "citas": [
+            "[rok-pflex-um-es, p. 119]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto describe los tipos y mecanismos de fallo/alarma pero no menciona la inercia, ni propone instalar una resistencia dinámica como solución."
+        },
+        {
+          "texto": "Si el voltaje de línea AC es inestable o alto, monitorear la fuente principal y considerar transformadores con mejor regulación si aplica [rok-pflex-um-es, p. 119].",
+          "citas": [
+            "[rok-pflex-um-es, p. 119]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto proporcionado describe los tipos y mecanismos de fallos automáticos en el variador, pero no menciona la inestabilidad o voltaje alto como causa ni sugiere transformadores con mejor regulación."
+        }
+      ],
+      "propuesta": {
+        "verificaciones": 2,
+        "descartadas": 1,
+        "origen": "llm"
+      },
+      "espera_aprobacion": true,
+      "tiempos": {
+        "retrieve_s": 0.36,
+        "llm_s": 14.35,
+        "fidelidad_s": 20.6,
+        "propuesta_s": 7.12,
+        "router_s": 4.35
+      },
+      "total_s": 46.8,
+      "respuesta": "# Seguridad\nAntes de intervenir en el tablero o bornes: bloqueo y etiquetado (LOTO) y verificación de ausencia de tensión. El bus DC queda cargado después de cortar la alimentación; esperar el tiempo de descarga que indique el manual y medir antes de tocar componentes internos [rok-20b-um001-en, p. 89]. Si hay presión o gas en la línea: despresurizar e aislar antes de cualquier trabajo [guía interna]. AIB / equipos rotantes: asegurar que no puedan arrancar ni moverse por inercia o contrapesos [historial, caso S-014].\n\n# Qué indica\nF5 OverVoltage significa que la tensión del bus DC excedió el valor máximo programado. El variador detiene su operación cuando esta condición se mantiene [rok-pflex-um-es, p. 119]. Según el manual de PowerFlex 700 Serie A (Frames 0…6), este código corresponde a una alarma donde la tensión del bus DC superó un límite superior definido por parámetros configurables [rok-20b-um001-en, p. 89].\n\n# Causas probables\nLa causa más frecuente es la regeneración de energía en el motor durante la desaceleración (frenado dinámico), lo que eleva la tensión del bus DC por encima del límite [rok-pflex-um-es, p. 119]. Esto ocurre cuando se intenta reducir la velocidad rápidamente sin una carga dinámica adecuada para absorber esa energía extraída del motor [historial, caso S-002]. Otras causas incluyen voltaje de línea transitorio o alto en el suministro AC original [rok-pflex-um-es, p. 119], aunque es menos común que la regeneración controlada por inercia del equipo acoplado (como un AIB con contrapesos desbalanceados) [historial, caso S-001].\n\n# Casos similares del historial\n*   **Caso S-002:** F5 OverVoltage al detener el pozo desde el tablero; arranca normal después de reset. Causa: Tiempo de desaceleración muy corto para la inercia del AIB [historial, caso S-002].\n*   **Caso S-001:** El variador paró por F5 OverVoltage en carrera descendente varias veces al día. Causa: Regeneración del motor en bajada de balancín; solución fue rebalancear contrapesos y extender tiempo de desaceleración [historial, caso S-001].\n*   **Caso S-014:** F5 OverVoltage después de cambio de contrapesos. Causa: Contrapesos mal posicionados generando regeneración en bajada; solución fue corregir posición según planilla de balanceo [historial, caso S-014].\n\n# Verificaciones\n*   Medir la tensión del bus DC (Vdc) durante el ciclo completo de desaceleración para confirmar si supera el valor límite configurado.\n*   Revisar los parámetros relacionados con límites de velocidad y tiempos de frenado en el variador, específicamente [Overspeed Limit] o equivalentes según modelo exacto [rok-pflex-um-es, p. 119].\n*   Verificar la configuración del tiempo de desaceleración (Decel Time) para asegurar que sea suficiente con respecto a la inercia total del motor y carga [historial, caso S-002].\n\n# Acciones\nSi se confirma regeneración como causa: aumentar el tiempo de desaceleración en los parámetros del variador hasta estabilizar el bus DC sin superar el límite máximo permitido por software o hardware. Si la inercia es muy alta y no hay solución con ajustes, evaluar instalar una resistencia dinámica (dynamic brake) para absorber energía [rok-pflex-um-es, p. 119]. Verificar que los contrapesos del AIB estén correctamente balanceados según planilla de montaje [historial, caso S-014]. Si el voltaje de línea AC es inestable o alto, monitorear la fuente principal y considerar transformadores con mejor regulación si aplica [rok-pflex-um-es, p. 119].\n\n# Escalar\nRecomendar escalar al supervisor o especialista cuando:\n*   La falla se repite después de ajustar el tiempo de desaceleración y verificar contrapesos sin resolver la causa raíz (riesgo de daño por sobrecalentamiento continuo).\n*   El manual indique reemplazar placas internas o componentes del variador completo debido a daños físicos no visibles.\n*   Se requiere intervenir con el equipo energizado para medir parámetros internos específicos que exceden las capacidades básicas del técnico [rok-20b-um001-en, p. 89]."
+    },
+    {
+      "id": "E-02",
+      "pregunta": "PowerFlex 700 con falla F4 UnderVoltage al arrancar",
+      "decisiones": [
+        "buscar_manual[llm]",
+        "buscar_historial[llm]",
+        "responder[llm]"
+      ],
+      "evidencia_relevante": true,
+      "citas_validas": [
+        "[rok-20b-um001-en, p. 89]",
+        "[historial, caso S-017]",
+        "[historial, caso S-003]",
+        "[historial, caso S-014]",
+        "[rok-pflex-um-es, p. 125]",
+        "[rok-20b-um001-en, p. 81]",
+        "[rok-pflex-um-es, p. 126]"
+      ],
+      "citas_invalidas": [],
+      "cita_pagina_esperada": true,
+      "fidelidad": {
+        "respaldada": 10,
+        "parcial": 0,
+        "no_respaldada": 2,
+        "no_verificable": 0,
+        "cita_invalida": 0
+      },
+      "tasa_respaldada": 0.833,
+      "afirmaciones_dudosas": [
+        {
+          "texto": "Medir el voltaje DC en el bus para confirmar si está por debajo del umbral mínimo (407V/204V) durante la operación normal y los transitorios de arranque [rok-pflex-um-es, p. 125].",
+          "citas": [
+            "[rok-pflex-um-es, p. 125]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [
+            "407",
+            "204"
+          ],
+          "motivo": "El texto menciona la sobretensión y cómo resolverla, pero no especifica el umbral mínimo de voltaje (407V/204V) ni instruye medir para confirmar si está por debajo durante arranques."
+        },
+        {
+          "texto": "Verificar/reprogramar parámetros que usen entradas analógicas si se configuró una referencia manual de tensión (TB Man Ref) en lugar del voltaje real [rok-pflex-um-es, p. 125].",
+          "citas": [
+            "[rok-pflex-um-es, p. 125]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto describe soluciones para fallos específicos como sobrevelocidad o sobretensión y no menciona la configuración de referencias manuales de tensión ni parámetros analógicos."
+        }
+      ],
+      "propuesta": {
+        "verificaciones": 3,
+        "descartadas": 0,
+        "origen": "llm"
+      },
+      "espera_aprobacion": true,
+      "tiempos": {
+        "retrieve_s": 0.14,
+        "llm_s": 13.29,
+        "fidelidad_s": 15.13,
+        "propuesta_s": 7.36,
+        "router_s": 4.3
+      },
+      "total_s": 40.2,
+      "respuesta": "### Seguridad\nAntes de abrir tableros o tocar bornes: bloqueo y etiquetado (LOTO) y verificación de ausencia de tensión. Variadores: el bus DC queda cargado después de cortar la alimentación; esperar el tiempo de descarga que indique el manual y medir antes de intervenir. Equipos con presión o gas: despresurizar y aislar antes de desarmar. AIB / equipos rotantes: asegurar que no puedan arrancar ni moverse por inercia o contrapesos.\n\n### Qué indica\nLa alarma **UnderVoltage** (F4) se activa cuando la tensión del bus CC cae por debajo de un valor predeterminado, específicamente 407V DC para entrada CA 400/480V o 204V DC para entrada CA 200/240V [rok-20b-um001-en, p. 89].\n\n### Causas probables\nLa caída de tensión en el bus puede deberse a interrupciones en la línea de alimentación AC o voltaje bajo en la red entrante [rok-20b-um001-en, p. 89]. En entornos industriales con arranques directos masivos (ej. bombas grandes), un motor principal puede causar una caída sistémica que afecta a otros variadores conectados al mismo tablero o transformador [historial, caso S-017].\n\n### Casos similares del historial\n*   **Caso S-017:** Falla F4 UnderVoltage en PowerFlex 753 durante arranque de bomba grande; causa fue caída de tensión general por arranque directo simultáneo. Solución: Coordinación secuencial y evaluación de capacidad transformadora [historial, caso S-017].\n*   **Caso S-003:** Falla F4 UnderVoltage en PowerFlex 700 tras tormenta; causa fue corte de distribución media tensión normalizando la línea del pozo. Solución: Verificación y reseteo según procedimiento de batería [historial, caso S-003].\n*   **Caso S-014:** Falla F5 OverVoltage (relacionada con regeneración) tras cambio de contrapesos desbalanceados en AIB; solución fue corregir el balanceo para evitar inyección de energía al bus [historial, caso S-014].\n\n### Verificaciones\nMonitorear la línea AC entrante por voltaje bajo o interrupciones de potencia antes del arranque [rok-20b-um001-en, p. 89]. Medir el voltaje DC en el bus para confirmar si está por debajo del umbral mínimo (407V/204V) durante la operación normal y los transitorios de arranque [rok-pflex-um-es, p. 125]. Verificar que no haya condiciones de regeneración excesiva o desbalance mecánico que inyecten energía al bus CC [historial, caso S-014].\n\n### Acciones\nSi la condición causante ya no está presente (tensión normalizada), el variador intentará restablecer automáticamente si **[Auto Rstrt Tries]** se configuró con un valor mayor a \"0\" y transcurrido el tiempo definido en **[Auto Rstrt Delay]** [rok-20b-um001-en, p. 81]. Si la falla persiste o no es reseteable:\n*   Verificar/reprogramar parámetros que usen entradas analógicas si se configuró una referencia manual de tensión (TB Man Ref) en lugar del voltaje real [rok-pflex-um-es, p. 125].\n*   Si el problema persiste tras verificar la red y coordinar arranques, considerar reemplazo del variador completo como medida extrema para fallas no reseteables que requieran reparación de placa o unidad potencia [rok-pflex-um-es, p. 126].\n\n### Escalar\nRecomendar escalar al supervisor o especialista cuando: la falla se repite tras coordinar arranques y verificar tensión; el manual indica reemplazo del variador completo por fallas no reseteables; hay riesgo de integridad del pozo (presión, gas) si la caída es recurrente indicando fallo en protección eléctrica general."
+    },
+    {
+      "id": "E-03",
+      "pregunta": "El variador PowerFlex 700 muestra F13 Ground Fault",
+      "decisiones": [
+        "buscar_manual[llm]",
+        "buscar_historial[llm]",
+        "responder[llm]"
+      ],
+      "evidencia_relevante": true,
+      "citas_validas": [
+        "[rok-20b-um001-en, p. 89]",
+        "[rok-pflex-um-es, p. 119]",
+        "[rok-20b-um001-en, p. 85]",
+        "[historial, caso S-024]",
+        "[historial, caso S-016]",
+        "[historial, caso S-007]"
+      ],
+      "citas_invalidas": [],
+      "cita_pagina_esperada": true,
+      "fidelidad": {
+        "respaldada": 6,
+        "parcial": 0,
+        "no_respaldada": 4,
+        "no_verificable": 0,
+        "cita_invalida": 0
+      },
+      "tasa_respaldada": 0.6,
+      "afirmaciones_dudosas": [
+        {
+          "texto": "F13 Ground Fault es una condición donde se detecta un camino a tierra mayor al 25% del rating del variador [rok-20b-um001-en, p. 89].",
+          "citas": [
+            "[rok-20b-um001-en, p. 89]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto solo lista el código de falla 'Ground Fault' sin definir qué condición lo provoca ni mencionar ningún umbral del 25%."
+        },
+        {
+          "texto": "Es un fallo de tipo No-Resettable que requiere corrección antes del ciclo siguiente [rok-pflex-um-es, p. 119].",
+          "citas": [
+            "[rok-pflex-um-es, p. 119]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto describe un fallo 'Auto-Restab./Marcha' que se rearme automáticamente, lo cual contradice la afirmación de ser un fallo 'No-Resettable'."
+        },
+        {
+          "texto": "Verificar que la temperatura ambiente máxima no haya sido excedida antes de revisar otros elementos [rok-pflex-um-es, p. 119].",
+          "citas": [
+            "[rok-pflex-um-es, p. 119]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto describe los tipos y mecanismos de fallo o alarma pero no menciona la temperatura ambiente ni su verificación."
+        },
+        {
+          "texto": "Reprogramar parámetro [Motor NP FLA] si la autotune excede el valor programado (aunque no es F13) [rok-pflex-um-es, p. 119].",
+          "citas": [
+            "[rok-pflex-um-es, p. 119]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [
+            "Motor NP FLA"
+          ],
+          "motivo": "El texto describe fallos y alarmas generales sin mencionar el parámetro específico [Motor NP FLA] ni la condición de reprogramarlo cuando la autotune excede un valor programado."
+        }
+      ],
+      "propuesta": {
+        "verificaciones": 2,
+        "descartadas": 0,
+        "origen": "llm"
+      },
+      "espera_aprobacion": true,
+      "tiempos": {
+        "retrieve_s": 0.14,
+        "llm_s": 9.76,
+        "fidelidad_s": 12.69,
+        "propuesta_s": 6.03,
+        "router_s": 4.15
+      },
+      "total_s": 32.8,
+      "respuesta": "# Seguridad\nAntes de abrir tableros o tocar bornes: bloqueo y etiquetado (LOTO) y verificación de ausencia de tensión. Variadores: el bus DC queda cargado después de cortar la alimentación; esperar el tiempo de descarga que indique el manual y medir antes de intervenir. Equipos con presión o gas: despresurizar y aislar antes de desarmar. AIB / equipos rotantes: asegurar que no puedan arrancar ni moverse por inercia o contrapesos.\n\n# Qué indica\nF13 Ground Fault es una condición donde se detecta un camino a tierra mayor al 25% del rating del variador [rok-20b-um001-en, p. 89]. Es un fallo de tipo No-Resettable que requiere corrección antes del ciclo siguiente [rok-pflex-um-es, p. 119].\n\n# Causas probables\nEl cable o el motor pueden tener una condición a tierra en sus conexiones externas al variador [rok-20b-um001-en, p. 85]. El bobinado del motor puede estar dañado (a tierra) debido a humedad o sobrecalentamiento previo [historial, caso S-024] [historial, caso S-016].\n\n# Casos similares del historial\nFalla F13 intermitente por lluvia: cable de salida con aislación dañada en la caja de conexiones que ingresaba agua; solución fue medir aislamiento y reemplazar el tramo [historial, caso S-007]. Falsa no reseteable reaparece inmediatamente: motor del AIB con bobinado a tierra; solución confirmó falla y reemplazó el motor [historial, caso S-024].\n\n# Verificaciones\nVerificar que la temperatura ambiente máxima no haya sido excedida antes de revisar otros elementos [rok-pflex-um-es, p. 119]. Medir aislamiento del cable entre variador y motor con el motor desconectado para detectar fugas a tierra o humedad en bobinado [historial, caso S-024] [historial, caso S-016].\n\n# Acciones\nReprogramar parámetro [Motor NP FLA] si la autotune excede el valor programado (aunque no es F13) [rok-pflex-um-es, p. 119]. Si se confirma falla en cable o motor: reemplazar cable dañado y sellar caja de conexiones para evitar ingreso de agua [historial, caso S-007] o reemplazar el bobinado del motor si está a tierra [historial, caso S-024].\n\n# Escalar\nRecomendar escalar al supervisor o especialista cuando: la falla se repite después de resetear y corregir la causa evidente; hay riesgo para personas, ambiente o integridad del pozo (presión, gas); el manual indica reemplazar placas o equipos completos."
+    },
+    {
+      "id": "E-04",
+      "pregunta": "PowerFlex 700 dispara por sobrecarga del motor, falla 7",
+      "decisiones": [
+        "buscar_manual[llm]",
+        "buscar_historial[llm]",
+        "responder[llm]"
+      ],
+      "evidencia_relevante": true,
+      "citas_validas": [
+        "[historial, caso S-005]",
+        "[historial, caso S-015]"
+      ],
+      "citas_invalidas": [
+        "[rok-20b-um01-en, p. 86]",
+        "[rok-20b-um01-en, p. 81]"
+      ],
+      "cita_pagina_esperada": false,
+      "fidelidad": {
+        "respaldada": 2,
+        "parcial": 0,
+        "no_respaldada": 0,
+        "no_verificable": 0,
+        "cita_invalida": 5
+      },
+      "tasa_respaldada": 0.286,
+      "afirmaciones_dudosas": [
+        {
+          "texto": "La falla 7 corresponde a \"Motor Overload\", definida como una sobrecarga excesiva del motor donde la corriente de salida supera el valor configurado en [Motor NP FLA] ([rok-20b-um01-en, p. 86]).",
+          "citas": [
+            "[rok-20b-um01-en, p. 86]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        },
+        {
+          "texto": "Es un fallo no reseteable que requiere corrección antes de reiniciar ([rok-20b-um01-en, p. 81]).",
+          "citas": [
+            "[rok-20b-um01-en, p. 81]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        },
+        {
+          "texto": "Existen dos causas principales documentadas: existe una carga excesiva o condiciones de sobrecarga en el motor; y se ha programado un valor incorrecto para [Motor NP FLA] ([rok-20b-um01-en, p. 86]).",
+          "citas": [
+            "[rok-20b-um01-en, p. 86]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        },
+        {
+          "texto": "Revisar si existe sobrecarga real o configuración incorrecta del parámetro 41 [Motor NP Volts] (que afecta cálculos de impedancia) ([rok-20b-um01-en, p. 86]).",
+          "citas": [
+            "[rok-20b-um01-en, p. 86]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        },
+        {
+          "texto": "Reducir la carga para que la corriente no supere el valor configurado en [Motor NP FLA]. Revisar el tamaño del motor y verificar si se requiere salida adicional o corrección de parámetros ([rok-20b-um01-en, p. 86]).",
+          "citas": [
+            "[rok-20b-um01-en, p. 86]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        }
+      ],
+      "propuesta": {
+        "verificaciones": 0,
+        "descartadas": 6,
+        "origen": "llm"
+      },
+      "espera_aprobacion": false,
+      "tiempos": {
+        "retrieve_s": 0.14,
+        "llm_s": 9.36,
+        "fidelidad_s": 2.41,
+        "propuesta_s": 9.53,
+        "router_s": 4.29
+      },
+      "total_s": 25.7,
+      "respuesta": "# Seguridad\nAntes de abrir tableros o tocar bornes: bloqueo y etiquetado (LOTO) y verificación de ausencia de tensión. Variadores: el bus DC queda cargado después de cortar la alimentación; esperar el tiempo de descarga que indique el manual y medir antes de intervenir. Equipos con presión o gas: despresurizar y aislar antes de desarmar. AIB / equipos rotantes: asegurar que no puedan arrancar ni moverse por inercia o contrapesos.\n\n# Qué indica\nLa falla 7 corresponde a \"Motor Overload\", definida como una sobrecarga excesiva del motor donde la corriente de salida supera el valor configurado en [Motor NP FLA] ([rok-20b-um01-en, p. 86]). Es un fallo no reseteable que requiere corrección antes de reiniciar ([rok-20b-um01-en, p. 81]).\n\n# Causas probables\nExisten dos causas principales documentadas: existe una carga excesiva o condiciones de sobrecarga en el motor; y se ha programado un valor incorrecto para [Motor NP FLA] ([rok-20b-um01-en, p. 86]).\n\n# Casos similares del historial\nEn caso S-005 (PowerFlex 700), aumentar la velocidad de un AIB provocó sobrecarga porque exigía corriente superior a la nominal configurada; se resolvió verificando el parámetro contra la placa y ajustando el diseño ([historial, caso S-005]). En caso S-015 (PowerFlex 755), una aceleración muy corta causó fallo de corriente al arrancar un motor inercial; aumentaron el tiempo de aceleración para mitigar el pico de demanda ([historial, caso S-015]).\n\n# Verificaciones\nVerificar las conexiones entre el motor y la carga. Confirmar los requisitos de nivel y tiempo de operación. Revisar si existe sobrecarga real o configuración incorrecta del parámetro 41 [Motor NP Volts] (que afecta cálculos de impedancia) ([rok-20b-um01-en, p. 86]).\n\n# Acciones\nReducir la carga para que la corriente no supere el valor configurado en [Motor NP FLA]. Revisar el tamaño del motor y verificar si se requiere salida adicional o corrección de parámetros ([rok-20b-um01-en, p. 86]).\n\n# Escalar\nRecomendar escalar al supervisor o especialista cuando la falla se repite tras resetear; cuando sea necesario reemplazar placas o equipos completos; o si hay riesgo para personas, ambiente o integridad del pozo ([guía interna]). Si el diagnóstico no alcanza a ser confiable con los datos actuales."
+    },
+    {
+      "id": "E-05",
+      "pregunta": "PowerFlex 700 tira F12 HW OverCurrent al arrancar el motor",
+      "decisiones": [
+        "buscar_manual[llm]",
+        "buscar_historial[llm]",
+        "responder[llm]"
+      ],
+      "evidencia_relevante": true,
+      "citas_validas": [
+        "[historial, caso S-006]",
+        "[historial, caso S-015]",
+        "[historial, caso S-009]"
+      ],
+      "citas_invalidas": [
+        "[rok-20b-um01-en, p. 86]",
+        "[rok-20b-um01-en, p. 89]",
+        "[rok-20b-um01-en, p. 88]"
+      ],
+      "cita_pagina_esperada": false,
+      "fidelidad": {
+        "respaldada": 7,
+        "parcial": 0,
+        "no_respaldada": 0,
+        "no_verificable": 0,
+        "cita_invalida": 8
+      },
+      "tasa_respaldada": 0.467,
+      "afirmaciones_dudosas": [
+        {
+          "texto": "El código **F12 HW OverCurrent** indica que \"la corriente de salida del variador ha excedido el límite de corriente hardware\" [rok-20b-um01-en, p. 86].",
+          "citas": [
+            "[rok-20b-um01-en, p. 86]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        },
+        {
+          "texto": "Este es un fallo no rearmable por reset automático; requiere intervención técnica para corregir la causa raíz antes de reiniciar el equipo [rok-20b-um01-en, p. 89].",
+          "citas": [
+            "[rok-20b-um01-en, p. 89]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        },
+        {
+          "texto": "Exceso de carga:** El variador está entregando más corriente de lo que puede soportar debido a una sobrecarga mecánica o configuración incorrecta [rok-20b-um01-en, p. 86].",
+          "citas": [
+            "[rok-20b-um01-en, p. 86]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        },
+        {
+          "texto": "Configuración del DC Boost:** Un ajuste inadecuado del \"DC boost setting\" genera un pico de corriente excesivo al arranque [rok-20b-um01-en, p. 86].",
+          "citas": [
+            "[rok-20b-um01-en, p. 86]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        },
+        {
+          "texto": "Voltaje de freno (Brake):** Los voltajes configurados para el freno en DC están demasiado altos, provocando corrientes elevadas [rok-20b-um01-en, p. 86].",
+          "citas": [
+            "[rok-20b-um01-en, p. 86]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        },
+        {
+          "texto": "Verificación de carga:** Evaluar si existe sobrecarga mecánica o si los requisitos del proceso coinciden con la capacidad nominal configurada en **[Current Lmt Val]** [rok-20b-um01-en, p. 88].",
+          "citas": [
+            "[rok-20b-um01-en, p. 88]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        },
+        {
+          "texto": "Parámetros DC Boost y Brake:** Revisar que el \"DC boost setting\" no esté mal programado y verificar si los voltajes del freno (brake volts) están configurados dentro de rangos aceptables [rok-20b-um01-en, p. 86].",
+          "citas": [
+            "[rok-20b-um01-en, p. 86]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        },
+        {
+          "texto": "Revisar y ajustar el valor de voltaje del freno (brake volts) para evitar sobrecargas [rok-20b-um01-en, p. 86].",
+          "citas": [
+            "[rok-20b-um01-en, p. 86]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        }
+      ],
+      "propuesta": {
+        "verificaciones": 2,
+        "descartadas": 1,
+        "origen": "llm"
+      },
+      "espera_aprobacion": true,
+      "tiempos": {
+        "retrieve_s": 0.15,
+        "llm_s": 15.46,
+        "fidelidad_s": 8.81,
+        "propuesta_s": 7.93,
+        "router_s": 4.67
+      },
+      "total_s": 37.0,
+      "respuesta": "# Seguridad\nAntes de realizar cualquier verificación física o desarme: bloqueo y etiquetado (LOTO) e identificación de la ausencia de tensión. Si el equipo está energizado, no se debe intervenir en bornes ni tableros sin autorización del supervisor responsable por los riesgos eléctricos y mecánicos asociados a equipos rotantes bajo presión o gas.\n\n# Qué indica\nEl código **F12 HW OverCurrent** indica que \"la corriente de salida del variador ha excedido el límite de corriente hardware\" [rok-20b-um01-en, p. 86]. Este es un fallo no rearmable por reset automático; requiere intervención técnica para corregir la causa raíz antes de reiniciar el equipo [rok-20b-um01-en, p. 89].\n\n# Causas probables\nSegún los manuales disponibles:\n*   **Exceso de carga:** El variador está entregando más corriente de lo que puede soportar debido a una sobrecarga mecánica o configuración incorrecta [rok-20b-um01-en, p. 86].\n*   **Configuración del DC Boost:** Un ajuste inadecuado del \"DC boost setting\" genera un pico de corriente excesivo al arranque [rok-20b-um01-en, p. 86].\n*   **Voltaje de freno (Brake):** Los voltajes configurados para el freno en DC están demasiado altos, provocando corrientes elevadas [rok-20b-um01-en, p. 86].\n\n# Casos similares del historial\n*   **Caso S-006:** En un pozo con bomba de profundidad trabada por arena (AIB), el disparo F12 HW OverCurrent al arrancar fue causado por el pico de corriente necesario para vencer la resistencia mecánica. La solución implicó detener el equipo y realizar una intervención externa (\"pulling\"), sin daños en el variador [historial, caso S-006].\n*   **Caso S-015:** Un PowerFlex 755 (similar arquitectura) disparó F12 HW OverCurrent al acelerar debido a un tiempo de aceleración demasiado corto para una bomba centrífuga con alta inercia. La corrección consistió en aumentar el tiempo de aceleración y verificar la aislación del motor [historial, caso S-015].\n*   **Caso S-009:** Un PowerFlex 700 disparó F21 Output PhaseLoss al arrancar por un borne flojo. Aunque es una falla diferente (fase perdida), el antecedente demuestra que las conexiones físicas de salida hacia el motor son críticas para la operación segura [historial, caso S-009].\n\n# Verificaciones\n*   **Verificación de carga:** Evaluar si existe sobrecarga mecánica o si los requisitos del proceso coinciden con la capacidad nominal configurada en **[Current Lmt Val]** [rok-20b-um01-en, p. 88].\n*   **Parámetros DC Boost y Brake:** Revisar que el \"DC boost setting\" no esté mal programado y verificar si los voltajes del freno (brake volts) están configurados dentro de rangos aceptables [rok-20b-um01-en, p. 86].\n*   **Verificación de conexiones:** Inspeccionar el cableado entre variador y motor para descartar bornes flojos o cortocircuitos fase-fase (análogo al caso S-009) [historial, caso S-015; historial, caso S-009].\n*   **Verificación de aceleración:** Comprobar si el perfil de arranque es compatible con la inercia del motor y carga mecánica actual (caso similar al S-015) [historial, caso S-015].\n\n# Acciones\nSi se confirma que no hay daño físico en el variador:\n*   Ajustar los parámetros de **[DC Boost]** o verificar si están configurados correctamente según la carga.\n*   Revisar y ajustar el valor de voltaje del freno (brake volts) para evitar sobrecargas [rok-20b-um01-en, p. 86].\n*   Si se sospecha una obstrucción mecánica o trabado en un equipo AIB/Bomba: detener la operación y solicitar intervención externa antes de reiniciar el variador (como ocurrió en caso S-006) [historial, caso S-006].\n\n# Escalar\nRecomendar escalar al supervisor o especialista si:\n*   La falla se repite tras corregir los parámetros visibles sin resolver la causa física.\n*   Se requiere intervención con el equipo energizado para verificar conexiones internas (riesgo de descarga del bus DC).\n*   Existe riesgo de daño en equipos rotantes, pozo o ambiente debido a una obstrucción mecánica no detectada [historial, caso S-006]."
+    },
+    {
+      "id": "E-06",
+      "pregunta": "El PowerFlex 700 del tablero para por sobretemperatura del disipador (F8)",
+      "decisiones": [
+        "buscar_manual[llm]",
+        "buscar_historial[llm]",
+        "responder[llm]"
+      ],
+      "evidencia_relevante": true,
+      "citas_validas": [
+        "[rok-20b-um001-en, p. 85]",
+        "[rok-pflex-um-es, p. 123]",
+        "[rok-pflex-um-es, p. 126]",
+        "[historial, caso S-008]",
+        "[historial, caso S-004]"
+      ],
+      "citas_invalidas": [],
+      "cita_pagina_esperada": true,
+      "fidelidad": {
+        "respaldada": 9,
+        "parcial": 0,
+        "no_respaldada": 5,
+        "no_verificable": 0,
+        "cita_invalida": 0
+      },
+      "tasa_respaldada": 0.643,
+      "afirmaciones_dudosas": [
+        {
+          "texto": "Si se debe abrir la carcasa del variador para acceder al disipador o ventilador, recordar que el bus DC queda cargado tras cortar la alimentación; esperar el tiempo de descarga indicado en el manual y medir antes de tocar bornes [rok-20b-um001-en, p. 85].",
+          "citas": [
+            "[rok-20b-um001-en, p. 85]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto de la fuente describe cómo solucionar el error Heatsink OvrTemp sin mencionar abrir la carcasa ni advertencias sobre descargar el bus DC antes de tocar los bornes."
+        },
+        {
+          "texto": "Según los manuales en inglés y español para PowerFlex 700 Series A/B Frames 0…6, este fallo se clasifica como una condición crítica que detiene el variador si no se corrige [rok-pflex-um-es, p. 123] [rok-pflex-um-es, p. 126].",
+          "citas": [
+            "[rok-pflex-um-es, p. 123]",
+            "[rok-pflex-um-es, p. 126]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto no menciona que el fallo sea una condición crítica ni detenga al variador, sino que describe acciones correctivas específicas para errores de hardware."
+        },
+        {
+          "texto": "3.  Revisar el cableado externo a los terminales de salida para descartar cortocircuitos o condiciones que generen sobrecorriente excesiva [rok-pflex-um-es, p. 123].",
+          "citas": [
+            "[rok-pflex-um-es, p. 123]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto menciona verificar la conexión en puente y el cableado para puesta a tierra o sobrecalentamiento, pero no afirma explícitamente revisar el cableado externo para descartar cortocircuitos que generen sobrecorriente excesiva."
+        },
+        {
+          "texto": "Si el problema persiste tras estas acciones correctivas evidentes, escalar al supervisor o especialista técnico dado que implica posible daño en hardware interno (Main Control Board) según otros códigos F93/F130 [rok-pflex-um-es, p. 126] [historial, caso S-004].",
+          "citas": [
+            "[rok-pflex-um-es, p. 126]",
+            "[historial, caso S-004]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [
+            "F93",
+            "F130"
+          ],
+          "motivo": "El texto no menciona el daño en la Main Control Board ni los códigos F93/F130, sino que describe problemas de transistores, variadores y fusibles."
+        },
+        {
+          "texto": "Recomendar elevación de nivel si: la falla se repite tras limpiar ventiladores y verificar carga; o si el manual indica reemplazo de placa principal (Main Control Board) para códigos F93/F130 que no coinciden con este fallo térmico pero comparten hardware [rok-pflex-um-es, p. 126].",
+          "citas": [
+            "[rok-pflex-um-es, p. 126]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [
+            "F93",
+            "F130"
+          ],
+          "motivo": "El texto no menciona la elevación de nivel ni las condiciones específicas para recomendarla tras limpiar ventiladores o verificar carga."
+        }
+      ],
+      "propuesta": {
+        "verificaciones": 3,
+        "descartadas": 0,
+        "origen": "llm"
+      },
+      "espera_aprobacion": true,
+      "tiempos": {
+        "retrieve_s": 0.14,
+        "llm_s": 14.05,
+        "fidelidad_s": 19.04,
+        "propuesta_s": 6.96,
+        "router_s": 4.35
+      },
+      "total_s": 44.6,
+      "respuesta": "# Seguridad\nAntes de intervenir el tablero: bloqueo y etiquetado (LOTO) y verificación de ausencia de tensión. Si se debe abrir la carcasa del variador para acceder al disipador o ventilador, recordar que el bus DC queda cargado tras cortar la alimentación; esperar el tiempo de descarga indicado en el manual y medir antes de tocar bornes [rok-20b-um001-en, p. 85]. Si hay riesgo de inercia del AIB (SIM), asegurar equipos rotantes para evitar movimiento accidental.\n\n# Qué indica\nEl código **F8 Heatsink OvrTemp** indica que la temperatura del disipador excede el 100% de [Drive Temp] [rok-20b-um001-en, p. 85]. Según los manuales en inglés y español para PowerFlex 700 Series A/B Frames 0…6, este fallo se clasifica como una condición crítica que detiene el variador si no se corrige [rok-pflex-um-es, p. 123] [rok-pflex-um-es, p. 126].\n\n# Causas probables\n*   La temperatura ambiente máxima ha sido excedida o los filtros de aire están obstruidos impidiendo la ventilación adecuada [rok-20b-um001-en, p. 85] [historial, caso S-008].\n*   El ventilador del disipador está dañado, trabado o no gira correctamente, generando sobrecalentamiento radiante (Sobrtmp. rad.) [rok-pflex-um-es, p. 126] [historial, caso S-008].\n*   Existe una carga excesiva en el motor que supera la capacidad térmica del disipador actual [rok-20b-um001-en, p. 85].\n\n# Casos similares del historial\nEn un caso similar (S-008) con PowerFlex 700 SIM-120 en verano, el fallo F8 Heatsink OvrTemp se debió a un ventilador trabado y filtros tapados de polvo; la solución fue reemplazar el ventilador y limpiar los filtros [historial, caso S-008]. Otro caso (S-004) mostró que fallas recurrentes tras reset pueden indicar problemas físicos como fusibles quemados en entrada, aunque aquí se prioriza lo térmico.\n\n# Verificaciones\n1.  Confirmar si la temperatura ambiente instalada supera los límites máximos permitidos para el equipo [rok-20b-um001-en, p. 85].\n2.  Inspeccionar visualmente y medir la rotación del ventilador asociado al disipador; verificar que no esté trabado ni obstruido por polvo o suciedad [rok-pflex-um-es, p. 126] [historial, caso S-008].\n3.  Revisar el cableado externo a los terminales de salida para descartar cortocircuitos o condiciones que generen sobrecorriente excesiva [rok-pflex-um-es, p. 123].\n\n# Acciones\n*   Limpiar filtros de aire y asegurar flujo de ventilación óptimo en el tablero; si es necesario, reemplazar el ventilador defectuoso [historial, caso S-008] [rok-pflex-um-es, p. 126].\n*   Verificar que la carga del motor no sea excesiva para las capacidades térmicas actuales y ajustar parámetros de operación si corresponde [rok-20b-um001-en, p. 85].\n*   Si el problema persiste tras estas acciones correctivas evidentes, escalar al supervisor o especialista técnico dado que implica posible daño en hardware interno (Main Control Board) según otros códigos F93/F130 [rok-pflex-um-es, p. 126] [historial, caso S-004].\n\n# Escalar\nRecomendar elevación de nivel si: la falla se repite tras limpiar ventiladores y verificar carga; o si el manual indica reemplazo de placa principal (Main Control Board) para códigos F93/F130 que no coinciden con este fallo térmico pero comparten hardware [rok-pflex-um-es, p. 126]. Si la intervención requiere abrir tableros energizados o presurizados del pozo, escalar inmediatamente por seguridad y riesgo ambiental."
+    },
+    {
+      "id": "E-07",
+      "pregunta": "PowerFlex 700 en falla F2 Auxiliary Input, no deja arrancar",
+      "decisiones": [
+        "buscar_manual[llm]",
+        "buscar_historial[llm]",
+        "responder[llm]"
+      ],
+      "evidencia_relevante": true,
+      "citas_validas": [
+        "[rok-20b-um001-en, p. 84]",
+        "[rok-pflex-um-es, p. 119]",
+        "[rok-20b-um001-en, p. 93]",
+        "[historial, caso S-004]",
+        "[historial, caso S-006]",
+        "[historial, caso S-009]"
+      ],
+      "citas_invalidas": [],
+      "cita_pagina_esperada": true,
+      "fidelidad": {
+        "respaldada": 5,
+        "parcial": 1,
+        "no_respaldada": 5,
+        "no_verificable": 0,
+        "cita_invalida": 0
+      },
+      "tasa_respaldada": 0.455,
+      "afirmaciones_dudosas": [
+        {
+          "texto": "Según el manual, esto impide que el equipo inicie automáticamente o permita un arrancar forzado sin resolver primero ([rok-pflex-um-es, p. 119]; [rok-20b-um001-en, p. 84]).",
+          "citas": [
+            "[rok-pflex-um-es, p. 119]",
+            "[rok-20b-um001-en, p. 84]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto describe fallos específicos como 'Auto-Restab./Marcha' o errores de temperatura y resistencia, pero no menciona la restricción general contra el arrancamiento forzado sin resolver primero ni detalla cómo evitarlo."
+        },
+        {
+          "texto": "No se encontró en el historial casos específicos con falla F2 que coincidan exactamente con este síntoma; los casos disponibles tratan sobre pérdida de fase (F5), sobrecorriente o conflictos digitales ([historial, caso S-004]; [historial, caso S-006]).",
+          "citas": [
+            "[historial, caso S-004]",
+            "[historial, caso S-006]"
+          ],
+          "veredicto": "parcial",
+          "faltantes": [
+            "F2",
+            "F5"
+          ],
+          "motivo": "El texto confirma que los casos disponibles en el historial tratan sobre pérdida de fase (F17) y sobrecorriente o conflictos digitales, coincidiendo exactamente con la afirmación."
+        },
+        {
+          "texto": "1.  **Verificar señal física:** Usar un multímetro para confirmar que la entrada digital configurada como auxiliar esté en el estado lógico esperado (generalmente \"ON\" o presionado) antes de intentar arrancar ([rok-pflex-um-es, p. 119]).",
+          "citas": [
+            "[rok-pflex-um-es, p. 119]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto describe tipos de fallos y alarmas pero no menciona el uso de un multímetro ni la verificación del estado lógico digital."
+        },
+        {
+          "texto": "2.  **Revisar configuración del variador:** Comprobar los parámetros [Digital Inx Sel] para asegurar que la entrada física corresponde a la función programada como auxiliar (ej. \"Stop\", \"Auxiliary\") y no hay conflictos con otras entradas ([rok-20b-um001-en, p. 93]; [rok-pflex-um-es, p. 119]).",
+          "citas": [
+            "[rok-20b-um001-en, p. 93]",
+            "[rok-pflex-um-es, p. 119]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [
+            "Auxiliary"
+          ],
+          "motivo": "El texto no menciona la verificación específica de los parámetros [Digital Inx Sel] para asegurar que la entrada física corresponda a una función programada como auxiliar."
+        },
+        {
+          "texto": "Start sin Stop) y reprogramar [Digital Inx Sel] para eliminarlos ([rok-pflex-um-es, p. 119]; [rok-20b-um001-en, p. 93]).",
+          "citas": [
+            "[rok-pflex-um-es, p. 119]",
+            "[rok-20b-um001-en, p. 93]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto describe cómo programar entradas digitales para resolver conflictos o falta de señal, pero no menciona la acción específica de 'reprogramar [Digital Inx Sel] para eliminarlos' ni cita códigos específicos como los proporcionados en la afirmación."
+        },
+        {
+          "texto": "Si el problema es puramente de configuración: ajustar los parámetros del variador según la lógica de seguridad requerida por el equipo en campo ([rok-pflex-um-es, p. 119]; [rok-20b-um001-en, p. 84]).",
+          "citas": [
+            "[rok-pflex-um-es, p. 119]",
+            "[rok-20b-um001-en, p. 84]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto describe fallos específicos y sus soluciones sin mencionar la lógica de seguridad requerida por el equipo en campo ni referirse a parámetros generales para ajustar según dicha lógica."
+        }
+      ],
+      "propuesta": {
+        "verificaciones": 2,
+        "descartadas": 1,
+        "origen": "llm"
+      },
+      "espera_aprobacion": true,
+      "tiempos": {
+        "retrieve_s": 0.15,
+        "llm_s": 13.59,
+        "fidelidad_s": 15.05,
+        "propuesta_s": 6.54,
+        "router_s": 4.4
+      },
+      "total_s": 39.7,
+      "respuesta": "# Seguridad\nAntes de abrir tableros o tocar bornes: bloqueo y etiquetado (LOTO) y verificación de ausencia de tensión. Variadores: el bus DC queda cargado después de cortar la alimentación; esperar el tiempo de descarga que indique el manual y medir antes de intervenir. Equipos con presión o gas: despresurizar y aislar antes de desarmar. AIB / equipos rotantes: asegurar que no puedan arrancar ni moverse por inercia o contrapesos.\n\n# Qué indica\nLa falla F2 (Auxiliary Input) significa \"Interlock auxiliar abierto\" ([rok-20b-um001-en, p. 84]). El variador detiene la operación porque una condición de seguridad externa no se ha satisfecho antes del arranque. Según el manual, esto impide que el equipo inicie automáticamente o permita un arrancar forzado sin resolver primero ([rok-pflex-um-es, p. 119]; [rok-20b-um001-en, p. 84]).\n\n# Causas probables\nEl interlock auxiliar depende de la configuración del variador y el estado físico de los cables conectados a sus entradas digitales:\n*   El cableado remoto está abierto o desconectado ([rok-20b-um001-en, p. 84]).\n*   La función digital configurada para \"auxiliar\" no coincide con la señal física presente en el campo (ej. falta un botón de parada físico que deba estar presionado).\n*   Existe una configuración incorrecta del parámetro [Digital Inx Sel] ([rok-20b-um001-en, p. 93]).\n\n# Casos similares del historial\nNo se encontró en el historial casos específicos con falla F2 que coincidan exactamente con este síntoma; los casos disponibles tratan sobre pérdida de fase (F5), sobrecorriente o conflictos digitales ([historial, caso S-004]; [historial, caso S-006]).\n\n# Verificaciones\n1.  **Verificar señal física:** Usar un multímetro para confirmar que la entrada digital configurada como auxiliar esté en el estado lógico esperado (generalmente \"ON\" o presionado) antes de intentar arrancar ([rok-pflex-um-es, p. 119]).\n2.  **Revisar configuración del variador:** Comprobar los parámetros [Digital Inx Sel] para asegurar que la entrada física corresponde a la función programada como auxiliar (ej. \"Stop\", \"Auxiliary\") y no hay conflictos con otras entradas ([rok-20b-um001-en, p. 93]; [rok-pflex-um-es, p. 119]).\n3.  **Inspección visual:** Verificar que los cables de la entrada auxiliar estén conectados firmemente y no presenten circuitos abiertos ([rok-20b-um001-en, p. 84]; [historial, caso S-009] - referencia a bornes flojos).\n\n# Acciones\n*   Corregir el cableado remoto si se detecta un circuito abierto o desconexión ([rok-20b-um001-en, p. 84]).\n*   Si la señal física está presente pero falla persiste: verificar que no haya conflictos de entrada digital configurados (ej. Start sin Stop) y reprogramar [Digital Inx Sel] para eliminarlos ([rok-pflex-um-es, p. 119]; [rok-20b-um001-en, p. 93]).\n*   Si el problema es puramente de configuración: ajustar los parámetros del variador según la lógica de seguridad requerida por el equipo en campo ([rok-pflex-um-es, p. 119]; [rok-20b-um001-en, p. 84]).\n\n# Escalar\nRecomendar escalar al supervisor o especialista cuando:\n*   La falla persiste tras verificar la señal física y corregir la configuración del variador sin encontrar causa aparente en el cableado.\n*   Se requiere intervención con equipos energizados para rastrear un circuito abierto difícil de localizar.\n*   El diagnóstico sugiere una falla en los sensores o lógica externa que no es solo un problema de cableado simple."
+    },
+    {
+      "id": "E-08",
+      "pregunta": "PowerFlex 700 con F17 Input Phase Loss",
+      "decisiones": [
+        "buscar_manual[llm]",
+        "buscar_historial[llm]",
+        "responder[llm]"
+      ],
+      "evidencia_relevante": false,
+      "citas_validas": [
+        "[historial, caso S-010]",
+        "[historial, caso S-004]"
+      ],
+      "citas_invalidas": [],
+      "cita_pagina_esperada": false,
+      "fidelidad": {
+        "respaldada": 5,
+        "parcial": 1,
+        "no_respaldada": 0,
+        "no_verificable": 0,
+        "cita_invalida": 0
+      },
+      "tasa_respaldada": 0.833,
+      "afirmaciones_dudosas": [
+        {
+          "texto": "S-010**: Falla F17 repetida sin corte reportado por microcortes en contactor. Solución: Reemplazar contactor y monitorear tensión (rok-20b-um001-en, p. 93) ([historial, caso S-010]).",
+          "citas": [
+            "[historial, caso S-010]"
+          ],
+          "veredicto": "parcial",
+          "faltantes": [
+            "F17",
+            "93"
+          ],
+          "motivo": "El texto confirma que la falla F3 repetida sin corte de energía se debió a microcortes por un contactor defectuoso y su solución fue el reemplazo del mismo, coincidiendo exactamente con los hechos descritos en la afirmación."
+        }
+      ],
+      "propuesta": {
+        "verificaciones": 2,
+        "descartadas": 1,
+        "origen": "llm"
+      },
+      "espera_aprobacion": true,
+      "tiempos": {
+        "retrieve_s": 0.15,
+        "llm_s": 10.7,
+        "fidelidad_s": 8.26,
+        "propuesta_s": 8.08,
+        "router_s": 5.07
+      },
+      "total_s": 32.3,
+      "respuesta": "# Seguridad\nAntes de abrir tableros o tocar bornes: bloqueo y etiquetado (LOTO) y verificación de ausencia de tensión. Variadores: el bus DC queda cargado después de cortar la alimentación; esperar el tiempo de descarga que indique el manual y medir antes de intervenir. Equipos con presión o gas: despresurizar y aislar antes de desarmar. AIB / equipos rotantes: asegurar que no puedan arrancar ni moverse por inercia o contrapesos.\n\n# Qué indica\nLa falla **F17 Input Phase Loss** significa que \"The DC bus ripple has exceeded the level in [Phase Loss Level]\" (rok-20b-um001-en, p. 91). También se define como una condición donde el \"Current in one or more phases has been lost\" o permanece por debajo de un nivel preset (rok-20b-um001-en, p. 87).\n\n# Causas probables\n*   Pérdida de tensión en la línea AC: Monitor the incoming AC line for low voltage or line power interruption (rok-20b-um001-en, p. 93).\n*   Microcortes por contacto defectuoso en el contactor de entrada del tablero ([historial, caso S-010]).\n*   Fusible quemado en el seccionador de entrada del tablero ([historial, caso S-004]).\n\n# Casos similares del historial\n*   **S-004**: Síntoma F17 repetido tras reset; fusible quemado en seccionador. Solución: Reemplazo con LOTO y medición de tensión antes de energizar ([historial, caso S-004]).\n*   **S-010**: Falla F17 repetida sin corte reportado por microcortes en contactor. Solución: Reemplazar contactor y monitorear tensión (rok-20b-um001-en, p. 93) ([historial, caso S-010]).\n\n# Verificaciones\n*   Check the drive and motor wiring para verificar continuidad fase-fase o leads desconectados (rok-20b-um001-en, p. 87).\n*   Monitor la tensión de entrada AC y el bus DC durante un periodo prolongado si falla recurrente ([historial, caso S-010]).\n\n# Acciones\n1. Verificar estado del fusible o contactor de entrada; reemplazarlo solo con equipo bloqueado (LOTO) y medido sin tensión ([historial, caso S-004], [historial, caso S-010]).\n2. Si el problema persiste tras resetear la falla, escalar al supervisor si se sospecha daño en componentes de potencia o contacto interno recurrente que requiere reemplazo de placa/variador (rok-20b-um001-en, p. 89).\n\n# Escalar\nRecomendar escalar al supervisor o especialista cuando: la falla se repite después de corregir el fusible/contactor; hay riesgo para personas por trabajo en equipo energizado; o si las verificaciones no confirman una causa externa simple y sugieren daño interno del variador."
+    },
+    {
+      "id": "E-09",
+      "pregunta": "El PowerFlex 700 da Decel Inhibit (F24) al parar",
+      "decisiones": [
+        "buscar_manual[llm]",
+        "buscar_historial[llm]",
+        "responder[llm]"
+      ],
+      "evidencia_relevante": true,
+      "citas_validas": [
+        "[rok-20b-um001-en, p. 95]",
+        "[historial, caso S-013]",
+        "[historial, caso S-002]",
+        "[rok-pflex-um-es, p. 123]",
+        "[rok-20b-um001-en, p. 85]"
+      ],
+      "citas_invalidas": [],
+      "cita_pagina_esperada": true,
+      "fidelidad": {
+        "respaldada": 5,
+        "parcial": 0,
+        "no_respaldada": 0,
+        "no_verificable": 0,
+        "cita_invalida": 0
+      },
+      "tasa_respaldada": 1.0,
+      "afirmaciones_dudosas": [],
+      "propuesta": {
+        "verificaciones": 5,
+        "descartadas": 0,
+        "origen": "llm"
+      },
+      "espera_aprobacion": true,
+      "tiempos": {
+        "retrieve_s": 0.14,
+        "llm_s": 9.71,
+        "fidelidad_s": 6.44,
+        "propuesta_s": 9.66,
+        "router_s": 4.72
+      },
+      "total_s": 30.7,
+      "respuesta": "# Seguridad\nAntes de abrir tableros o tocar bornes: bloqueo y etiquetado (LOTO) y verificación de ausencia de tensión. Variadores: el bus DC queda cargado después de cortar la alimentación; esperar el tiempo de descarga que indique el manual y medir antes de intervenir. AIB / equipos rotantes: asegurar que no puedan arrancar ni moverse por inercia o contrapesos.\n\n# Qué indica\nLa falla **Decel Inhibit** (F24) significa que el variador detiene la desaceleración para limitar la tensión del bus debido a voltaje excesivo generado durante frenado regenerativo, normalmente causado por energía regenerativa excesiva o inestabilidad en la línea de entrada AC.\n\n# Causas probables\n- La función de regulación del bus está habilitada y se detiene la desaceleración por exceso de tensión del bus (según [rok-20b-um001-en, p. 95]).\n- El voltaje regenerativo es excesivo o hay inestabilidad en el voltaje AC de entrada (según [rok-20b-um001-en, p. 95]).\n\n# Casos similares del historial\nEn caso S-013 con PowerFlex 700 SIM-150 (AIB), la Decel Inhibit al parar el pozo se resolvió extendiendo el tiempo de desaceleración y evaluando si era necesaria resistencia de frenado. En caso S-002, una alarma F5 OverVoltage al detener un AIB se solucionó aumentando el tiempo de desaceleración debido a inercia excesiva del equipo (según [historial, caso S-013], [historial, caso S-002]).\n\n# Verificaciones\nVerificar que la tensión de entrada esté dentro de los límites especificados por el variador. Verificar que la impedancia de tierra del sistema siga técnicas apropiadas de conexión a tierra (según [rok-pflex-um-es, p. 123], [rok-20b-um001-en, p. 85]).\n\n# Acciones\nReprogramar los parámetros 161/162 para eliminar cualquier selección \"Adjust Freq\". Deshabilitar la regulación del bus (parámetros 161 & 162) y agregar una resistencia de frenado dinámica o prolongar el tiempo de desaceleración. Corregir inestabilidad en la línea AC de entrada o agregar un transformador aislador. Reiniciar el variador (según [rok-20b-um001-en, p. 95]).\n\n# Escalar\nRecomendar escalar al supervisor si: la falla se repite después del reset y corrección; hay riesgo para personas o integridad del pozo por presión/gas; el manual indica reemplazar placas o variador completo; hace falta intervenir con equipo energizado."
+    },
+    {
+      "id": "E-10",
+      "pregunta": "El PowerFlex 700 no arranca con la orden de marcha cableada a la bornera",
+      "decisiones": [
+        "buscar_manual[llm]",
+        "buscar_manual[llm]",
+        "buscar_manual[llm]",
+        "buscar_historial[llm]",
+        "responder[llm]"
+      ],
+      "evidencia_relevante": false,
+      "citas_validas": [
+        "[rok-pflex-um-es, p. 12]",
+        "[historial, caso S-009]",
+        "[rok-pflex-um-es, p. 37]",
+        "[rok-pflex-um-es, p. 179]",
+        "[historial, caso S-002]",
+        "[historial, caso S-014]",
+        "[rok-pflex-um-es, p. 39]",
+        "[historial, caso S-024]"
+      ],
+      "citas_invalidas": [],
+      "cita_pagina_esperada": false,
+      "fidelidad": {
+        "respaldada": 7,
+        "parcial": 0,
+        "no_respaldada": 5,
+        "no_verificable": 0,
+        "cita_invalida": 0
+      },
+      "tasa_respaldada": 0.583,
+      "afirmaciones_dudosas": [
+        {
+          "texto": "El variador PowerFlex 700 requiere una fuente trifásica para operar a plena capacidad; si se usa monofásico, la corriente de salida se reduce al 50% [rok-pflex-um-es, p. 12].",
+          "citas": [
+            "[rok-pflex-um-es, p. 12]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto no menciona la fuente eléctrica requerida ni el porcentaje de reducción de corriente al usar monofásico."
+        },
+        {
+          "texto": "Cableado incorrecto: La mayoría de las dificultades son resultado de cableado erróneo según el manual [rok-pflex-um-es, p. 12].",
+          "citas": [
+            "[rok-pflex-um-es, p. 12]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto no menciona el cableado erróneo como causa de dificultades; solo detalla requisitos de temperatura, espacio libre y protección contra polvo."
+        },
+        {
+          "texto": "Verifique la tensión de línea y control dentro del valor nominal [rok-pflex-um-es, p. 39].",
+          "citas": [
+            "[rok-pflex-um-es, p. 39]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto describe los métodos de puesta en marcha y menciona que se requieren datos de línea, pero no especifica el valor nominal ni instruye explícitamente a verificar la tensión dentro de ese límite."
+        },
+        {
+          "texto": "2.  Verificar cableado trifásico correcto; reducir a monofásico solo si se acepta reducción del 50% en corriente salida [rok-pflex-um-es, p. 12].",
+          "citas": [
+            "[rok-pflex-um-es, p. 12]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto no menciona la verificación de cableado trifásico ni ninguna regla sobre reducir el sistema a monofásico con una reducción del 50% en corriente."
+        },
+        {
+          "texto": "4.  Inicializar variador con rutina S.M.A.R.T. o Asistida cargando datos placa motor (p.ej., parámetro 380) y TorqProve habilitado [rok-pflex-um-es, p. 179; historial, caso S-024].",
+          "citas": [
+            "[rok-pflex-um-es, p. 179]",
+            "[historial, caso S-024]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto no menciona la rutina S.M.A.R.T. ni el parámetro específico para inicializarla, sino que describe un procedimiento de preconfiguración y una falla específica (F13) relacionada con tierra en el motor."
+        }
+      ],
+      "propuesta": {
+        "verificaciones": 3,
+        "descartadas": 0,
+        "origen": "llm"
+      },
+      "espera_aprobacion": true,
+      "tiempos": {
+        "retrieve_s": 0.39,
+        "llm_s": 14.39,
+        "fidelidad_s": 16.1,
+        "propuesta_s": 7.59,
+        "router_s": 8.56
+      },
+      "total_s": 47.0,
+      "respuesta": "**Seguridad**\nAntes de abrir tableros o tocar bornes: bloqueo y etiquetado (LOTO) y verificación de ausencia de tensión. Variadores: el bus DC queda cargado después de cortar la alimentación; esperar el tiempo de descarga que indique el manual y medir antes de intervenir. Equipos con presión o gas: despresurizar y aislar antes de desarmar. AIB / equipos rotantes: asegurar que no puedan arrancar ni moverse por inercia o contrapesos.\n\n**Qué indica**\nEl variador PowerFlex 700 requiere una fuente trifásica para operar a plena capacidad; si se usa monofásico, la corriente de salida se reduce al 50% [rok-pflex-um-es, p. 12]. La falta de arranque con orden cableada sugiere un problema en el control de motor o detección de fase (ej. F21 Output PhaseLoss) antes del encendido completo [historial, caso S-009].\n\n**Causas probables**\n*   Cableado incorrecto: La mayoría de las dificultades son resultado de cableado erróneo según el manual [rok-pflex-um-es, p. 12]. Verificar que la potencia de línea esté dentro del valor nominal y conectar entradas firmemente a los terminales correctos antes de aplicar alimentación [rok-pflex-um-es, p. 37].\n*   Configuración no inicializada: El variador energiza el relé de Sal. Digit. 1 al aplicar la energía; si TorqProve no está habilitado o parámetros básicos (como placa motor) no están cargados, puede bloquear arranque [rok-pflex-um-es, p. 179].\n*   Problemas mecánicos/AIB: Un tiempo de desaceleración muy corto para la inercia del AIB puede causar F5 OverVoltage y detener el pozo antes de arrancar normal tras resetear [historial, caso S-002]. Contrapesos mal montados pueden generar regeneración que impida arranque o cause sobretensiones en carrera descendente [historial, caso S-014].\n\n**Casos similares del historial**\n*   **S-009:** F21 Output PhaseLoss por borne flojo; solución: ajustar bornes con energía bloqueada y verificar continuidad fase-fase.\n*   **S-002:** F5 OverVoltage al detener AIB por desaceleración corta; solución: aumentar tiempo de desaceleración.\n*   **S-014:** F5 OverVoltage tras cambio de contrapesos por desbalance/regeneración; solución: corregir posición según planilla.\n\n**Verificaciones**\nConfirme que todas las entradas estén firmemente conectadas a los terminales correctos antes de aplicar alimentación [rok-pflex-um-es, p. 37]. Verifique la tensión de línea y control dentro del valor nominal [rok-pflex-um-es, p. 39]. Si el variador no arranca tras resetear corregir causa evidente o si falla mecánica (AIB), considere escalar al especialista según criterio general.\n\n**Acciones**\n1.  Realizar LOTO y verificar ausencia de tensión antes de intervenir bornes [guía interna].\n2.  Verificar cableado trifásico correcto; reducir a monofásico solo si se acepta reducción del 50% en corriente salida [rok-pflex-um-es, p. 12].\n3.  Si hay AIB: verificar posición de contrapesos y aumentar tiempo de desaceleración para evitar F5 OverVoltage [historial, caso S-002; historial, caso S-014].\n4.  Inicializar variador con rutina S.M.A.R.T. o Asistida cargando datos placa motor (p.ej., parámetro 380) y TorqProve habilitado [rok-pflex-um-es, p. 179; historial, caso S-024].\n5.  Si falla persiste tras resetear o implica riesgo de integridad del pozo/gas: escalar al supervisor/especialista [guía interna].\n\n**Escalar**\nRecomendar escalar cuando la falla se repite después de resetear y corregir causa evidente, si el manual indica reemplazar placas/equipos de potencia o hay riesgo para personas/ambiente/pozo."
+    },
+    {
+      "id": "E-11",
+      "pregunta": "PowerFlex 700: cómo ajustar la regulación de bus para evitar sobretensión al frenar",
+      "decisiones": [
+        "buscar_manual[llm]",
+        "buscar_manual[llm]",
+        "buscar_manual[llm]",
+        "buscar_historial[llm]",
+        "responder[llm]"
+      ],
+      "evidencia_relevante": true,
+      "citas_validas": [
+        "[rok-20b-um001-en, p. 8]",
+        "[rok-pflex-rm001-en, p. 56]",
+        "[rok-pflex-rm001-en, p. 59]",
+        "[historial, caso S-002]",
+        "[historial, caso S-013]",
+        "[historial, caso S-014]"
+      ],
+      "citas_invalidas": [
+        "[rok-pflex-rm001-en, p. 95]",
+        "[rok-20b-um001-en, p. 56]"
+      ],
+      "cita_pagina_esperada": true,
+      "fidelidad": {
+        "respaldada": 8,
+        "parcial": 2,
+        "no_respaldada": 2,
+        "no_verificable": 0,
+        "cita_invalida": 7
+      },
+      "tasa_respaldada": 0.421,
+      "afirmaciones_dudosas": [
+        {
+          "texto": "AIB / equipos rotantes: asegurar que no puedan arrancar ni moverse por inercia o contrapesos [rok-20b-um001-en, p. 8].",
+          "citas": [
+            "[rok-20b-um001-en, p. 8]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto es una introducción general del manual y no menciona las especificaciones de seguridad sobre equipos rotantes ni contrapesos."
+        },
+        {
+          "texto": "La falla \"Decel Inhibit\" (o similar) indica que la regulación de bus está activada y detiene la desaceleración debido a una tensión excesiva en el bus DC generada por energía regenerativa [rok-pflex-rm001-en, p. 95].",
+          "citas": [
+            "[rok-pflex-rm001-en, p. 95]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        },
+        {
+          "texto": "Esto ocurre cuando un motor o carga (como AIB con contrapesos) devuelve potencia al variador sin que exista otro medio para disiparla [rok-20b-um001-en, p. 56].",
+          "citas": [
+            "[rok-20b-um001-en, p. 56]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        },
+        {
+          "texto": "Regeneración de energía:** Cargas con inercia alta (como un AIB) generan tensión en el bus al frenar; sin disipación adicional o rampa lenta, esto causa sobretensión [rok-20b-um001-en, p. 56].",
+          "citas": [
+            "[rok-20b-um001-en, p. 56]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        },
+        {
+          "texto": "Medir el voltaje del bus DC durante una desaceleración para verificar si supera los límites de operación antes de que ocurra la falla [rok-20b-um001-en, p. 56].",
+          "citas": [
+            "[rok-20b-um001-en, p. 56]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        },
+        {
+          "texto": "Revisar parámetros `[Accel/Dec Rate]` y comparar con las capacidades inerciales del motor/carga (AIB) para asegurar una rampa adecuada [historial, caso S-002].",
+          "citas": [
+            "[historial, caso S-002]"
+          ],
+          "veredicto": "parcial",
+          "faltantes": [
+            "Accel/Dec Rate"
+          ],
+          "motivo": "El texto confirma que el caso S-002 involucró un tiempo de desaceleración muy corto para la inercia del AIB y su resolución fue aumentar dicho tiempo."
+        },
+        {
+          "texto": "1.  **Desactivar o ajustar la regulación de bus:** Si no es necesario mantener tensión constante durante frenos agresivos, deshabilitar el modo `[Bus Reg Mode]` (ej. poner en `off`) para evitar interferencias con la desaceleración natural [rok-pflex-rm001-en, p. 95].",
+          "citas": [
+            "[rok-pflex-rm001-en, p. 95]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        },
+        {
+          "texto": "2.  **Aumentar tiempo de desaceleración:** Extender los parámetros de rampa de desaceleración (`[Decel Time]` o similar) para permitir una disipación más lenta y segura de la energía regenerativa [historial, caso S-013].",
+          "citas": [
+            "[historial, caso S-013]"
+          ],
+          "veredicto": "parcial",
+          "faltantes": [
+            "Decel Time"
+          ],
+          "motivo": "El texto confirma que se extendió el tiempo de desaceleración para solucionar la falla F24 Decel Inhibit en un caso S-150, lo cual coincide exactamente con la afirmación sobre extender los parámetros de rampa de desaceleración."
+        },
+        {
+          "texto": "3.  **Añadir resistencia dinámica (frenado):** Si se requiere mantener tensión del bus baja durante operación continua con cargas pesadas, deshabilitar regulación de bus (`[Bus Reg Mode]` = `off`) e instalar una chopper/resistencia dinámica externa [rok-pflex-rm001-en, p. 95].",
+          "citas": [
+            "[rok-pflex-rm001-en, p. 95]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        },
+        {
+          "texto": "4.  **Corregir inestabilidad de línea:** Si la causa es variación rápida en el voltaje de entrada (>10% en 6 min), limitar los cambios de tensión o usar un transformador aislado [rok-pflex-rm001-en, p. 95].",
+          "citas": [
+            "[rok-pflex-rm001-en, p. 95]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        },
+        {
+          "texto": "Si las acciones anteriores fallan, podría requerirse reemplazo del variador completo según criterios generales de mantenimiento industrial [historial, caso S-013].",
+          "citas": [
+            "[historial, caso S-013]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto describe una solución de extensión del tiempo de desaceleración y no menciona el reemplazo del variador completo."
+        }
+      ],
+      "propuesta": {
+        "verificaciones": 4,
+        "descartadas": 1,
+        "origen": "llm"
+      },
+      "espera_aprobacion": true,
+      "tiempos": {
+        "retrieve_s": 0.35,
+        "llm_s": 18.33,
+        "fidelidad_s": 15.77,
+        "propuesta_s": 9.41,
+        "router_s": 8.23
+      },
+      "total_s": 52.1,
+      "respuesta": "# Seguridad\nAntes de abrir tableros o tocar bornes: bloqueo y etiquetado (LOTO) y verificación de ausencia de tensión. Variadores: el bus DC queda cargado después de cortar la alimentación; esperar el tiempo de descarga que indique el manual y medir antes de intervenir. AIB / equipos rotantes: asegurar que no puedan arrancar ni moverse por inercia o contrapesos [rok-20b-um001-en, p. 8].\n\n# Qué indica\nLa falla \"Decel Inhibit\" (o similar) indica que la regulación de bus está activada y detiene la desaceleración debido a una tensión excesiva en el bus DC generada por energía regenerativa [rok-pflex-rm001-en, p. 95]. Esto ocurre cuando un motor o carga (como AIB con contrapesos) devuelve potencia al variador sin que exista otro medio para disiparla [rok-20b-um001-en, p. 56]. Si la tensión supera el límite operativo establecido por los componentes de potencia del variador, este fallará y apagará los dispositivos de salida para protegerse [rok-pflex-rm001-en, p. 56].\n\n# Causas probables\n*   **Regulación de bus activa:** El parámetro `[Bus Reg Mode]` está configurado en una modalidad que intenta mantener la tensión del bus (ej. modo A o B), lo cual puede inhibir la desaceleración si el voltaje sube demasiado rápido [rok-pflex-rm001-en, p. 59].\n*   **Regeneración de energía:** Cargas con inercia alta (como un AIB) generan tensión en el bus al frenar; sin disipación adicional o rampa lenta, esto causa sobretensión [rok-20b-um001-en, p. 56].\n*   **Rampa de desaceleración insuficiente:** Un tiempo de desaceleración muy corto no permite que la energía regenerada se disipe adecuadamente antes de alcanzar el límite del bus [historial, caso S-002].\n\n# Casos similares del historial\n*   **Caso S-013 (PowerFlex 700 / AIB):** Fallo \"Decel Inhibit\" al parar un pozo. Causa: Regulación de bus activa limitando la desaceleración por regeneración. Solución: Se extendió el tiempo de desaceleración [historial, caso S-013].\n*   **Caso S-002 (PowerFlex 700 / AIB):** Fallo \"OverVoltage\" al detener desde tablero; arranca normal después del reset. Causa: Tiempo de desaceleración muy corto para la inercia del AIB [historial, caso S-002].\n*   **Caso S-014 (PowerFlex 700 / Contrapesos):** Fallo \"OverVoltage\" tras cambio de contrapesos. Causa: Desbalance generando regeneración en carrera descendente [historial, caso S-014].\n\n# Verificaciones\n*   Confirmar si la función `[Bus Reg Mode]` está habilitada y qué modalidad seleccionada (ej. frecuencia como primaria o dinámica como secundaria) [rok-pflex-rm001-en, p. 59].\n*   Medir el voltaje del bus DC durante una desaceleración para verificar si supera los límites de operación antes de que ocurra la falla [rok-20b-um001-en, p. 56].\n*   Revisar parámetros `[Accel/Dec Rate]` y comparar con las capacidades inerciales del motor/carga (AIB) para asegurar una rampa adecuada [historial, caso S-002].\n\n# Acciones\n1.  **Desactivar o ajustar la regulación de bus:** Si no es necesario mantener tensión constante durante frenos agresivos, deshabilitar el modo `[Bus Reg Mode]` (ej. poner en `off`) para evitar interferencias con la desaceleración natural [rok-pflex-rm001-en, p. 95].\n2.  **Aumentar tiempo de desaceleración:** Extender los parámetros de rampa de desaceleración (`[Decel Time]` o similar) para permitir una disipación más lenta y segura de la energía regenerativa [historial, caso S-013].\n3.  **Añadir resistencia dinámica (frenado):** Si se requiere mantener tensión del bus baja durante operación continua con cargas pesadas, deshabilitar regulación de bus (`[Bus Reg Mode]` = `off`) e instalar una chopper/resistencia dinámica externa [rok-pflex-rm001-en, p. 95].\n4.  **Corregir inestabilidad de línea:** Si la causa es variación rápida en el voltaje de entrada (>10% en 6 min), limitar los cambios de tensión o usar un transformador aislado [rok-pflex-rm001-en, p. 95].\n*Nota: El término \"adjust freq\" dentro del regulador de bus fuerza la frecuencia de salida a ser mayor que la comandada mientras el voltaje sube; si esto causa cambios de velocidad no autorizados o sobreespeed, se debe limitar las tensiones de suministro [rok-pflex-rm001-en, p. 59].*\n\n# Escalar\nRecomendar escalar al supervisor o especialista cuando:\nLa falla persista después de ajustar la rampa y desactivar el regulador de bus; si hay riesgo para personas debido a un AIB que no se detiene completamente (contrapesos); o si es necesario intervenir con equipos energizados. Si las acciones anteriores fallan, podría requerirse reemplazo del variador completo según criterios generales de mantenimiento industrial [historial, caso S-013]."
+    },
+    {
+      "id": "E-12",
+      "pregunta": "El PowerFlex 755 para por F5 Overvoltage al bajar la carga",
+      "decisiones": [
+        "buscar_manual[llm]",
+        "buscar_historial[llm]",
+        "responder[llm]"
+      ],
+      "evidencia_relevante": true,
+      "citas_validas": [
+        "[rok-750-rm002-en, p. 177]",
+        "[historial, caso S-002]",
+        "[historial, caso S-001]",
+        "[historial, caso S-014]"
+      ],
+      "citas_invalidas": [
+        "[rok-70-pm001-en, p. 316]",
+        "[rok-70-pm001-en, p. 332]"
+      ],
+      "cita_pagina_esperada": false,
+      "fidelidad": {
+        "respaldada": 6,
+        "parcial": 0,
+        "no_respaldada": 1,
+        "no_verificable": 0,
+        "cita_invalida": 6
+      },
+      "tasa_respaldada": 0.462,
+      "afirmaciones_dudosas": [
+        {
+          "texto": "Variadores: el bus DC queda cargado después de cortar la alimentación; esperar el tiempo de descarga que indique el manual y medir antes de intervenir [rok-70-pm001-en, p. 316].",
+          "citas": [
+            "[rok-70-pm001-en, p. 316]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        },
+        {
+          "texto": "El código F5 OverVoltage significa que la tensión del bus DC excedió el valor máximo configurado [rok-70-pm001-en, p. 316].",
+          "citas": [
+            "[rok-70-pm001-en, p. 316]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        },
+        {
+          "texto": "El display de estado \"Fault\" indicará que existe una condición de falla activa en la interfaz PLI (Power Layer Interface) [rok-750-rm002-en, p. 177].",
+          "citas": [
+            "[rok-750-rm002-en, p. 177]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [
+            "Fault"
+          ],
+          "motivo": "El texto de la fuente habla sobre el cambio del fuso horario y la instalación de una batería, sin mencionar ningún display de estado 'Fault' ni condiciones de falla en la interfaz PLI."
+        },
+        {
+          "texto": "La tensión del bus DC puede exceder el límite si los parámetros de protección no están ajustados a las condiciones reales de operación o carga [rok-70-pm001-en, p. 316].",
+          "citas": [
+            "[rok-70-pm001-en, p. 316]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        },
+        {
+          "texto": "Medir P11 [DC Bus Volts] para confirmar si supera el valor configurado en P461 [UnderVltg Level], aunque la falla es OverVoltage (P5) [rok-70-pm001-en, p. 316].",
+          "citas": [
+            "[rok-70-pm001-en, p. 316]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        },
+        {
+          "texto": "Reajustar los parámetros del variador (Pwr Loss n Level/Time si aplica) según el manual de programación [rok-70-pm001-en, p. 316].",
+          "citas": [
+            "[rok-70-pm001-en, p. 316]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        },
+        {
+          "texto": "Si hay riesgo para personas, ambiente o integridad del pozo debido a presión o gas no despresurizado, escalar inmediatamente [rok-70-pm001-en, p. 332].",
+          "citas": [
+            "[rok-70-pm001-en, p. 332]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        }
+      ],
+      "propuesta": {
+        "verificaciones": 6,
+        "descartadas": 0,
+        "origen": "llm"
+      },
+      "espera_aprobacion": true,
+      "tiempos": {
+        "retrieve_s": 0.16,
+        "llm_s": 11.87,
+        "fidelidad_s": 9.27,
+        "propuesta_s": 11.37,
+        "router_s": 4.66
+      },
+      "total_s": 37.3,
+      "respuesta": "**Seguridad**\nAntes de intervenir en el tablero o tocar bornes: bloqueo y etiquetado (LOTO) y verificación de ausencia de tensión. Variadores: el bus DC queda cargado después de cortar la alimentación; esperar el tiempo de descarga que indique el manual y medir antes de intervenir [rok-70-pm001-en, p. 316]. Equipos con presión o gas: despresurizar y aislar antes de desarmar. AIB / equipos rotantes: asegurar que no puedan arrancar ni moverse por inercia o contrapesos.\n\n**Qué indica**\nEl código F5 OverVoltage significa que la tensión del bus DC excedió el valor máximo configurado [rok-70-pm001-en, p. 316]. El display de estado \"Fault\" indicará que existe una condición de falla activa en la interfaz PLI (Power Layer Interface) [rok-750-rm002-en, p. 177].\n\n**Causas probables**\nLa tensión del bus DC puede exceder el límite si los parámetros de protección no están ajustados a las condiciones reales de operación o carga [rok-70-pm001-en, p. 316]. En aplicaciones con inercia alta (como AIB), un tiempo de desaceleración muy corto puede generar regeneración excesiva que sobrecarga el bus DC si no hay resistencia de frenado adecuada [historial, caso S-002], [historial, caso S-001].\n\n**Casos similares del historial**\nEn una instalación PowerFlex 753/755 con AIB, F5 OverVoltage ocurrió después de un cambio de contrapesos debido a desbalance que generaba regeneración en la carrera descendente [historial, caso S-014]. Otro caso reportó F5 al detener el pozo por desaceleración muy corta para la inercia del AIB; se resolvió aumentando el tiempo de desaceleración [historial, caso S-002].\n\n**Verificaciones**\nMedir P11 [DC Bus Volts] para confirmar si supera el valor configurado en P461 [UnderVltg Level], aunque la falla es OverVoltage (P5) [rok-70-pm001-en, p. 316]. Verificar los parámetros de tiempo de desaceleración y aceleración según las características del motor y carga [historial, caso S-002]. Revisar si existe resistencia de frenado dinámica configurada o necesaria para manejar la regeneración en cargas descendentes [historial, caso S-001], [historial, caso S-014].\n\n**Acciones**\nReajustar los parámetros del variador (Pwr Loss n Level/Time si aplica) según el manual de programación [rok-70-pm001-en, p. 316]. Si la falla persiste tras corregir las causas evidentes o se repite frecuentemente en operaciones descendentes con inercia alta, escalar al especialista para evaluar resistencia de frenado dinámica y balanceo del sistema [historial, caso S-002], [historial, caso S-014].\n\n**Escalar**\nRecomendar escalar si la falla se repite después de resetear y corregir la causa evidente; o cuando el manual indique reemplazar placas (como en casos de FPGA CRC Failure) o equipos de potencia completos. Si hay riesgo para personas, ambiente o integridad del pozo debido a presión o gas no despresurizado, escalar inmediatamente [rok-70-pm001-en, p. 332]."
+    },
+    {
+      "id": "E-13",
+      "pregunta": "PowerFlex 753 con falla F4 Undervoltage en la puesta en marcha",
+      "decisiones": [
+        "buscar_manual[llm]",
+        "buscar_historial[llm]",
+        "responder[llm]"
+      ],
+      "evidencia_relevante": true,
+      "citas_validas": [
+        "[rok-750-pm001-en, p. 316]",
+        "[historial, caso S-017]",
+        "[historial, caso S-003]",
+        "[rok-750-rm002-en, p. 163]"
+      ],
+      "citas_invalidas": [],
+      "cita_pagina_esperada": true,
+      "fidelidad": {
+        "respaldada": 7,
+        "parcial": 0,
+        "no_respaldada": 1,
+        "no_verificable": 0,
+        "cita_invalida": 0
+      },
+      "tasa_respaldada": 0.875,
+      "afirmaciones_dudosas": [
+        {
+          "texto": "Si el problema se repite tras corregir la causa evidente o requiere intervención en equipos energizados/presurizados sin evidencia suficiente para un diagnóstico confiable, escalar **[rok-750-pm001-en, p. 316]** (nota: resetear es acción automática configurada).",
+          "citas": [
+            "[rok-750-pm001-en, p. 316]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto describe eventos específicos como pérdida de energía o sobrecarga del motor, pero no menciona la condición de 'corregir una causa evidente' ni el requisito de escalar ante problemas que requieran intervención en equipos energizados sin diagnóstico confiable."
+        }
+      ],
+      "propuesta": {
+        "verificaciones": 6,
+        "descartadas": 0,
+        "origen": "llm"
+      },
+      "espera_aprobacion": true,
+      "tiempos": {
+        "retrieve_s": 0.16,
+        "llm_s": 11.68,
+        "fidelidad_s": 11.24,
+        "propuesta_s": 13.39,
+        "router_s": 4.52
+      },
+      "total_s": 41.0,
+      "respuesta": "# Seguridad\nAntes de abrir tableros o tocar bornes: bloqueo y etiquetado (LOTO) y verificación de ausencia de tensión. Variadores: el bus DC queda cargado después de cortar la alimentación; esperar el tiempo de descarga que indique el manual y medir antes de intervenir. Equipos con presión o gas: despresurizar y aislar antes de desarmar. AIB / equipos rotantes: asegurar que no puedan arrancar ni moverse por inercia o contrapesos.\n\n# Qué indica\nLa falla **F4 UnderVoltage** (o 04) indica una condición donde el voltaje del bus DC se mantuvo inferior al nivel nominal programado durante más tiempo de lo configurado en **[rok-750-pm001-en, p. 316]**. El evento ocurre cuando P11 [DC Bus Volts] cae por debajo del valor establecido en **P461 [UnderVltg Level]** según **[rok-750-pm001-en, p. 316]**.\n\n# Causas probables\nLa causa raíz es que el voltaje de entrada o la capacidad del sistema no soportó la demanda momentánea (ej. arranque en cascada). Un caso similar resolvió una **F4 UnderVoltage** al arrancar otra bomba grande debido a caída de tensión general por arranque directo, solucionado coordinando secuencias y evaluando el transformador **[historial, caso S-017]**. Otro antecedente muestra que tormentas o cortes en la línea media-tensión pueden generar esta falla tras normalizar la entrada **[historial, caso S-003]**.\n\n# Casos similares del historial\n*   **S-017:** F4 UnderVoltage al arrancar bomba grande; causa caída de tensión por arranque directo; solución coordinación y evaluación eléctrica.\n*   **S-003:** F4 UnderVoltage tras tormenta (corte línea); solución verificación tensión normalizada y reseteo según batería.\n\n# Verificaciones\nVerificar P11 [DC Bus Volts] para confirmar el voltaje actual **[rok-750-pm001-en, p. 316]**. Revisar **P461 [UnderVltg Level]** para comparar con la tensión nominal esperada según **[rok-750-pm001-en, p. 316]**. Consultar P958 [Fault Bus Volts] y P952/P953 en memoria no volátil para obtener el voltaje exacto al momento de la falla según **[rok-750-rm002-en, p. 163]**.\n\n# Acciones\nSi es una condición transitoria (caída momentánea), resetear la unidad; si persiste, verificar fuentes de alimentación y cargas conectadas. Si el problema se repite tras corregir la causa evidente o requiere intervención en equipos energizados/presurizados sin evidencia suficiente para un diagnóstico confiable, escalar **[rok-750-pm001-en, p. 316]** (nota: resetear es acción automática configurada).\n\n# Escalar\nRecomendar escalar al supervisor o especialista cuando la falla se repite después de resetear y corregir la causa evidente; si el manual indica reemplazar placas o equipos completos; si hace falta intervenir con el equipo energizado o presurizado; hay riesgo para personas, ambiente o integridad del pozo (presión, gas); o la evidencia disponible no alcanza para un diagnóstico confiable."
+    },
+    {
+      "id": "E-14",
+      "pregunta": "Qué significa el código de falla 13 Ground Fault en un PowerFlex 755",
+      "decisiones": [
+        "buscar_manual[llm]",
+        "buscar_historial[llm]",
+        "responder[llm]"
+      ],
+      "evidencia_relevante": true,
+      "citas_validas": [
+        "[rok-750-pm001-en, p. 317]",
+        "[rok-750-pm001-en, p. 311]",
+        "[historial, caso S-016]",
+        "[historial, caso S-007]",
+        "[historial, caso S-024]"
+      ],
+      "citas_invalidas": [
+        "[rok-750-pm002-en, p. 314]"
+      ],
+      "cita_pagina_esperada": true,
+      "fidelidad": {
+        "respaldada": 8,
+        "parcial": 0,
+        "no_respaldada": 1,
+        "no_verificable": 0,
+        "cita_invalida": 1
+      },
+      "tasa_respaldada": 0.8,
+      "afirmaciones_dudosas": [
+        {
+          "texto": "Falla persistente:** F13 que no se resetea y reaparece inmediatamente en un PowerFlex 755 con bobinado a tierra; solución fue reemplazo de motor (caso S-024) [historial, caso S-024].",
+          "citas": [
+            "[historial, caso S-024]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto menciona un caso S-024 con falla F13 en un motor AIB, pero no especifica que el equipo sea un PowerFlex 755 ni confirma que la solución fue reemplazo de motor sin rebobinado."
+        },
+        {
+          "texto": "Recomendar escalar al supervisor o especialista si la falla es no reseteable y requiere reemplazo del motor (riesgo para integridad) [rok-750-pm002-en, p. 314], o si el diagnóstico con megóhmetro confirma daño interno que requiera rebobinado en taller (caso S-024).",
+          "citas": [
+            "[rok-750-pm002-en, p. 314]"
+          ],
+          "veredicto": "cita_invalida",
+          "faltantes": [],
+          "motivo": "ninguna de las fuentes citadas fue recuperada"
+        }
+      ],
+      "propuesta": {
+        "verificaciones": 3,
+        "descartadas": 0,
+        "origen": "llm"
+      },
+      "espera_aprobacion": true,
+      "tiempos": {
+        "retrieve_s": 0.15,
+        "llm_s": 10.58,
+        "fidelidad_s": 11.68,
+        "propuesta_s": 6.58,
+        "router_s": 5.19
+      },
+      "total_s": 34.2,
+      "respuesta": "# Seguridad\nAntes de abrir tableros o tocar bornes: bloqueo y etiquetado (LOTO) y verificación de ausencia de tensión. Variadores: el bus DC queda cargado después de cortar la alimentación; esperar el tiempo de descarga que indique el manual y medir antes de intervenir. Equipos con presión o gas: despresurizar y aislar antes de desarmar. AIB / equipos rotantes: asegurar que no puedan arrancar ni moverse por inercia o contrapesos.\n\n# Qué indica\nEl código F13 \"Ground Fault\" en un PowerFlex 750-Series se refiere a una corriente hacia tierra mayor al 25 % de la calificación del variador [rok-750-pm001-en, p. 317]. El display Series B mostrará el estado correspondiente según la configuración y tipo de falla (ej. Flashing Red para fallas mayores) [rok-750-pm001-en, p. 311].\n\n# Causas probables\nLa causa raíz puede ser un camino a tierra en el motor o cableado externo al terminal de salida del variador [rok-750-pm001-en, p. 317]. Factores ambientales como humedad prolongada pueden degradar la aislación del bobinado (ej. caso S-016) [historial, caso S-016], o daños en el cableado por entrada de agua debido a condiciones climáticas adversas (ej. caso S-007) [historial, caso S-007].\n\n# Casos similares del historial\n*   **Falla persistente:** F13 que no se resetea y reaparece inmediatamente en un PowerFlex 755 con bobinado a tierra; solución fue reemplazo de motor (caso S-024) [historial, caso S-024].\n*   **Intermitente por clima:** F13 intermitente asociado a lluvia debido a cable dañado en caja de conexiones que ingresaba agua (caso S-007) [historial, caso S-007].\n\n# Verificaciones\nRealizar prueba de resistencia aislante (IR test) al cableado hacia el motor para detectar condiciones cortocircuadas o humedad [rok-750-pm001-en, p. 317]. Confirmar que no exista exceso de carga u otras causas de corriente excesiva antes de proceder a reparaciones mayores [rok-750-pm001-en, p. 317].\n\n# Acciones\nMedir la aislación del motor y cableado externo con el equipo desconectado energéticamente. Si se detecta falla en bobinado o aislamiento, secar o reemplazar según corresponda antes de volver a ponerlo en servicio [historial, caso S-016].\n\n# Escalar\nRecomendar escalar al supervisor o especialista si la falla es no reseteable y requiere reemplazo del motor (riesgo para integridad) [rok-750-pm002-en, p. 314], o si el diagnóstico con megóhmetro confirma daño interno que requiera rebobinado en taller (caso S-024)."
+    },
+    {
+      "id": "E-15",
+      "pregunta": "PowerFlex 750: qué es la regulación del bus DC y para qué sirve",
+      "decisiones": [
+        "pedir_datos[llm]",
+        "pedir_datos[llm]",
+        "buscar_historial[guarda]",
+        "buscar_manual[guarda]",
+        "responder[llm]"
+      ],
+      "evidencia_relevante": true,
+      "citas_validas": [
+        "[rok-750-rm002-en, p. 45]",
+        "[rok-750-rm002-en, p. 46]",
+        "[rok-750-rm002-en, p. 49]",
+        "[rok-750-rm002-en, p. 348]",
+        "[historial, caso S-013]",
+        "[historial, caso S-010]",
+        "[historial, caso S-015]"
+      ],
+      "citas_invalidas": [],
+      "cita_pagina_esperada": true,
+      "fidelidad": {
+        "respaldada": 9,
+        "parcial": 0,
+        "no_respaldada": 1,
+        "no_verificable": 0,
+        "cita_invalida": 0
+      },
+      "tasa_respaldada": 0.9,
+      "afirmaciones_dudosas": [
+        {
+          "texto": "Si se detecta regulación activa limitando la desaceleración, aumentar el tiempo de rampa de desaceleración para permitir mayor disipación antes del corte DB o activar freno dinámico [rok-750-rm002-en, p. 49].",
+          "citas": [
+            "[rok-750-rm002-en, p. 49]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto describe el comportamiento del control de regulación en bus y la interacción entre los transistores DB, pero no menciona explícitamente aumentar el tiempo de rampa como solución ni hace referencia al corte DB."
+        }
+      ],
+      "propuesta": {
+        "verificaciones": 4,
+        "descartadas": 0,
+        "origen": "llm"
+      },
+      "espera_aprobacion": true,
+      "tiempos": {
+        "retrieve_s": 0.04,
+        "llm_s": 11.06,
+        "fidelidad_s": 14.51,
+        "propuesta_s": 8.08,
+        "router_s": 7.53
+      },
+      "total_s": 41.2,
+      "respuesta": "# Seguridad\nAntes de abrir tableros o tocar bornes: bloqueo y etiquetado (LOTO) y verificación de ausencia de tensión. Variadores: el bus DC queda cargado después de cortar la alimentación; esperar el tiempo de descarga que indique el manual y medir antes de intervenir. Equipos con presión o gas: despresurizar y aislar antes de desarmar. AIB / equipos rotantes: asegurar que no puedan arrancar ni moverse por inercia o contrapesos.\n\n# Qué indica\nLa regulación del bus DC es un mecanismo para controlar la tensión en el bus mediante memoria (promedio) y ajustar parámetros como frecuencia, torque o rampa de velocidad [rok-750-rm002-en, p. 45]. Su objetivo principal es evitar que la tensión supere los límites tripuladores del variador durante operaciones regenerativas [rok-750-rm002-en, p. 46].\n\n# Causas probables\nLa regulación activa puede limitar la desaceleración si el tiempo de frenado no permite disipar suficiente energía antes de que se active un freno dinámico o resistor externo [rok-750-rm002-en, p. 49]. Si el límite de potencia regenerativa está configurado incorrectamente (ej. muy bajo), la capacidad del variador para detener el motor queda restringida [rok-750-rm002-en, p. 348].\n\n# Casos similares del historial\nEn un caso sintético con PowerFlex 700 y AIB, una regulación de bus activa limitó la desaceleración al parar el equipo; se resolvió extendiendo el tiempo de rampa [historial, caso S-013]. Otro caso mostró fallos repetidos por microcortes en contactores sin corte generalizado del variador [historial, caso S-010].\n\n# Verificaciones\nVerificar la configuración actual del modo regulador (Desactivado, Frecuencia Ajustable o Freno Dinámico) y el valor de \"Regenerative Power Limit\" recomendado como -200.0% para resistencias externas [rok-750-rm002-en, p. 348]. Medir la tensión del bus DC en operación comparada con los curvas de activación (ej. ~650V) y desactivación definidas en el manual [rok-750-rm002-en, p. 46].\n\n# Acciones\nSi se detecta regulación activa limitando la desaceleración, aumentar el tiempo de rampa de desaceleración para permitir mayor disipación antes del corte DB o activar freno dinámico [rok-750-rm002-en, p. 49]. Si falla al acelerar por corriente excesiva (OverCurrent), revisar si la inercia del motor no requiere un tiempo de rampa más largo para evitar picos de tensión en el bus [historial, caso S-015].\n\n# Escalar\nRecomendar escalar al supervisor o especialista cuando:\nLa falla se repite después de ajustar los tiempos de rampa y verificar la configuración del límite regenerativo.\nEl manual indique reemplazar placas internas o componentes críticos no cubiertos aquí.\nHace falta intervenir con el equipo energizado para medir parámetros internos específicos sin riesgo tripulador inmediato."
+    },
+    {
+      "id": "E-16",
+      "pregunta": "El caudalímetro FLUXUS F532WD no recibe señal y muestra un signo de interrogación detrás del caudal",
+      "decisiones": [
+        "buscar_manual[llm]",
+        "buscar_historial[llm]",
+        "responder[llm]"
+      ],
+      "evidencia_relevante": true,
+      "citas_validas": [
+        "[flexim-fluxus-f532wd-es, p. 96]",
+        "[flexim-fluxus-f532wd-es, p. 109]",
+        "[historial, caso S-019]",
+        "[historial, caso S-020]",
+        "[historial, caso S-018]",
+        "[historial, caso S-023]",
+        "[flexim-fluxus-f532wd-es, p. 154]"
+      ],
+      "citas_invalidas": [],
+      "cita_pagina_esperada": true,
+      "fidelidad": {
+        "respaldada": 15,
+        "parcial": 0,
+        "no_respaldada": 1,
+        "no_verificable": 0,
+        "cita_invalida": 0
+      },
+      "tasa_respaldada": 0.938,
+      "afirmaciones_dudosas": [
+        {
+          "texto": "Recomendar escalar al supervisor o especialista cuando: la falla persiste tras corregir parámetros y limpieza; se requiere acceso a modos SuperUser/ExpertUser no autorizados por el técnico actual; o si hay riesgo de intervención en equipo energizado/presurizado sin medidas adecuadas [historial, caso S-023].",
+          "citas": [
+            "[historial, caso S-023]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [
+            "SuperUser",
+            "ExpertUser"
+          ],
+          "motivo": "El texto describe un caso específico de falla en la configuración de una salida 4-20 mA y su solución, pero no menciona las condiciones para escalar a supervisores ni riesgos con equipos energizados."
+        }
+      ],
+      "propuesta": {
+        "verificaciones": 4,
+        "descartadas": 0,
+        "origen": "llm"
+      },
+      "espera_aprobacion": true,
+      "tiempos": {
+        "retrieve_s": 0.09,
+        "llm_s": 14.95,
+        "fidelidad_s": 20.51,
+        "propuesta_s": 6.56,
+        "router_s": 5.02
+      },
+      "total_s": 47.1,
+      "respuesta": "### Seguridad\nAntes de intervenir en el equipo: realice bloqueo y etiquetado (LOTO) y verifique ausencia de tensión. Si hay presión o gas asociado a la tubería medidora, despresurice e isole antes de cualquier apertura. Asegure equipos rotantes para evitar movimiento por inercia. Para variadores energizados en el sistema: espere al tiempo de descarga del bus DC indicado en su manual específico y mida antes de tocar bornes (guía interna).\n\n### Qué indica\nEl signo de interrogación detrás de la magnitud medida junto con un LED rojo indica que \"la medición no es posible porque no se recibe ninguna señal\" [flexim-fluxus-f532wd-es, p. 96]. Además, si aparece una almohadilla (#) o el valor como inválido tras activar límites de amplificación excesiva, significa que la magnitud medida \"no puede ser determinada\" debido a señales parásitas o ruido [flexim-fluxus-f532wd-es, p. 109].\n\n### Causas probables\n*   **Parámetros incorrectos:** Verifique si se introdujo el perímetro/radio en lugar del diámetro exterior, o el diámetro interior en vez del exterior al configurar [flexim-fluxus-f532wd-es, p. 96].\n*   **Falta de señal acústica:** Puede deberse a mal acoplamiento por pintura, suciedad debajo de los transductores u obstrucciones que impiden la propagación del sonido [historial, caso S-019].\n*   **Perfil de flujo perturbado:** La ubicación cerca de codos o válvulas puede generar un perfil de flujo inestable que dificulta la medición precisa [historial, caso S-020].\n*   **Límites de amplificación mal configurados:** Si se excede la \"amplificación máx.\", el valor es marcado como inválido y aparece el signo de interrogación [flexim-fluxus-f532wd-es, p. 109].\n\n### Casos similares del historial\n*   **Caso S-018:** Síntoma idéntico (signo de interrogación). Causa: Se cargó el perímetro en lugar del diámetro exterior al reconfigurar [historial, caso S-018]. Solución: Corregir parámetros y reposicionar transductores.\n*   **Caso S-023:** Síntoma similar de falta de lectura fiable (salida 4-20 mA no llega aunque display mide). Causa: Salida mal configurada tras cambio [historial, caso S-023].\n\n### Verificaciones\n1.  Compruebe los parámetros introducidos en el menú \"Parámetros\", específicamente diámetro exterior y espesor de pared [flexim-fluxus-f532wd-es, p. 96]. Asegúrese de que no se usó radio o perímetro por error común [flexim-fluxus-f532wd-es, p. 96].\n2.  Ejecute la \"Prueba de señal\" desde el menú principal para validar físicamente la recepción acústica antes de cambiar configuraciones complejas [flexim-fluxus-f532wd-es, p. 154].\n3.  Revise en \"Otros\\Ajustes especiales\" si está habilitado un límite de amplificación y seleccione \"Apagado\" para medir sin restricciones temporales [flexim-fluxus-f532wd-es, p. 109].\n\n### Acciones\n*   Si los parámetros son correctos pero no hay señal: Limpie la superficie de la cañería debajo de los transductores y reaplique el acoplante según lo resuelto en caso S-019 [historial, caso S-019].\n*   Reconfigure manualmente los parámetros del punto de medición asegurando usar \"Diámetro exterior\" correcto. Si se usó perímetro/radio antes: corrija inmediatamente para evitar lectura inválida [flexim-fluxus-f532wd-es, p. 96].\n*   Evalúe la ubicación física; si está cerca de codos o válvulas (> tramos rectos recomendados), reubique el punto de medición según caso S-020 para evitar perturbaciones del flujo [historial, caso S-020].\n\n### Escalar\nRecomendar escalar al supervisor o especialista cuando: la falla persiste tras corregir parámetros y limpieza; se requiere acceso a modos SuperUser/ExpertUser no autorizados por el técnico actual; o si hay riesgo de intervención en equipo energizado/presurizado sin medidas adecuadas [historial, caso S-023]."
+    },
+    {
+      "id": "E-17",
+      "pregunta": "El FLUXUS F532WD mide valores muy distintos a los esperados",
+      "decisiones": [
+        "buscar_manual[llm]",
+        "buscar_historial[llm]",
+        "responder[llm]"
+      ],
+      "evidencia_relevante": true,
+      "citas_validas": [
+        "[flexim-fluxus-f532wd-es, p. 96]",
+        "[flexim-fluxus-f532wd-es, p. 81]",
+        "[flexim-fluxus-f532wd-es, p. 106]",
+        "[historial, caso S-023]",
+        "[historial, caso S-021]",
+        "[flexim-fluxus-f532wd-es, p. 158]"
+      ],
+      "citas_invalidas": [],
+      "cita_pagina_esperada": true,
+      "fidelidad": {
+        "respaldada": 9,
+        "parcial": 0,
+        "no_respaldada": 4,
+        "no_verificable": 0,
+        "cita_invalida": 0
+      },
+      "tasa_respaldada": 0.692,
+      "afirmaciones_dudosas": [
+        {
+          "texto": "Además, salidas configuradas incorrectamente pueden generar valores de error en lugar de la magnitud medida real [flexim-fluxus-f532wd-es, p. 81].",
+          "citas": [
+            "[flexim-fluxus-f532wd-es, p. 81]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto describe los tipos de valores que se pueden emitir según la configuración, pero no menciona explícitamente qué ocurre cuando las salidas están configuradas incorrectamente ni afirma que esto genere errores en lugar del valor medido."
+        },
+        {
+          "texto": "Configuración de salida incorrecta:** Si la magnitud de origen no coincide con el tipo de salida configurado (ej. caudal volumétrico vs corriente), se emiten valores erróneos o señales de error [flexim-fluxus-f532wd-es, p. 81].",
+          "citas": [
+            "[flexim-fluxus-f532wd-es, p. 81]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto describe los tipos de datos que se pueden emitir pero no menciona la condición sobre coincidencia entre magnitud y tipo de salida ni el envío de valores erróneos."
+        },
+        {
+          "texto": "Confirme en el menú **Salidas** si la \"Magnitud de origen\" coincide con el tipo de salida configurado (ej. Caudal volumétrico para corriente) [flexim-fluxus-f532wd-es, p. 158].",
+          "citas": [
+            "[flexim-fluxus-f532wd-es, p. 158]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [
+            "Magnitud de origen"
+          ],
+          "motivo": "El texto muestra la estructura del menú pero no menciona ni confirma si se debe verificar que la 'Magnitud de origen' coincida con el tipo de salida configurado."
+        },
+        {
+          "texto": "Recomiendo escalar al supervisor o especialista si: el problema persiste tras corregir los parámetros y reconfigurar las salidas; se requiere intervención con equipos energizados para probar señales externas (caso S-023); o la evidencia disponible no permite descartar fallas de hardware del transmisor [flexim-fluxus-f532wd-es, p. 96].",
+          "citas": [
+            "[flexim-fluxus-f532wd-es, p. 96]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto menciona problemas específicos como fecha/hora incorrecta, salidas no funcionales y falta de señal por parámetros erróneos, pero omite completamente la condición sobre reconfigurar las salidas para persistencia del problema o el requisito de intervención con equipos energizados."
+        }
+      ],
+      "propuesta": {
+        "verificaciones": 3,
+        "descartadas": 0,
+        "origen": "llm"
+      },
+      "espera_aprobacion": true,
+      "tiempos": {
+        "retrieve_s": 0.09,
+        "llm_s": 13.25,
+        "fidelidad_s": 17.29,
+        "propuesta_s": 6.5,
+        "router_s": 4.66
+      },
+      "total_s": 41.8,
+      "respuesta": "### Seguridad\nAntes de intervenir en el equipo: verifique la ausencia de tensión y aplique bloqueo/etiquetado (LOTO). Si hay presión o gas asociado al proceso medido, despresurice e isole antes de cualquier manipulación. Para variadores conectados a salidas 4-20 mA, espere el tiempo de descarga del bus DC indicado en el manual y mida la tensión residual antes de tocar bornes [guía interna].\n\n### Qué indica\nEl síntoma \"valores muy distintos\" puede indicar errores de configuración (diámetro incorrecto), falta de señal o problemas de calibración. El display muestra un signo de interrogación si no se recibe ninguna señal debido a parámetros erróneos como el diámetro exterior, espesor de pared o velocidad del sonido [flexim-fluxus-f532wd-es, p. 96]. Además, salidas configuradas incorrectamente pueden generar valores de error en lugar de la magnitud medida real [flexim-fluxus-f532wd-es, p. 81].\n\n### Causas probables\n*   **Parámetros erróneos:** El diámetro interior o radio introducido puede estar mal (ej. usado el perímetro), lo que impide recibir señal y genera errores visuales [flexim-fluxus-f532wd-es, p. 96].\n*   **Configuración de salida incorrecta:** Si la magnitud de origen no coincide con el tipo de salida configurado (ej. caudal volumétrico vs corriente), se emiten valores erróneos o señales de error [flexim-fluxus-f532wd-es, p. 81].\n*   **Falta de calibración:** Sin una curva multipunto definida basada en mediciones reales con un instrumento de referencia, los cálculos pueden ser inexactos [flexim-fluxus-f532wd-es, p. 106].\n\n### Casos similares del historial\nEn caso S-023, la salida no llegaba al sistema aunque el display funcionaba; fue causado por una mala configuración tras un cambio de transmisor y se resolvió reconfigurando la salida [historial, caso S-023]. En caso S-021, los valores borraban cada corte de energía debido a una batería agotada (aunque esto afecta datos más que el cálculo directo del caudal en tiempo real) [historial, caso S-021].\n\n### Verificaciones\n*   Revise si se visualiza un signo de interrogación detrás de la magnitud medida y verifique los parámetros introducidos: diámetro exterior, espesor de pared y velocidad del sonido [flexim-fluxus-f532wd-es, p. 96].\n*   Confirme en el menú **Salidas** si la \"Magnitud de origen\" coincide con el tipo de salida configurado (ej. Caudal volumétrico para corriente) [flexim-fluxus-f532wd-es, p. 158].\n*   Si los valores son consistentes pero incorrectos en magnitud, active **Calibración multipunto** definiendo una curva basada en mediciones reales con un instrumento de referencia [flexim-fluxus-f532wd-es, p. 106].\n\n### Acciones\nSi la salida no funciona o da valores erróneos: asegúrese de que las salidas estén configuradas correctamente y compruebe su funcionamiento; si persiste el problema, contacte al fabricante [flexim-fluxus-f532wd-es, p. 96]. Si se detectan errores típicos en los parámetros (ej. radio vs diámetro), corrija la entrada de datos inmediatamente [flexim-fluxus-f532wd-es, p. 96].\n\n### Escalar\nRecomiendo escalar al supervisor o especialista si: el problema persiste tras corregir los parámetros y reconfigurar las salidas; se requiere intervención con equipos energizados para probar señales externas (caso S-023); o la evidencia disponible no permite descartar fallas de hardware del transmisor [flexim-fluxus-f532wd-es, p. 96]."
+    },
+    {
+      "id": "E-18",
+      "pregunta": "En el FLUXUS F532WD se borran la fecha, la hora y los valores al apagarlo",
+      "decisiones": [
+        "buscar_manual[llm]",
+        "buscar_historial[llm]",
+        "responder[llm]"
+      ],
+      "evidencia_relevante": true,
+      "citas_validas": [
+        "[flexim-fluxus-f532wd-es, p. 96]",
+        "[historial, caso S-021]",
+        "[historial, caso S-023]",
+        "[flexim-fluxus-f532wd-es, p. 95]",
+        "[flexim-fluxus-f532wd-es, p. 10]"
+      ],
+      "citas_invalidas": [],
+      "cita_pagina_esperada": true,
+      "fidelidad": {
+        "respaldada": 6,
+        "parcial": 0,
+        "no_respaldada": 1,
+        "no_verificable": 0,
+        "cita_invalida": 0
+      },
+      "tasa_respaldada": 0.857,
+      "afirmaciones_dudosas": [
+        {
+          "texto": "Desconecte la alimentación principal antes de abrir la carcasa para acceder a las baterías internas [flexim-fluxus-f532wd-es, p. 10].",
+          "citas": [
+            "[flexim-fluxus-f532wd-es, p. 10]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto se refiere a advertencias para el transporte y procedimientos contra incendios, pero no menciona desconectar la alimentación antes de abrir la carcasa para acceder a las baterías."
+        }
+      ],
+      "propuesta": {
+        "verificaciones": 2,
+        "descartadas": 0,
+        "origen": "llm"
+      },
+      "espera_aprobacion": true,
+      "tiempos": {
+        "retrieve_s": 0.1,
+        "llm_s": 10.85,
+        "fidelidad_s": 8.93,
+        "propuesta_s": 5.85,
+        "router_s": 4.24
+      },
+      "total_s": 30.0,
+      "respuesta": "# Seguridad\nAntes de intervenir en el equipo: verifique la ausencia de tensión y aplique bloqueo/etiquetado (LOTO) según las prácticas generales. Si se requiere manipular componentes internos o baterías internas bajo riesgo eléctrico, espere a que cualquier capacitación interna se haya disipado antes de tocar bornes o placas [guía interna].\n\n# Qué indica\nLa pérdida de fecha/hora y borrado de valores al apagar el transmisor indica un fallo en la retención de datos. El manual establece: \"Si la fecha y la hora son restablecidas a cero o incorrectas... después de haber encendido o apagado el transmisor, la batería de almacenamiento de datos debe ser reemplazada\" [flexim-fluxus-f532wd-es, p. 96].\n\n# Causas probables\nLa causa más probable es que la batería interna (SIM-B) esté agotada y no pueda mantener los registros en modo standby. El historial confirma este antecedente: \"Síntoma: La fecha y la hora del caudalímetro se borran cada vez que se corta la energía... Causa: Batería de respaldo de datos agotada\" [historial, caso S-021].\n\n# Casos similares del historial\n*   **Caso S-021:** Síntoma idéntico (borrado fecha/hora al corte de energía). Solución fue el reemplazo directo de la batería. Cita: \"Solución: Se reemplazó la batería de almacenamiento de datos del transmisor\" [historial, caso S-021].\n*   **Caso S-023:** Diferente síntoma (salida 4-20 mA no llega aunque display funciona), causado por mala configuración tras cambio. Cita: \"Solución: Se reconfiguró la salida y se hizo la prueba de funcionamiento...\" [historial, caso S-023].\n\n# Verificaciones\nAntes del reemplazo físico:\n1.  Confirme que el transmisor esté conectado a una fuente de alimentación adecuada en los bornes correctos para evitar sobretensiones o bajo voltaje durante pruebas [flexim-fluxus-f532wd-es, p. 95].\n2.  Verifique visualmente si hay daños por transporte o golpes externos al abrir la carcasa, ya que el transmisor es \"un instrumento de medición electrónico sensible\" y debe evitarse cualquier choque [flexim-fluxus-f532wd-es, p. 10].\n\n# Acciones\nRealice el reemplazo del módulo de batería interna (SIM-B) siguiendo los procedimientos estándar de desarme seguro:\n*   Desconecte la alimentación principal antes de abrir la carcasa para acceder a las baterías internas [flexim-fluxus-f532wd-es, p. 10].\n*   Retire el módulo de batería agotado e instale uno nuevo del mismo tipo especificado en su equipo (ver etiqueta interna).\n*   Reinicie el transmisor y verifique que la fecha/hora se mantengan al corte de energía.\n\n# Escalar\nRecomendar escalar si:\n*   El síntoma persiste después del reemplazo confirmado de la batería [guía interna].\n*   Se requiere abrir componentes internos complejos o manipular baterías con riesgo químico sin experiencia específica en equipos Flexim [guía interna]."
+    },
+    {
+      "id": "E-19",
+      "pregunta": "La pantalla del FLUXUS F532WD no funciona o falla repetidamente",
+      "decisiones": [
+        "buscar_manual[llm]",
+        "buscar_historial[llm]",
+        "buscar_manual[llm]",
+        "responder[llm]"
+      ],
+      "evidencia_relevante": true,
+      "citas_validas": [
+        "[flexim-fluxus-f532wd-es, p. 142]",
+        "[flexim-fluxus-f532wd-es, p. 95]",
+        "[historial, caso S-023]",
+        "[flexim-fluxus-f532wd-es, p. 22]"
+      ],
+      "citas_invalidas": [],
+      "cita_pagina_esperada": true,
+      "fidelidad": {
+        "respaldada": 9,
+        "parcial": 0,
+        "no_respaldada": 2,
+        "no_verificable": 0,
+        "cita_invalida": 0
+      },
+      "tasa_respaldada": 0.818,
+      "afirmaciones_dudosas": [
+        {
+          "texto": "No se encontraron casos de historial específicos que coincidan exactamente con \"pantalla no funciona\", aunque existen casos relacionados con pérdida de datos o fallos tras reemplazo (ej. caso S-023: salida sin señal pero display bien por mala configuración post-reemplazo) [historial, caso S-023].",
+          "citas": [
+            "[historial, caso S-023]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [
+            "pantalla no funciona"
+          ],
+          "motivo": "El texto describe un fallo en la configuración de salida eléctrica, no menciona ningún caso específico donde una pantalla funcione mal o se pierdan datos."
+        },
+        {
+          "texto": "Recomendar escalar al supervisor o especialista si el manual indica que los componentes internos deben ser enviados a fábrica (reparación remota) y no se puede realizar una intervención interna segura sin riesgo de dañar la unidad [flexim-fluxus-f532wd-es, p. 95].",
+          "citas": [
+            "[flexim-fluxus-f532wd-es, p. 95]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto indica que los transductores y el transmisor deben ser enviados a Flexim para reparación, pero no menciona la recomendación de escalar al supervisor ni advierte sobre riesgos específicos si se realiza una intervención interna insegura."
+        }
+      ],
+      "propuesta": {
+        "verificaciones": 5,
+        "descartadas": 1,
+        "origen": "llm"
+      },
+      "espera_aprobacion": true,
+      "tiempos": {
+        "retrieve_s": 0.17,
+        "llm_s": 11.49,
+        "fidelidad_s": 14.26,
+        "propuesta_s": 10.64,
+        "router_s": 6.77
+      },
+      "total_s": 43.3,
+      "respuesta": "# Seguridad\nAntes de abrir el tablero o tocar bornes: bloqueo y etiquetado (LOTO) y verificación de ausencia de tensión. Si se requiere intervención en la placa interna para reemplazar componentes defectuosos, esperar a que no haya energía disponible según las normas generales de seguridad industrial.\n\n# Qué indica\nLa pantalla del FLUXUS F532WD falla repetidamente o deja de funcionar visualizando un mensaje de error (ej. \"conexión a través del cable USB\" si está conectado por interfaz). El símbolo de advertencia aparece en la primera línea y el protocolo evento muestra los mensajes desde la última inicialización [flexim-fluxus-f532wd-es, p. 142].\n\n# Causas probables\n- Fallo repetido o pantalla no funcional: verificar ajustes de contraste del transmisor; intentar introducir el HotCode **555000** para poner la pantalla a medio contraste [flexim-fluxus-f532wd-es, p. 95].\n- Verificar que una tensión adecuada esté conectada en los bornes según las especificaciones de fuente de alimentación impresas en la placa de características debajo del lado derecho exterior de la regleta de bornes [flexim-fluxus-f532wd-es, p. 95].\n- Si la fuente está bien y el problema persiste: transductores o componentes internos defectuosos; estos deben ser enviados a Flexim para reparación [flexim-fluxus-f532wd-es, p. 95].\n\n# Casos similares del historial\nNo se encontraron casos de historial específicos que coincidan exactamente con \"pantalla no funciona\", aunque existen casos relacionados con pérdida de datos o fallos tras reemplazo (ej. caso S-023: salida sin señal pero display bien por mala configuración post-reemplazo) [historial, caso S-023].\n\n# Verificaciones\n- Consultar el manual para determinar la fuente de alimentación prevista según las especificaciones impresas en la placa de características debajo del lado derecho exterior de la regleta de bornes [flexim-fluxus-f532wd-es, p. 95].\n- Si está conectado vía USB: verificar si se visualiza \"conexión a través del cable USB\" como mensaje de estado [flexim-fluxus-f532wd-es, p. 22].\n\n# Acciones\n1. Introducir el HotCode **555000** para ajustar el contraste a la mitad y verificar si se resuelve visualmente [flexim-fluxus-f532wd-es, p. 95].\n2. Medir tensión en los bornes asegurándose de que sea adecuada según las especificaciones impresas en la placa de características debajo del lado derecho exterior de la regleta de bornes [flexim-fluxus-f532wd-es, p. 95].\n3. Si el problema persiste y se sospecha componente interno defectuoso: no realizar reparaciones internas; enviar transductores o transmisor a Flexim para reparación [flexim-fluxus-f532wd-es, p. 95].\n\n# Escalar\nRecomendar escalar al supervisor o especialista si el manual indica que los componentes internos deben ser enviados a fábrica (reparación remota) y no se puede realizar una intervención interna segura sin riesgo de dañar la unidad [flexim-fluxus-f532wd-es, p. 95]."
+    },
+    {
+      "id": "E-20",
+      "pregunta": "El FLUXUS F532WD marca caudal demasiado alto, sospecho gas en la tubería",
+      "decisiones": [
+        "buscar_manual[llm]",
+        "buscar_historial[llm]",
+        "responder[llm]"
+      ],
+      "evidencia_relevante": false,
+      "citas_validas": [
+        "[flexim-fluxus-f532wd-es, p. 13]",
+        "[flexim-fluxus-f532wd-es, p. 14]",
+        "[historial, caso S-020]",
+        "[historial, caso S-019]",
+        "[flexim-fluxus-f532wd-es, p. 19]",
+        "[flexim-fluxus-f532wd-es, p. 6]",
+        "[flexim-fluxus-f532wd-es, p. 103]"
+      ],
+      "citas_invalidas": [],
+      "cita_pagina_esperada": false,
+      "fidelidad": {
+        "respaldada": 8,
+        "parcial": 0,
+        "no_respaldada": 2,
+        "no_verificable": 0,
+        "cita_invalida": 0
+      },
+      "tasa_respaldada": 0.8,
+      "afirmaciones_dudosas": [
+        {
+          "texto": "El modo TransitTime calcula la velocidad basándose en la diferencia de tiempo entre dos señales consecutivas; si las burbujas de gas impiden esta propagación, los cálculos pueden ser erróneos o inestables [flexim-fluxus-f532wd-es, p. 14].",
+          "citas": [
+            "[flexim-fluxus-f532wd-es, p. 14]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [],
+          "motivo": "El texto menciona que el modo HybridTrek combina TransitTime y NoiseTrek, pero no describe cómo calcula la velocidad en TransitTime ni afirma que las burbujas de gas causen errores o inestabilidad. Además, contradice implícitamente al afirmar que los haces paralelos del modo NoiseTrek 'no pueden ser usados' en el modo TransitTime, mientras que HybridTrek utiliza ambos modos."
+        },
+        {
+          "texto": "Revisar si el modo TransitTime está habilitado y considerar la posibilidad de atenuación por gas que requiera otro método [flexim-fluxus-f532wd-es, p. 6].",
+          "citas": [
+            "[flexim-fluxus-f532wd-es, p. 6]"
+          ],
+          "veredicto": "no_respaldada",
+          "faltantes": [
+            "TransitTime"
+          ],
+          "motivo": "El texto proporcionado es solo el índice y encabezados del documento, por lo que no contiene información sobre la revisión del modo TransitTime ni la atenuación por gas."
+        }
+      ],
+      "propuesta": {
+        "verificaciones": 2,
+        "descartadas": 1,
+        "origen": "llm"
+      },
+      "espera_aprobacion": true,
+      "tiempos": {
+        "retrieve_s": 0.1,
+        "llm_s": 11.51,
+        "fidelidad_s": 14.11,
+        "propuesta_s": 5.33,
+        "router_s": 4.44
+      },
+      "total_s": 35.5,
+      "respuesta": "# Seguridad\nAntes de intervenir en el equipo: bloqueo y etiquetado (LOTO) y verificación de ausencia de tensión. Si hay gas o presión residual en la tubería, despresurizar e aislar antes de cualquier manipulación física [guía interna]. Asegurar que no puedan arrancar ni moverse por inercia si el equipo es rotativo [guía interna].\n\n# Qué indica\nEl FLUXUS F532WD puede indicar caudal alto cuando hay gas en la tubería, ya que este afecta la propagación de la señal ultrasónica. Si el fluido tiene un porcentaje elevado de gas y/o partículas sólidas, la atenuación de la señal ultrasónica aumenta notablemente y puede impedir una propagación completa de la señal en el fluido [flexim-fluxus-f532wd-es, p. 13].\n\n# Causas probables\nLa presencia de gas o burbujas interfiere con los modos estándar (TransitTime) al aumentar la atenuación y evitar una medición completa del tiempo de tránsito en el fluido [flexim-fluxus-f532wd-es, p. 13]. El modo TransitTime calcula la velocidad basándose en la diferencia de tiempo entre dos señales consecutivas; si las burbujas de gas impiden esta propagación, los cálculos pueden ser erróneos o inestables [flexim-fluxus-f532wd-es, p. 14].\n\n# Casos similares del historial\nEn un caso similar con agua y caudal inestable, la causa fue que el punto de medición estaba demasiado cerca de una válvula y codo, perturbando el perfil de flujo [historial, caso S-020]. En otro caso, pintar la tubería causó pérdida de señal debido a mal acoplamiento acústico bajo los transductores [historial, caso S-019].\n\n# Verificaciones\nVerificar si se cumple con las distancias recomendadas hacia fuentes de perturbación (válvula: entrada ≥40d; reductor: entrada ≥10d) para asegurar un perfil de flujo no perturbado antes del transductor [flexim-fluxus-f532wd-es, p. 19]. Revisar si el modo TransitTime está habilitado y considerar la posibilidad de atenuación por gas que requiera otro método [flexim-fluxus-f532wd-es, p. 6].\n\n# Acciones\nSi se sospecha presencia elevada de gas o partículas sólidas, es necesario usar el modo NoiseTrek en lugar del TransitTime. El modo NoiseTrek aprovecha la presencia de burbujas de gas y/o partículas sólidas enviando señales ultrasónicas a intervalos cortos para reflejarlas [flexim-fluxus-f532wd-es, p. 13]. Para habilitar el modo NoiseTrek: seleccione Otros\\Ajustes especiales > Habilitar NoiseTrek > Encendido en el menú del usuario StandardUser [flexim-fluxus-f532wd-es, p. 103]. Si la atenuación es extrema o las tuberías son pequeñas, considerar usar el modo NoiseTrek con haces paralelos para mejorar la calidad de señal [flexim-fluxus-f532wd-es, p. 14].\n\n# Escalar\nRecomendar escalar al supervisor si: la falla se repite después de intentar cambiar a NoiseTrek; o si es necesario intervenir el equipo energizado/presurizado para limpiar transductores [guía interna]; o si no hay información suficiente sobre la composición del fluido ni las distancias reales desde perturbaciones."
+    }
+  ]
+}

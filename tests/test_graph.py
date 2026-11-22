@@ -13,6 +13,7 @@ from troubleshooting_agent.agent.graph import (
     reanudar,
 )
 from troubleshooting_agent.agent.llm import LLMSimulado, OllamaLLM, crear_llm
+from troubleshooting_agent.agent.propuesta import SCHEMA_PROPUESTA
 from troubleshooting_agent.config import load_settings
 from troubleshooting_agent.retrieval.embeddings import HashEmbedder
 from troubleshooting_agent.retrieval.index import indexar
@@ -66,11 +67,13 @@ class LLMFijo:
 
     nombre, simulado = "fijo", False
 
-    def __init__(self, respuesta, decisiones=None):
+    def __init__(self, respuesta, decisiones=None, propuestas=None):
         self.respuesta = respuesta
         self.decisiones = list(decisiones or [])
+        self.propuestas = list(propuestas or [])
         self.llamadas = 0
         self.prompts_router = []
+        self.prompts_propuesta = []
 
     def generar(self, system, user):
         self.llamadas += 1
@@ -78,6 +81,11 @@ class LLMFijo:
         return self.respuesta
 
     def generar_json(self, system, user, schema):
+        if schema is SCHEMA_PROPUESTA:
+            self.prompts_propuesta.append(user)
+            if not self.propuestas:
+                raise ValueError("sin guion de propuesta")
+            return self.propuestas.pop(0)
         self.prompts_router.append(user)
         if not self.decisiones:
             raise ValueError("sin guion")
@@ -85,9 +93,10 @@ class LLMFijo:
 
 
 def _correr(grafo, pregunta="El Drive 100 paró por F5 OverVoltage", respuestas=()):
+    """Corre y responde las pausas en orden; sin más respuestas, devuelve el estado pausado."""
     r = iniciar(grafo, pregunta, "t1", k=2)
     respuestas = list(respuestas)
-    while pendiente(r) is not None:
+    while pendiente(r) is not None and respuestas:
         r = reanudar(grafo, respuestas.pop(0), "t1")
     return r
 
@@ -139,7 +148,7 @@ def test_grafo_cita_valida_y_fuentes(retriever, retriever_hist, identificador):
         "[demo, p. 81] Manual demo · Troubleshooting",
         "[historial, caso S-001] Historial demo · caso sintético",
     ]
-    assert r["avisos"] == []
+    assert not any("cita" in a for a in r["avisos"])
 
 
 def test_grafo_cita_inventada_genera_aviso(retriever, identificador):
@@ -158,7 +167,7 @@ def test_grafo_pide_datos_pausa_y_reanuda(retriever, retriever_hist, identificad
     assert "respuesta" not in r
 
     r = reanudar(grafo, "es el variador Drive 100, muestra F5", "t-pausa")
-    assert pendiente(r) is None
+    assert pendiente(r)["tipo"] == "aprobacion"  # pedir datos no es el HITL: la pausa de aprobación sigue
     assert r["equipo"]["modelo"] == "Drive 100" and r["equipo"]["codigo_falla"] == "F5"
     assert r["pedidos"] == 1
     assert _acciones(r) == ["pedir_datos", "buscar_historial", "buscar_manual", "responder"]
@@ -243,3 +252,15 @@ def test_use_real_llm_false(settings, monkeypatch):
     monkeypatch.setenv("USE_REAL_LLM", "false")
     llm, avisos = llm_mod.crear_llm(load_settings())
     assert llm.simulado and "simulado" in avisos[0]
+
+
+def test_crear_retriever_indice_bloqueado_avisa(settings, monkeypatch):
+    from troubleshooting_agent.retrieval.store import abrir_store
+
+    monkeypatch.setenv("USE_QDRANT", "true")
+    s = load_settings()
+    otro_proceso = abrir_store(s)  # Qdrant local bloquea la carpeta
+    manual, historial, avisos = crear_retriever(s)
+    assert manual is None and historial is None
+    assert "abierto por otro proceso" in avisos[0]
+    otro_proceso.cerrar()

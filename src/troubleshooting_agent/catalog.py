@@ -19,7 +19,7 @@ from troubleshooting_agent.config import load_settings
 
 Doc = dict[str, Any]
 
-# Campos que una sección puede pisar respecto del documento (CLAUDE.md §4.4).
+# Campos que una sección puede pisar respecto del documento (herencia doc → sección → chunk).
 CAMPOS_OVERRIDE_SECCION = ("clase_equipo", "fabricante", "modelos", "componente", "tipo_contenido")
 
 

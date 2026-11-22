@@ -41,6 +41,9 @@ qdrant_storage/
 artifacts/index/
 artifacts/*.sqlite
 artifacts/*.db
+# Estado de diagnósticos y órdenes de trabajo simuladas (locales)
+artifacts/estado/
+artifacts/ordenes/
 # Reportes de evaluación (json/md) en artifacts/ sí se versionan
 
 # ── Modelos / caches de HF ─────────────────────────
@@ -57,10 +60,3 @@ hf_cache/
 .kiro/
 .DS_Store
 Thumbs.db
-
-# ── Claude Code (config local del usuario) ─────────
-.claude/settings.local.json
-CLAUDE.local.md
-
-# Devolución del profesor (privada, no se versiona)
-devolucion_profesor.txt

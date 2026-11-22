@@ -112,7 +112,8 @@ al técnico: decidís la PRÓXIMA ACCIÓN y devolvés solo JSON.
 
 Acciones posibles:
 - buscar_manual: buscar en los manuales del fabricante (descripción de fallas, causas, acciones). \
-"consulta" = texto a buscar; incluí modelo y código o nombre de falla.
+"consulta" = texto a buscar; incluí modelo, código de falla y el nombre de ESA falla como \
+figura en el manual (los manuales Rockwell están en inglés), además de los términos en español.
 - buscar_historial: buscar casos de fallas ya resueltas en campo. "consulta" = síntoma + equipo.
 - pedir_datos: preguntarle al técnico un dato que falta. "pregunta" = pregunta corta en español.
 - responder: ya hay evidencia suficiente, o no hay más fuentes útiles.

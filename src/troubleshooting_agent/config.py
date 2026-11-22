@@ -43,6 +43,10 @@ class Settings:
     llm_num_ctx: int
     llm_temperature: float
     llm_think: bool
+    retrieval_mode: str
+    state_db: Path
+    ordenes_dir: Path
+    fidelidad_llm: bool
 
     @property
     def raw_dir(self) -> Path:
@@ -90,6 +94,10 @@ def load_settings(env_file: Path | None = None) -> Settings:
         d.strip() for d in env("WEB_SEARCH_ALLOWLIST", "rockwellautomation.com").split(",") if d.strip()
     )
 
+    retrieval_mode = env("RETRIEVAL_MODE", "hibrido").strip().lower()
+    if retrieval_mode not in ("hibrido", "denso", "bm25"):
+        raise ValueError(f"RETRIEVAL_MODE={retrieval_mode!r} no es válido; usar hibrido, denso o bm25")
+
     embedding_device = env("EMBEDDING_DEVICE", "auto").strip().lower()
     if embedding_device not in ("auto", "cuda", "cpu"):
         raise ValueError(f"EMBEDDING_DEVICE={embedding_device!r} no es válido; usar auto, cuda o cpu")
@@ -111,4 +119,8 @@ def load_settings(env_file: Path | None = None) -> Settings:
         llm_num_ctx=int(env("LLM_NUM_CTX", "8192")),
         llm_temperature=float(env("LLM_TEMPERATURE", "0.2")),
         llm_think=_bool(env("LLM_THINK", "false")),
+        retrieval_mode=retrieval_mode,
+        state_db=_ruta(env("STATE_DB", "artifacts/estado/checkpoints.sqlite")),
+        ordenes_dir=_ruta(env("ORDENES_DIR", "artifacts/ordenes")),
+        fidelidad_llm=_bool(env("FIDELIDAD_LLM", "false")),
     )
