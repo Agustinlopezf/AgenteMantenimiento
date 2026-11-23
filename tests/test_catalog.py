@@ -1,8 +1,14 @@
+import copy
+import json
+
 from troubleshooting_agent.catalog import (
     documentos_a_indexar,
     load_catalog,
+    main,
     metadata_para_pagina,
     resolver_archivos,
+    validar_catalogo,
+    validar_registros,
 )
 from troubleshooting_agent.config import REPO_ROOT
 
@@ -83,3 +89,79 @@ def test_catalogo_real_demo():
         "flexim-fluxus-f532wd-es",
         "hist-sintetico-demo",
     }
+
+
+TAXONOMIA = {
+    "clase_equipo": {"variador_frecuencia": {}, "motor_electrico": {}},
+    "tipo_documento": ["manual_usuario"],
+    "tipo_contenido": ["instalacion", "troubleshooting", "general"],
+    "contexto_operativo": ["general"],
+    "conjunto": {"pozo": {"clases": ["variador_frecuencia"]}},
+    "distribucion": ["publico", "propietario", "interno_pae"],
+}
+
+
+def _valido(mini_catalogo):
+    cat = copy.deepcopy(mini_catalogo)
+    cat["taxonomia"] = TAXONOMIA
+    cat["documentos"][0]["fuente_publica"] = {"url": "https://ejemplo/manual.pdf"}
+    cat["documentos"][2]["motivo_exclusion"] = "duplicado"
+    cat["documentos"].pop()  # demo-faltante: público sin archivo
+    return cat
+
+
+def test_validar_catalogo_ok_y_avisos(mini_catalogo, raw_dir):
+    errores, avisos = validar_catalogo(_valido(mini_catalogo), raw_dir)
+    assert errores == []
+    assert avisos == ["demo-ocr: falta el archivo en data/raw (escaneado.pdf) (solo hace falta con CORPUS=completo)"]
+
+
+def test_validar_catalogo_detecta_errores(mini_catalogo, raw_dir):
+    cat = copy.deepcopy(mini_catalogo)
+    cat["taxonomia"] = TAXONOMIA
+    pub = cat["documentos"][0]
+    pub["clase_equipo"] = "licuadora"
+    pub["paginas"] = 2
+    pub["secciones"][0]["tipo_contenido"] = "receta"
+    pub["secciones"][1]["paginas"] = [2, 5]
+    pub["secciones"].append({"titulo": "Anidada", "paginas": [1, 1], "tipo_contenido": "general"})
+    pub["secciones"].append({"titulo": "Al revés", "paginas": [3, 1], "tipo_contenido": "general"})
+    pub["relacionados"] = ["no-existe"]
+    cat["documentos"][1]["doc_id"] = "demo-publico"
+    errores, avisos = validar_catalogo(cat, raw_dir)
+    texto = "\n".join(errores)
+    for esperado in ["doc_id repetido: demo-publico", "clase_equipo='licuadora'", "tipo_contenido='receta'",
+                     "termina en p. 5 pero el documento tiene 2", "paginas=[3, 1] inválido",
+                     "relacionado 'no-existe'", "documento publico sin fuente_publica.url",
+                     "demo-faltante: falta el archivo"]:
+        assert esperado in texto, esperado
+    assert any("secciones solapadas" in a for a in avisos)
+    assert any("indexar=false sin motivo_exclusion" in a for a in avisos)
+
+
+def test_validar_registros_historial():
+    filas = [{"clase_equipo": "variador_frecuencia"}, {"clase_equipo": "x", "clases_relacionadas": ["y"]}]
+    assert validar_registros(filas, TAXONOMIA, "h.jsonl") == [
+        "h.jsonl:2: clase_equipo='x' no está en la taxonomía", "h.jsonl:2: clase_equipo='y' no está en la taxonomía"]
+
+
+def test_catalogo_real_sin_errores():
+    catalog = load_catalog(REPO_ROOT / "data" / "catalog" / "catalogo_documentos.json")
+    errores, _ = validar_catalogo(catalog, catalog_dir=REPO_ROOT / "data" / "catalog")
+    assert errores == []
+    filas = [json.loads(linea) for linea in
+             (REPO_ROOT / "data" / "catalog" / "fallas_sinteticas.jsonl").read_text(encoding="utf-8").splitlines()
+             if linea.strip()]
+    assert validar_registros(filas, catalog["taxonomia"], "fallas_sinteticas.jsonl") == []
+
+
+def test_cli_validate_exit_code(tmp_path, monkeypatch, mini_catalogo, raw_dir):
+    cat = _valido(mini_catalogo)
+    path = tmp_path / "catalog" / "catalogo_documentos.json"  # DATA_DIR=tmp_path → raw_dir = tmp_path/raw
+    path.parent.mkdir()
+    path.write_text(json.dumps(cat), encoding="utf-8")
+    monkeypatch.setenv("DATA_DIR", str(tmp_path))
+    assert main(["validate", "--sin-hash"]) == 0
+    cat["documentos"][0]["clase_equipo"] = "licuadora"
+    path.write_text(json.dumps(cat), encoding="utf-8")
+    assert main(["validate", "--sin-hash"]) == 1

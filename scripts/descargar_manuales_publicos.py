@@ -9,6 +9,11 @@ Solo usa la biblioteca estándar. Uso:
 Cada archivo se guarda con el nombre del campo `archivo` del catálogo, así la ingesta
 lo encuentra igual que en el corpus completo. Si el sha256 no coincide con el del
 catálogo, avisa (el fabricante puede haber publicado otra revisión) pero no falla.
+
+Algunos sitios (Rockwell) rechazan las descargas automatizadas (HTTP 403). En ese caso
+el script imprime el link: bajá el PDF con el navegador y dejalo en data/raw/ con el
+nombre que se baja o con el del catálogo; al volver a correr el script lo reconoce, lo
+renombra si hace falta y verifica el sha256.
 """
 
 from __future__ import annotations
@@ -58,10 +63,12 @@ def main() -> int:
     args = ap.parse_args()
 
     catalogo = json.loads(args.catalogo.read_text(encoding="utf-8"))
-    publicos = [d for d in catalogo["documentos"] if d.get("distribucion") == "publico"]
+    # solo documentos con archivo propio (el historial sintético vive en data/catalog/)
+    publicos = [d for d in catalogo["documentos"] if d.get("distribucion") == "publico" and d.get("archivo")]
     args.destino.mkdir(parents=True, exist_ok=True)
 
     errores = 0
+    manuales: list[str] = []
     for doc in publicos:
         fuente = doc.get("fuente_publica") or {}
         url, hash_esperado = fuente.get("url"), fuente.get("sha256")
@@ -72,8 +79,15 @@ def main() -> int:
             print(f"{etiqueta} ERROR: marcado como público pero sin fuente_publica.url")
             errores += 1
             continue
+        bajado = args.destino / url.rsplit("/", 1)[-1]  # nombre con el que lo guarda el navegador
+        if not destino.exists() and bajado != destino and bajado.is_file():
+            bajado.rename(destino)
+            print(f"{etiqueta} {bajado.name} → {destino.name} (nombre del catálogo)")
         if destino.exists() and not args.force:
-            print(f"{etiqueta} ya existe: {destino.name}")
+            obtenido = sha256(destino)
+            estado = "OK" if not hash_esperado or obtenido == hash_esperado else \
+                "AVISO: sha256 distinto al del catálogo (posible nueva revisión)"
+            print(f"{etiqueta} ya existe: {destino.name} · {estado}")
             continue
         if args.dry_run:
             print(f"{etiqueta} descargaría {url} -> {destino.name}")
@@ -84,6 +98,7 @@ def main() -> int:
             descargar(url, destino)
         except (urllib.error.URLError, TimeoutError, ValueError) as e:
             print(f"{etiqueta} ERROR: {e}")
+            manuales.append(f"  {url}\n    → guardar en {args.destino}/ como {destino.name} (o con el nombre original)")
             errores += 1
             continue
 
@@ -94,7 +109,11 @@ def main() -> int:
         else:
             print(f"{etiqueta} OK ({destino.stat().st_size / 1e6:.1f} MB)")
 
-    print(f"\n{len(publicos)} documentos públicos en el catálogo, {errores} con error.")
+    print(f"\n{len(publicos)} documentos públicos con archivo en el catálogo, {errores} con error.")
+    if manuales:
+        print("\nNo se pudieron descargar automáticamente (el sitio rechaza clientes que no son un navegador\n"
+              "o el link cambió). Bajalos con el navegador y volvé a correr este script para verificarlos:")
+        print("\n".join(manuales))
     return 1 if errores else 0
 
 

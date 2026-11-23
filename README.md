@@ -82,9 +82,11 @@ Los manuales **no están en el repositorio**. El catálogo (versionado) clasific
 ### Corpus de demo (para reproducir)
 
 ```bash
-uv run python scripts/descargar_manuales_publicos.py   # baja los 6 públicos a data/raw/
+uv run python scripts/descargar_manuales_publicos.py   # baja los 6 públicos a data/raw/ y verifica sha256
 # en .env: CORPUS=demo
 ```
+
+Algunos sitios rechazan las descargas automatizadas (Rockwell responde HTTP 403 a clientes que no son un navegador). En ese caso el script lista los links: bajá esos PDFs con el navegador, dejalos en `data/raw/` (con el nombre con que se descargan) y volvé a correr el script, que los renombra al nombre del catálogo y verifica el sha256. Si el sha256 no coincide, el fabricante publicó otra revisión y los números de página del set de evaluación pueden no corresponder.
 
 Con `CORPUS=demo` la ingesta usa solo los documentos `publico`: alcanza para probar el agente de punta a punta con preguntas sobre variadores de frecuencia y caudalímetros. El corpus completo (motocompresores, perforación, pozos con SAM V2) se muestra en una demo en vivo.
 
