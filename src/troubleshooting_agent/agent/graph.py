@@ -36,7 +36,7 @@ from troubleshooting_agent.agent import router
 from troubleshooting_agent.agent.citas import CitaAny, armar_fuentes, clasificar_citas, extraer_citas
 from troubleshooting_agent.agent.equipo import Equipo, IdentificadorEquipo
 from troubleshooting_agent.agent.estado import abrir_checkpointer, serializador
-from troubleshooting_agent.agent.fidelidad import evaluar_fidelidad, resumen_fidelidad
+from troubleshooting_agent.agent.fidelidad import corregir_citas, evaluar_fidelidad, resumen_fidelidad
 from troubleshooting_agent.agent.llm import LLM, crear_llm
 from troubleshooting_agent.agent.prompts import construir_mensaje_usuario, system_prompt
 from troubleshooting_agent.agent.propuesta import (
@@ -113,6 +113,7 @@ def construir_grafo(
     checkpointer: Any = None,
     dir_ordenes: Path | None = None,
     juez_fidelidad: bool = False,
+    fusion_consulta: bool = True,
 ):
     identificador = identificador or IdentificadorEquipo({}, [])
     dir_ordenes = dir_ordenes or REPO_ROOT / "artifacts" / "ordenes"
@@ -143,7 +144,8 @@ def construir_grafo(
         t0 = time.perf_counter()
         d, eq, k = estado["decision"], _equipo(estado), estado.get("k") or k_default
         if nombre == "buscar_manual":
-            r = buscar_manual(retriever, d["consulta"], eq, k)
+            r = buscar_manual(retriever, d["consulta"], eq, k,
+                              consulta_original=_texto_tecnico(estado) if fusion_consulta else None)
             clave = "hits"
         else:
             r = buscar_historial(retriever_historial, d["consulta"], eq, K_HISTORIAL)
@@ -189,9 +191,17 @@ def construir_grafo(
         pregunta = _texto_tecnico(estado)
         respuesta = llm.generar(system_prompt(), construir_mensaje_usuario(pregunta, hits, casos))
         todos = [*hits, *casos]
+        t_fid = time.perf_counter()
+        fidelidad = evaluar_fidelidad(respuesta, todos, llm if juez_fidelidad else None)
+        respuesta, corregidas = corregir_citas(respuesta, fidelidad)
         validas, invalidas = clasificar_citas(extraer_citas(respuesta), todos)
 
         avisos = []
+        if corregidas:
+            avisos.append(
+                f"Se corrigieron {len(corregidas)} cita(s) que apuntaban a una página que no respalda la frase "
+                "(los datos están en otra página recuperada): " + "; ".join(corregidas)
+            )
         if invalidas:
             avisos.append(
                 "La respuesta cita fuentes que NO están entre los fragmentos recuperados: "
@@ -199,8 +209,6 @@ def construir_grafo(
             )
         if not validas and not llm.simulado:
             avisos.append("La respuesta no incluye ninguna cita verificable: tratarla con cautela.")
-        t_fid = time.perf_counter()
-        fidelidad = evaluar_fidelidad(respuesta, todos, llm if juez_fidelidad else None)
         dudosas = [a for a in fidelidad["afirmaciones"] if a["veredicto"] in ("no_respaldada", "parcial")]
         if dudosas:
             avisos.append(
@@ -396,7 +404,7 @@ def crear_grafo_estado(settings: Settings):
     return construir_grafo(None, LLMSimulado(), checkpointer=abrir_checkpointer(settings.state_db))
 
 
-def crear_agente(settings: Settings, checkpointer: Any = None):
+def crear_agente(settings: Settings, checkpointer: Any = None, *, fusion_consulta: bool = True):
     """Devuelve (grafo compilado, avisos de arranque). Por defecto, estado persistente en STATE_DB."""
     from troubleshooting_agent.catalog import load_catalog
 
@@ -412,5 +420,6 @@ def crear_agente(settings: Settings, checkpointer: Any = None):
         checkpointer=checkpointer or abrir_checkpointer(settings.state_db),
         dir_ordenes=settings.ordenes_dir,
         juez_fidelidad=settings.fidelidad_llm,
+        fusion_consulta=fusion_consulta,
     )
     return grafo, avisos_r + avisos_l

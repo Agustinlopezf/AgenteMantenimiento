@@ -199,28 +199,35 @@ Set de evaluación: 20 preguntas de troubleshooting sobre los manuales públicos
 | BM25 | 0.20 | 0.40 | 0.70 | 0.34 |
 | híbrido (RRF) | 0.35 | 0.45 | 0.55 | 0.41 |
 | **híbrido + fallas** (default) | **0.60** | **0.80** | **0.95** | **0.72** |
+| con la consulta reescrita por el router | 0.50 | 0.80 | 0.90 | 0.65 |
+| **router + pregunta original (RRF)** (lo que hace el agente) | 0.50 | 0.80 | **0.95** | 0.66 |
 
 El filtro por metadatos del catálogo es lo que más mueve la aguja (las tablas de códigos de falla quedaban enterradas entre cientos de páginas que mencionan "OverVoltage"); BM25 aporta en códigos y nombres exactos. **Re-ranker: no se incorporó.** Con el híbrido + fallas, 16 de 20 preguntas tienen la página esperada en el top 3; un cross-encoder (bge-reranker-v2-m3, ~2 GB) sumado al LLM y a BGE-M3 excede los 8 GB de VRAM, y los fallos restantes son de cobertura (síntoma en español contra una tabla en inglés) más que de orden.
 
-**Agente de punta a punta** (`scripts/evaluar_agente.py` → `artifacts/eval_agente.json`, qwen3.5:4b, juez LLM activado). Dos corridas: la segunda agrega al prompt la lista explícita de citas permitidas.
+Las dos últimas filas usan las consultas que escribió el router en una corrida del agente (temperatura 0, `--consultas-router`), así la comparación no depende del ruido del LLM. **La reescritura del router recupera peor que la pregunta del técnico** (MRR 0.65 vs. 0.72): agrega términos en inglés que a veces ayudan (E-11, E-12) y a veces desvían (E-17, E-20). Por eso `buscar_manual` busca con las dos y las fusiona por RRF: recupera el hit@10 (0.95) sin perder los casos donde el router ayuda. Darle más peso a la pregunta original sube el MRR a 0.70, pero con 20 preguntas sin revisar no se ajustaron pesos.
 
-| Métrica | Corrida 1 | Corrida 2 (actual) |
-|---|---|---|
-| La evidencia recuperada incluye la página esperada | 80 % | 85 % |
-| La respuesta cita la página esperada | 70 % | 65 % |
-| Afirmaciones con cita respaldadas por la fuente | 68 % (167/246) | 67 % (151/225) |
-| Afirmaciones no respaldadas / que citan una página no recuperada | 48 / 22 | 43 / 27 |
-| Respuestas con al menos una cita inválida | 8 / 20 | 5 / 20 |
-| Propuestas que llegan a aprobación / verificaciones descartadas | 20 / 16 | 19 / 13 |
-| Tiempo medio por consulta (router + respuesta + propuesta + juez) | 41 s | 39 s |
+**Agente de punta a punta** (`scripts/evaluar_agente.py` → `artifacts/eval_agente.json`, qwen3.5:4b, juez LLM activado). Corrida 1: base; corrida 2: + lista explícita de citas permitidas en el prompt; corrida 3 (actual): + fusión de consultas y corrección de citas corridas.
 
-Las diferencias entre corridas están dentro de la variación del modelo (20 preguntas). Lectura: el agente encuentra y cita la página correcta en la mayoría de los casos, pero **1 de cada 3 afirmaciones del modelo 4B no está respaldada por la página que cita** (mezcla páginas, agrega consejos genéricos, desplaza el número de página). Por eso el chequeo por afirmación se muestra al técnico y la propuesta que va a aprobación solo conserva verificaciones con respaldo.
+| Métrica | Corrida 1 | Corrida 2 | Corrida 3 (actual) |
+|---|---|---|---|
+| La evidencia recuperada incluye la página esperada | 80 % | 85 % | 90 % |
+| La respuesta cita la página esperada | 70 % | 65 % | 80 % |
+| Afirmaciones con cita respaldadas por la fuente | 68 % (167/246) | 67 % (151/225) | 72 % (178/248) |
+| … contando las citas corregidas | — | — | 73 % (+2) |
+| Afirmaciones no respaldadas / que citan una página no recuperada | 48 / 22 | 43 / 27 | 47 / 12 |
+| Respuestas con al menos una cita inválida | 8 / 20 | 5 / 20 | 4 / 20 |
+| Propuestas que llegan a aprobación / verificaciones descartadas | 20 / 16 | 19 / 13 | 20 / 9 |
+| Tiempo medio por consulta (router + respuesta + propuesta + juez) | 41 s | 39 s | 41 s |
+
+**Variación entre corridas:** con la misma configuración salvo la fusión, otra corrida dio 80 % de afirmaciones respaldadas; la tasa oscila entre ~67 % y ~80 % de una corrida a otra (temperatura 0.2, 20 preguntas). Por eso la fusión se midió en el retrieval con consultas fijas (tabla de arriba) y no con esta tabla. Lectura: el agente encuentra y cita la página correcta en la mayoría de los casos, pero **entre 1 de cada 5 y 1 de cada 3 afirmaciones del modelo 4B no están respaldadas por la página que citan** (mezcla páginas, agrega consejos genéricos, desplaza el número de página). Por eso el chequeo por afirmación se muestra al técnico y la propuesta que va a aprobación solo conserva verificaciones con respaldo.
+
+**Corrección de citas corridas:** si una afirmación no está respaldada por la página que cita pero todos sus términos clave (≥ 2: códigos, parámetros, valores) están en otra fuente recuperada, la cita se reemplaza y se avisa al técnico (`↻ cita corregida`). Es conservadora: corrigió 2 a 4 afirmaciones por corrida (p. ej. un `doc_id` deformado `rok-70-pm001-en` → `rok-750-pm001-en`, p. 317); no cambia el panorama general, pero evita que una cita mal copiada invalide un dato correcto.
 
 ## Limitaciones
 
 - El agente asiste el diagnóstico; no reemplaza los procedimientos de seguridad ni el criterio del técnico.
-- El modelo por defecto (4B) produce afirmaciones no respaldadas (~1/3 según el juez): el chequeo de fidelidad las marca, pero no las corrige. Un modelo más grande (`LLM_MODEL`) debería mejorar esto si la GPU lo permite.
+- El modelo por defecto (4B) produce afirmaciones no respaldadas (20–33 % según el juez y la corrida): el chequeo de fidelidad las marca y corrige solo las citas corridas; no reescribe el contenido. Un modelo más grande (`LLM_MODEL`) debería mejorar esto si la GPU lo permite.
 - El chequeo léxico solo detecta términos clave inventados (códigos, parámetros, valores); las frases sin esos términos necesitan el juez LLM (`FIDELIDAD_LLM=true`), que suma latencia.
 - Qdrant local no admite dos procesos a la vez: no se puede correr el agente mientras corre la evaluación (el agente lo avisa).
-- El set de evaluación y el historial sintético los armó el asistente: falta la revisión de un técnico.
+- El set de evaluación y el historial sintético son borradores: falta la revisión de un técnico.
 - La calidad depende de la cobertura del corpus: hoy faltan, por ejemplo, el manual del VDF WEG CFW900 y el del controlador Lufkin SAM.

@@ -89,7 +89,9 @@ def imprimir_diagnostico(resultado: dict, mostrar_contexto: bool) -> None:
     if fid and fid["afirmaciones"]:
         print(f"\nFidelidad por afirmación: {resumen_fidelidad(fid)}")
         for a in fid["afirmaciones"]:
-            if a["veredicto"] not in ("respaldada", "no_verificable"):
+            if a["veredicto"] == "cita_corregida":
+                print(f"  ↻ cita corregida {', '.join(a['citas_originales'])} → {a['citas'][0]}: {a['texto'][:70]}…")
+            elif a["veredicto"] not in ("respaldada", "no_verificable"):
                 print(f"  ✗ [{a['veredicto']}] {a['texto'][:90]}… {('faltan: ' + ', '.join(a['faltantes'])) if a['faltantes'] else a['motivo']}")
     t = resultado.get("tiempos") or {}
     print(f"\n(router {t.get('router_s', 0):.1f} s · retrieve {t.get('retrieve_s', 0):.2f} s · "

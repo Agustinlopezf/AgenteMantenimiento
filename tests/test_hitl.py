@@ -194,3 +194,15 @@ def test_grafo_estado_lista_sin_indice_ni_llm(tmp_path, monkeypatch):
     iniciar(grafo, PREGUNTA, "t-lista")
     liviano = crear_grafo_estado(load_settings(tmp_path / "no.env"))
     assert [d["thread_id"] for d in listar_diagnosticos(liviano, liviano.checkpointer)] == ["t-lista"]
+
+
+def test_respuesta_con_cita_corrida_sale_corregida_y_avisada(tmp_path):
+    class CitaCorrida(LLMGuion):
+        def generar(self, system, user):
+            return "- El F5 OverVoltage indica sobretensión del bus [demo, p. 18]."
+
+    r = iniciar(_grafo(CitaCorrida([dict(PROPUESTA_OK)]), tmp_path), PREGUNTA, "t-corr")
+    assert "[demo, p. 81]" in r["respuesta"] and "p. 18]" not in r["respuesta"]
+    assert [str(c) for c in r["citas_validas"]] == ["[demo, p. 81]"] and r["citas_invalidas"] == []
+    assert any("Se corrigieron 1 cita(s)" in a and "[demo, p. 18] → [demo, p. 81]" in a for a in r["avisos"])
+    assert r["fidelidad"]["conteo"]["cita_corregida"] == 1

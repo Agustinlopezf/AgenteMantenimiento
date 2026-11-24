@@ -52,6 +52,7 @@ def correr(grafo, q: dict) -> dict:
         "id": q["id"],
         "pregunta": q["pregunta"],
         "decisiones": [f"{t['accion']}[{t['origen']}]" for t in r["traza"] if t["tipo"] == "decision"],
+        "consultas": [{"accion": c["accion"], "consulta": c["consulta"]} for c in r.get("consultas") or []],
         "evidencia_relevante": any(es_relevante(h, q["esperado"]) for h in hits),
         "citas_validas": [str(c) for c in r.get("citas_validas") or []],
         "citas_invalidas": [str(c) for c in r.get("citas_invalidas") or []],
@@ -59,8 +60,8 @@ def correr(grafo, q: dict) -> dict:
         "fidelidad": fid["conteo"],
         "tasa_respaldada": fid["tasa_respaldada"],
         "afirmaciones_dudosas": [
-            {k: a[k] for k in ("texto", "citas", "veredicto", "faltantes", "motivo")}
-            for a in fid["afirmaciones"] if a["veredicto"] in ("no_respaldada", "parcial", "cita_invalida")
+            {k: a.get(k) for k in ("texto", "citas", "citas_originales", "veredicto", "faltantes", "motivo")}
+            for a in fid["afirmaciones"] if a["veredicto"] in ("cita_corregida", "no_respaldada", "parcial", "cita_invalida")
         ],
         "propuesta": {"verificaciones": len(prop.get("verificaciones") or []),
                       "descartadas": len(prop.get("descartadas") or []), "origen": prop.get("origen")},
@@ -77,13 +78,15 @@ def agregados(filas: list[dict]) -> dict:
     for f in filas:
         for k, v in f["fidelidad"].items():
             conteo[k] = conteo.get(k, 0) + v
-    decididas = sum(conteo.get(k, 0) for k in ("respaldada", "parcial", "no_respaldada", "cita_invalida"))
+    decididas = sum(conteo.get(k, 0) for k in ("respaldada", "cita_corregida", "parcial", "no_respaldada", "cita_invalida"))
     return {
         "evidencia_relevante": round(sum(f["evidencia_relevante"] for f in filas) / n, 3),
         "cita_pagina_esperada": round(sum(f["cita_pagina_esperada"] for f in filas) / n, 3),
         "respuestas_con_cita_invalida": sum(bool(f["citas_invalidas"]) for f in filas),
         "afirmaciones": conteo,
         "tasa_respaldada": round(conteo.get("respaldada", 0) / decididas, 3) if decididas else None,
+        "tasa_tras_correccion": round((conteo.get("respaldada", 0) + conteo.get("cita_corregida", 0)) / decididas, 3)
+        if decididas else None,
         "propuestas_para_aprobar": sum(f["espera_aprobacion"] for f in filas),
         "verificaciones_descartadas": sum(f["propuesta"]["descartadas"] for f in filas),
         "tiempo_medio_s": round(sum(f["total_s"] for f in filas) / n, 1),
@@ -96,10 +99,13 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--salida", type=Path, default=REPO_ROOT / "artifacts" / "eval_agente.json")
     ap.add_argument("--juez", action=argparse.BooleanOptionalAction, default=True, help="juez LLM de fidelidad")
     ap.add_argument("--limite", type=int, help="evaluar solo las primeras N preguntas")
+    ap.add_argument("--fusion", action=argparse.BooleanOptionalAction, default=True,
+                    help="buscar_manual con consulta reescrita + pregunta original (RRF)")
     args = ap.parse_args(argv)
 
     settings = dataclasses.replace(load_settings(), fidelidad_llm=args.juez)
-    grafo, avisos = crear_agente(settings, checkpointer=InMemorySaver(serde=serializador()))
+    grafo, avisos = crear_agente(settings, checkpointer=InMemorySaver(serde=serializador()),
+                                 fusion_consulta=args.fusion)
     for a in avisos:
         print(f"⚠ {a}")
     preguntas = leer_preguntas(args.preguntas, settings.corpus)[: args.limite]
@@ -111,7 +117,7 @@ def main(argv: list[str] | None = None) -> int:
         c = f["fidelidad"]
         print(f"{q['id']}  evid={'✔' if f['evidencia_relevante'] else '✘'}  cita_esp={'✔' if f['cita_pagina_esperada'] else '✘'}"
               f"  inval={len(f['citas_invalidas'])}  fid={c.get('respaldada', 0)}/{sum(c.values())}"
-              f" (no_resp {c.get('no_respaldada', 0)}, parcial {c.get('parcial', 0)})"
+              f" (corr {c.get('cita_corregida', 0)}, no_resp {c.get('no_respaldada', 0)}, parcial {c.get('parcial', 0)})"
               f"  prop={f['propuesta']['verificaciones']}-{f['propuesta']['descartadas']}  {f['total_s']} s"
               f"  {' → '.join(f['decisiones'])}", flush=True)
 
@@ -121,9 +127,9 @@ def main(argv: list[str] | None = None) -> int:
     args.salida.write_text(json.dumps({
         "fecha": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "corpus": settings.corpus, "llm": settings.llm_model, "retrieval_mode": settings.retrieval_mode,
-        "juez_llm": args.juez, "n_preguntas": len(filas), "resumen": resumen, "detalle": filas,
+        "juez_llm": args.juez, "fusion_consulta": args.fusion, "n_preguntas": len(filas), "resumen": resumen, "detalle": filas,
     }, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"→ {args.salida.relative_to(REPO_ROOT)}")
+    print(f"→ {args.salida}")
     return 0
 
 

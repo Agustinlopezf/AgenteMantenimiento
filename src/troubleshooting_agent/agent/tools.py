@@ -7,6 +7,11 @@ Ambas filtran por el equipo identificado. Si el filtro por modelo deja sin
 resultados, `buscar_manual` reintenta solo con la clase y lo avisa. Si hay código de
 falla, `buscar_manual` busca primero en las secciones de troubleshooting / códigos de
 falla (tipo_contenido del catálogo) y completa con el resto del manual.
+
+El router reescribe la consulta (p. ej. agrega el nombre de la falla en inglés). Eso
+ayuda con manuales en inglés, pero a veces recupera peor que la pregunta original del
+técnico: si se pasa `consulta_original`, `buscar_manual` busca con las dos y las fusiona
+por RRF (un fragmento que aparece arriba en cualquiera de las dos queda arriba).
 """
 
 from __future__ import annotations
@@ -14,7 +19,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from troubleshooting_agent.agent.equipo import Equipo
-from troubleshooting_agent.retrieval.retriever import Retriever
+from troubleshooting_agent.retrieval.retriever import Retriever, rrf
 from troubleshooting_agent.retrieval.store import Filtros, Hit
 
 
@@ -40,7 +45,8 @@ class ResultadoBusqueda:
 
 
 def buscar_manual(
-    retriever: Retriever | None, consulta: str, equipo: Equipo, k: int, *, priorizar_fallas: bool = True
+    retriever: Retriever | None, consulta: str, equipo: Equipo, k: int, *, priorizar_fallas: bool = True,
+    consulta_original: str | None = None,
 ) -> ResultadoBusqueda:
     if retriever is None:
         return ResultadoBusqueda([], avisos=["No hay índice de manuales: buscar_manual no devolvió nada."])
@@ -51,12 +57,20 @@ def buscar_manual(
         filtros["modelos"] = equipo.modelo
     priorizar = priorizar_fallas and bool(equipo.codigo_falla)
 
-    def _buscar(f: Filtros) -> list[Hit]:
-        hits = retriever.buscar(consulta, k, {**f, "tipo_contenido": TIPOS_FALLAS}) if priorizar else []
+    consultas = [consulta]
+    if consulta_original and " ".join(consulta_original.split()).lower() != " ".join(consulta.split()).lower():
+        consultas.append(consulta_original)
+
+    def _una(q: str, f: Filtros) -> list[Hit]:
+        hits = retriever.buscar(q, k, {**f, "tipo_contenido": TIPOS_FALLAS}) if priorizar else []
         if len(hits) < k:  # completar con el resto del manual
             vistos = {h.payload["chunk_id"] for h in hits}
-            hits += [h for h in retriever.buscar(consulta, k, f or None) if h.payload["chunk_id"] not in vistos]
+            hits += [h for h in retriever.buscar(q, k, f or None) if h.payload["chunk_id"] not in vistos]
         return hits[:k]
+
+    def _buscar(f: Filtros) -> list[Hit]:
+        listas = [_una(q, f) for q in consultas]
+        return listas[0] if len(listas) == 1 else rrf(listas, k)
 
     avisos: list[str] = []
     hits = _buscar(filtros)
@@ -69,6 +83,8 @@ def buscar_manual(
         hits = _buscar(filtros)
     if priorizar:
         filtros = {**filtros, "prioridad": "secciones de fallas"}
+    if len(consultas) > 1:
+        filtros = {**filtros, "fusion": "consulta + pregunta original"}
     return ResultadoBusqueda(hits, filtros, avisos)
 
 

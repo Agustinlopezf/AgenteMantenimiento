@@ -2,6 +2,7 @@
 
 from troubleshooting_agent.agent.fidelidad import (
     SCHEMA_JUEZ,
+    corregir_citas,
     evaluar_fidelidad,
     resumen_fidelidad,
     separar_afirmaciones,
@@ -96,3 +97,36 @@ def test_propuesta_descarta_verificaciones_con_datos_inventados():
     ]}, [P87, P188], [])
     assert [v["accion"] for v in p["verificaciones"]] == ["Revisar parámetro 161 [Bus Reg Mode A]", "Verificar el cableado"]
     assert "146" in p["descartadas"][0]["motivo"]
+
+
+def test_corrige_cita_corrida_a_la_pagina_que_tiene_los_datos():
+    respuesta = ("- Revisar el parámetro 161 [Bus Reg Mode A] [m, p. 188].\n"
+                 "- OverVoltage: extender decel [m, p. 326].\n"          # p. 326 no se recuperó
+                 "- El F5 es grave [m, p. 188].\n"                       # un solo término: no se corrige
+                 "- Se llevó el parámetro 161 a 12 s [historial, caso S-002].\n")  # caso ↔ página: no se cruza
+    f = evaluar_fidelidad(respuesta, [P87, P188, CASO])
+    v = [(a["veredicto"], a["citas"]) for a in f["afirmaciones"]]
+    assert v[0] == ("cita_corregida", ["[m, p. 87]"]) and f["afirmaciones"][0]["citas_originales"] == ["[m, p. 188]"]
+    assert v[1][0] == "cita_invalida"  # "OverVoltage" solo: 1 término
+    assert v[2][0] == "no_respaldada"
+    assert v[3][0] == "parcial"  # 12 s está en el caso; 161 no
+    assert f["conteo"]["cita_corregida"] == 1
+    assert f["tasa_tras_correccion"] > f["tasa_respaldada"]
+
+    nueva, cambios = corregir_citas(respuesta, f)
+    assert "Revisar el parámetro 161 [Bus Reg Mode A] [m, p. 87]." in nueva
+    assert "[Bus Reg Mode A]" in nueva  # no toca corchetes que no son citas
+    assert "El F5 es grave [m, p. 188]" in nueva
+    assert cambios == ["[m, p. 188] → [m, p. 87]"]
+
+
+def test_corrige_cita_invalida_con_varios_terminos():
+    f = evaluar_fidelidad("OverVoltage 5: ver parámetro 161 [m, p. 326].", [P87, P188])
+    a = f["afirmaciones"][0]
+    assert a["veredicto"] == "cita_corregida" and a["citas"] == ["[m, p. 87]"]
+    assert corregir_citas("OverVoltage 5: ver parámetro 161 [m, p. 326].", f)[0].endswith("[m, p. 87].")
+
+
+def test_no_corrige_si_mezcla_cita_de_manual_y_de_caso():
+    f = evaluar_fidelidad("OverVoltage 5: ver parámetro 161 [m, p. 188; historial, caso S-002].", [P87, P188, CASO])
+    assert f["afirmaciones"][0]["veredicto"] != "cita_corregida"

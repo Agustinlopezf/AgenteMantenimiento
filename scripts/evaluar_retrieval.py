@@ -6,6 +6,11 @@ Para cada pregunta usa el mismo camino que el agente: identifica el equipo y lla
 `buscar_manual` (filtro por clase + modelo, con fallback a clase). Un resultado es
 relevante si coincide el doc_id y la página cae en el rango esperado.
 
+Con --consultas-router <eval_agente.json> agrega dos variantes (híbrido + fallas) con
+la consulta que escribió el router en esa corrida del agente: "router" sola y
+"router+pregunta" (fusión RRF con la pregunta original, como hace el agente). Así se
+mide la fusión sin el ruido del LLM: las consultas quedan fijas.
+
 Métricas: hit@k (hay al menos un relevante en el top k) y MRR@10.
 Salida: artifacts/eval_retrieval.json (+ tabla en la terminal).
 """
@@ -59,7 +64,14 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--preguntas", type=Path, default=REPO_ROOT / "data" / "eval" / "preguntas.jsonl")
     ap.add_argument("--salida", type=Path, default=REPO_ROOT / "artifacts" / "eval_retrieval.json")
+    ap.add_argument("--consultas-router", type=Path, help="eval_agente.json con las consultas del router")
     args = ap.parse_args(argv)
+    consultas_router: dict[str, str] = {}
+    if args.consultas_router:
+        for d in json.loads(args.consultas_router.read_text(encoding="utf-8"))["detalle"]:
+            manual = [c["consulta"] for c in d.get("consultas") or [] if c["accion"] == "buscar_manual"]
+            if manual:
+                consultas_router[d["id"]] = manual[0]
 
     settings = load_settings()
     preguntas = leer_preguntas(args.preguntas, settings.corpus)
@@ -77,14 +89,18 @@ def main(argv: list[str] | None = None) -> int:
     resultados: dict[str, dict] = {}
     detalle: list[dict] = []
     # variante: modo de retrieval × priorizar secciones de fallas cuando hay código
-    variantes = [(m, p) for m in MODOS for p in (False, True)]
-    for modo, priorizar in variantes:
-        nombre = modo + ("+fallas" if priorizar else "")
+    variantes = [(m, p, None) for m in MODOS for p in (False, True)]
+    if consultas_router:
+        variantes += [("hibrido", True, "router"), ("hibrido", True, "router+pregunta")]
+    for modo, priorizar, router in variantes:
+        nombre = router or modo + ("+fallas" if priorizar else "")
         r = RetrieverHibrido(denso, bm25, modo)
         rangos = []
         for q in preguntas:
             eq = ide.identificar(q["pregunta"])
-            hits = buscar_manual(r, q["pregunta"], eq, max(KS), priorizar_fallas=priorizar).hits
+            consulta = consultas_router.get(q["id"], q["pregunta"]) if router else q["pregunta"]
+            original = q["pregunta"] if router == "router+pregunta" else None
+            hits = buscar_manual(r, consulta, eq, max(KS), priorizar_fallas=priorizar, consulta_original=original).hits
             rango = rango_primer_relevante(hits, q["esperado"])
             rangos.append(rango)
             detalle.append({"id": q["id"], "variante": nombre, "rango": rango,
@@ -113,7 +129,7 @@ def main(argv: list[str] | None = None) -> int:
         "metricas": resultados,
         "detalle": detalle,
     }, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"\n→ {args.salida.relative_to(REPO_ROOT)}")
+    print(f"\n→ {args.salida}")
     return 0
 
 

@@ -1,5 +1,5 @@
 {
-  "fecha": "2026-11-21T14:49:54+00:00",
+  "fecha": "2026-11-23T23:04:05+00:00",
   "corpus": "demo",
   "embedding_model": "BAAI/bge-m3",
   "n_preguntas": 20,
@@ -46,6 +46,20 @@
       "hit@6": 0.85,
       "hit@10": 0.9,
       "mrr@10": 0.575
+    },
+    "router": {
+      "hit@1": 0.5,
+      "hit@3": 0.8,
+      "hit@6": 0.85,
+      "hit@10": 0.9,
+      "mrr@10": 0.651
+    },
+    "router+pregunta": {
+      "hit@1": 0.5,
+      "hit@3": 0.8,
+      "hit@6": 0.9,
+      "hit@10": 0.95,
+      "mrr@10": 0.658
     }
   },
   "detalle": [
@@ -1247,6 +1261,406 @@
         "flexim-fluxus-f532wd-es p97",
         "flexim-fluxus-f532wd-es p97",
         "flexim-fluxus-f532wd-es p11"
+      ]
+    },
+    {
+      "id": "E-01",
+      "variante": "router",
+      "rango": 3,
+      "top3": [
+        "rok-20b-um001-en p81",
+        "rok-20b-um001-en p89",
+        "rok-20b-um001-en p87"
+      ]
+    },
+    {
+      "id": "E-02",
+      "variante": "router",
+      "rango": 1,
+      "top3": [
+        "rok-20b-um001-en p89",
+        "rok-pflex-um-es p119",
+        "rok-20b-um001-en p81"
+      ]
+    },
+    {
+      "id": "E-03",
+      "variante": "router",
+      "rango": 2,
+      "top3": [
+        "rok-20b-um001-en p81",
+        "rok-20b-um001-en p85",
+        "rok-pflex-um-es p119"
+      ]
+    },
+    {
+      "id": "E-04",
+      "variante": "router",
+      "rango": 2,
+      "top3": [
+        "rok-20b-um001-en p81",
+        "rok-20b-um001-en p86",
+        "rok-20b-um001-en p87"
+      ]
+    },
+    {
+      "id": "E-05",
+      "variante": "router",
+      "rango": 1,
+      "top3": [
+        "rok-20b-um001-en p86",
+        "rok-20b-um001-en p89",
+        "rok-20b-um001-en p88"
+      ]
+    },
+    {
+      "id": "E-06",
+      "variante": "router",
+      "rango": 1,
+      "top3": [
+        "rok-20b-um001-en p85",
+        "rok-20b-um001-en p85",
+        "rok-20b-um001-en p81"
+      ]
+    },
+    {
+      "id": "E-07",
+      "variante": "router",
+      "rango": 2,
+      "top3": [
+        "rok-20b-um001-en p81",
+        "rok-20b-um001-en p84",
+        "rok-20b-um001-en p90"
+      ]
+    },
+    {
+      "id": "E-08",
+      "variante": "router",
+      "rango": 10,
+      "top3": [
+        "rok-20b-um001-en p89",
+        "rok-20b-um001-en p87",
+        "rok-20b-um001-en p90"
+      ]
+    },
+    {
+      "id": "E-09",
+      "variante": "router",
+      "rango": 1,
+      "top3": [
+        "rok-20b-um001-en p95",
+        "rok-20b-um001-en p81",
+        "rok-20b-um001-en p85"
+      ]
+    },
+    {
+      "id": "E-10",
+      "variante": "router",
+      "rango": null,
+      "top3": [
+        "rok-pflex-um-es p5",
+        "rok-pflex-um-es p37",
+        "rok-pflex-um-es p36"
+      ]
+    },
+    {
+      "id": "E-11",
+      "variante": "router",
+      "rango": 1,
+      "top3": [
+        "rok-pflex-rm001-en p59",
+        "rok-pflex-rm001-en p56",
+        "rok-pflex-rm001-en p58"
+      ]
+    },
+    {
+      "id": "E-12",
+      "variante": "router",
+      "rango": 1,
+      "top3": [
+        "rok-750-pm001-en p316",
+        "rok-750-pm001-en p313",
+        "rok-750-rm002-en p177"
+      ]
+    },
+    {
+      "id": "E-13",
+      "variante": "router",
+      "rango": 1,
+      "top3": [
+        "rok-750-pm001-en p316",
+        "rok-750-pm001-en p332",
+        "rok-750-pm001-en p313"
+      ]
+    },
+    {
+      "id": "E-14",
+      "variante": "router",
+      "rango": 3,
+      "top3": [
+        "rok-750-pm001-en p315",
+        "rok-750-pm001-en p313",
+        "rok-750-pm001-en p317"
+      ]
+    },
+    {
+      "id": "E-15",
+      "variante": "router",
+      "rango": 1,
+      "top3": [
+        "rok-750-rm002-en p49",
+        "rok-750-rm002-en p45",
+        "rok-750-rm002-en p46"
+      ]
+    },
+    {
+      "id": "E-16",
+      "variante": "router",
+      "rango": 2,
+      "top3": [
+        "flexim-fluxus-f532wd-es p12",
+        "flexim-fluxus-f532wd-es p96",
+        "flexim-fluxus-f532wd-es p155"
+      ]
+    },
+    {
+      "id": "E-17",
+      "variante": "router",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p96",
+        "flexim-fluxus-f532wd-es p81",
+        "flexim-fluxus-f532wd-es p106"
+      ]
+    },
+    {
+      "id": "E-18",
+      "variante": "router",
+      "rango": 4,
+      "top3": [
+        "flexim-fluxus-f532wd-es p1",
+        "flexim-fluxus-f532wd-es p10",
+        "flexim-fluxus-f532wd-es p95"
+      ]
+    },
+    {
+      "id": "E-19",
+      "variante": "router",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p95",
+        "flexim-fluxus-f532wd-es p142",
+        "flexim-fluxus-f532wd-es p96"
+      ]
+    },
+    {
+      "id": "E-20",
+      "variante": "router",
+      "rango": null,
+      "top3": [
+        "flexim-fluxus-f532wd-es p13",
+        "flexim-fluxus-f532wd-es p6",
+        "flexim-fluxus-f532wd-es p154"
+      ]
+    },
+    {
+      "id": "E-01",
+      "variante": "router+pregunta",
+      "rango": 2,
+      "top3": [
+        "rok-20b-um001-en p81",
+        "rok-20b-um001-en p87",
+        "rok-pflex-um-es p119"
+      ]
+    },
+    {
+      "id": "E-02",
+      "variante": "router+pregunta",
+      "rango": 1,
+      "top3": [
+        "rok-20b-um001-en p89",
+        "rok-pflex-um-es p119",
+        "rok-20b-um001-en p81"
+      ]
+    },
+    {
+      "id": "E-03",
+      "variante": "router+pregunta",
+      "rango": 3,
+      "top3": [
+        "rok-20b-um001-en p81",
+        "rok-pflex-um-es p119",
+        "rok-20b-um001-en p85"
+      ]
+    },
+    {
+      "id": "E-04",
+      "variante": "router+pregunta",
+      "rango": 5,
+      "top3": [
+        "rok-20b-um001-en p81",
+        "rok-20b-um001-en p87",
+        "rok-pflex-um-es p119"
+      ]
+    },
+    {
+      "id": "E-05",
+      "variante": "router+pregunta",
+      "rango": 1,
+      "top3": [
+        "rok-20b-um001-en p86",
+        "rok-20b-um001-en p88",
+        "rok-20b-um001-en p89"
+      ]
+    },
+    {
+      "id": "E-06",
+      "variante": "router+pregunta",
+      "rango": 1,
+      "top3": [
+        "rok-20b-um001-en p85",
+        "rok-20b-um001-en p81",
+        "rok-pflex-um-es p123"
+      ]
+    },
+    {
+      "id": "E-07",
+      "variante": "router+pregunta",
+      "rango": 2,
+      "top3": [
+        "rok-20b-um001-en p81",
+        "rok-20b-um001-en p84",
+        "rok-pflex-um-es p119"
+      ]
+    },
+    {
+      "id": "E-08",
+      "variante": "router+pregunta",
+      "rango": 10,
+      "top3": [
+        "rok-20b-um001-en p89",
+        "rok-20b-um001-en p87",
+        "rok-20b-um001-en p81"
+      ]
+    },
+    {
+      "id": "E-09",
+      "variante": "router+pregunta",
+      "rango": 1,
+      "top3": [
+        "rok-20b-um001-en p95",
+        "rok-20b-um001-en p85",
+        "rok-20b-um001-en p81"
+      ]
+    },
+    {
+      "id": "E-10",
+      "variante": "router+pregunta",
+      "rango": null,
+      "top3": [
+        "rok-pflex-um-es p37",
+        "rok-pflex-um-es p5",
+        "rok-pflex-um-es p39"
+      ]
+    },
+    {
+      "id": "E-11",
+      "variante": "router+pregunta",
+      "rango": 1,
+      "top3": [
+        "rok-pflex-rm001-en p59",
+        "rok-pflex-um-es p8",
+        "rok-pflex-rm001-en p56"
+      ]
+    },
+    {
+      "id": "E-12",
+      "variante": "router+pregunta",
+      "rango": 2,
+      "top3": [
+        "rok-750-pm001-en p313",
+        "rok-750-pm001-en p316",
+        "rok-750-rm002-en p177"
+      ]
+    },
+    {
+      "id": "E-13",
+      "variante": "router+pregunta",
+      "rango": 1,
+      "top3": [
+        "rok-750-pm001-en p316",
+        "rok-750-pm001-en p315",
+        "rok-750-pm001-en p307"
+      ]
+    },
+    {
+      "id": "E-14",
+      "variante": "router+pregunta",
+      "rango": 3,
+      "top3": [
+        "rok-750-pm001-en p313",
+        "rok-750-pm001-en p315",
+        "rok-750-pm001-en p317"
+      ]
+    },
+    {
+      "id": "E-15",
+      "variante": "router+pregunta",
+      "rango": 1,
+      "top3": [
+        "rok-750-rm002-en p49",
+        "rok-750-rm002-en p45",
+        "rok-750-rm002-en p46"
+      ]
+    },
+    {
+      "id": "E-16",
+      "variante": "router+pregunta",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p96",
+        "flexim-fluxus-f532wd-es p109",
+        "flexim-fluxus-f532wd-es p12"
+      ]
+    },
+    {
+      "id": "E-17",
+      "variante": "router+pregunta",
+      "rango": 5,
+      "top3": [
+        "flexim-fluxus-f532wd-es p81",
+        "flexim-fluxus-f532wd-es p158",
+        "flexim-fluxus-f532wd-es p110"
+      ]
+    },
+    {
+      "id": "E-18",
+      "variante": "router+pregunta",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p96",
+        "flexim-fluxus-f532wd-es p158",
+        "flexim-fluxus-f532wd-es p1"
+      ]
+    },
+    {
+      "id": "E-19",
+      "variante": "router+pregunta",
+      "rango": 1,
+      "top3": [
+        "flexim-fluxus-f532wd-es p95",
+        "flexim-fluxus-f532wd-es p96",
+        "flexim-fluxus-f532wd-es p6"
+      ]
+    },
+    {
+      "id": "E-20",
+      "variante": "router+pregunta",
+      "rango": 2,
+      "top3": [
+        "flexim-fluxus-f532wd-es p13",
+        "flexim-fluxus-f532wd-es p97",
+        "flexim-fluxus-f532wd-es p6"
       ]
     }
   ]

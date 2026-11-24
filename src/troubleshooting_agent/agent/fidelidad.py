@@ -12,7 +12,14 @@ Acá se baja a cada afirmación (línea o viñeta con cita):
 2. Juez LLM (opcional, FIDELIDAD_LLM=true): decide respaldada / parcial /
    no_respaldada leyendo la frase y el texto citado. Más lento; se usa en evaluación.
 
-Veredictos: respaldada · parcial · no_respaldada · no_verificable · cita_invalida.
+3. Reparación de citas corridas (siempre): el modelo chico a veces cita la página
+   equivocada (p. 326 en vez de p. 316) aunque el fragmento correcto esté recuperado.
+   Si una afirmación no está respaldada (o cita una página no recuperada) pero TODOS
+   sus términos clave (≥ 2) aparecen en otra fuente recuperada del mismo tipo, se
+   marca `cita_corregida` con la cita nueva y `corregir_citas` reescribe la respuesta.
+   La corrección se le muestra al técnico; no se oculta.
+
+Veredictos: respaldada · cita_corregida · parcial · no_respaldada · no_verificable · cita_invalida.
 """
 
 from __future__ import annotations
@@ -33,7 +40,8 @@ _ENTRE_COMILLAS = re.compile(r"[\"“«]([^\"”»]{3,40})[\"”»]")
 _IDENTIFICADOR = re.compile(r"\b[A-Z]{1,4}-\d+\b|\b\d{4}-\d{2}-\d{2}\b")  # S-014, SIM-101, fechas
 _TITULO = re.compile(r"^\s*(#+\s*)?\**\s*[\wÁÉÍÓÚáéíóúñ ]{2,40}\s*:?\**\s*:?\s*$")
 
-VEREDICTOS = ("respaldada", "parcial", "no_respaldada", "no_verificable", "cita_invalida")
+VEREDICTOS = ("respaldada", "cita_corregida", "parcial", "no_respaldada", "no_verificable", "cita_invalida")
+MIN_TERMINOS_CORRECCION = 2  # con un solo término (p. ej. "F5") cualquier página con un "5" serviría
 
 
 def _norm(texto: str) -> str:
@@ -50,6 +58,7 @@ class Afirmacion:
     veredicto: str = "no_verificable"
     metodo: str = "lexico"
     motivo: str = ""
+    citas_originales: list[str] = field(default_factory=list)  # solo si se corrigió la cita
 
     def como_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -150,6 +159,56 @@ def chequear_lexico(frase: str, citas: list[CitaAny], fuentes: dict[CitaAny, str
     return a
 
 
+def buscar_cita_alternativa(frase: str, citas: list[CitaAny], fuentes: dict[CitaAny, str],
+                            modelos_conocidos: set[str] | None = None) -> CitaAny | None:
+    """Otra fuente recuperada donde están todos los términos clave de la frase.
+
+    Solo del mismo tipo que la cita original (página de manual ↔ página, caso ↔ caso);
+    prefiere el mismo documento y la página más cercana.
+    """
+    terminos = terminos_clave(frase, modelos_conocidos)
+    if len(terminos) < MIN_TERMINOS_CORRECCION or not citas:
+        return None
+    original = citas[0]
+    if any(type(c) is not type(original) for c in citas):
+        return None  # cita manual + caso a la vez: no se reemplazan las dos por una sola fuente
+    candidatas = []
+    for c, texto in fuentes.items():
+        if c in citas or type(c) is not type(original):
+            continue
+        texto_norm = _norm(texto)
+        if all(_aparece(t, texto_norm) for t in terminos):
+            if isinstance(c, Cita) and isinstance(original, Cita):
+                orden = (c.doc_id != original.doc_id, abs(c.pagina - original.pagina))
+            else:
+                orden = (0, 0)
+            candidatas.append((orden, str(c), c))
+    return min(candidatas)[2] if candidatas else None
+
+
+def corregir_citas(respuesta: str, fidelidad: dict[str, Any]) -> tuple[str, list[str]]:
+    """Reescribe en la respuesta las citas de las afirmaciones `cita_corregida`.
+
+    Devuelve (respuesta, ["[doc, p. 326] → [doc, p. 316]", ...]).
+    """
+    cambios: list[str] = []
+    for a in fidelidad.get("afirmaciones") or []:
+        if a["veredicto"] != "cita_corregida" or a["texto"] not in respuesta:
+            continue
+        malas = set(extraer_citas(" ".join(a["citas_originales"])))
+        nueva = a["citas"][0]
+
+        def reemplazar(m: re.Match) -> str:
+            encontradas = extraer_citas(m.group(0))
+            return nueva if encontradas and set(encontradas) <= malas else m.group(0)
+
+        texto = _CORCHETES.sub(reemplazar, a["texto"])
+        if texto != a["texto"]:
+            respuesta = respuesta.replace(a["texto"], texto, 1)
+            cambios.append(f"{', '.join(a['citas_originales'])} → {nueva}")
+    return respuesta, cambios
+
+
 # ── juez LLM (opcional) ─────────────────────────────────────
 
 SCHEMA_JUEZ: dict[str, Any] = {
@@ -199,15 +258,24 @@ def evaluar_fidelidad(respuesta: str, hits: list[Hit], llm=None, modelos_conocid
     afirmaciones = []
     for frase, citas in separar_afirmaciones(respuesta):
         a = chequear_lexico(frase, citas, fuentes, modelos)
-        if llm is not None and not llm.simulado and a.veredicto != "cita_invalida":
+        if a.veredicto in ("no_respaldada", "cita_invalida") and \
+                (nueva := buscar_cita_alternativa(frase, citas, fuentes, modelos)) is not None:
+            a.citas_originales, a.citas = a.citas, [str(nueva)]
+            a.terminos, a.faltantes = terminos_clave(frase, modelos), []
+            a.veredicto = "cita_corregida"
+            a.motivo = f"la fuente citada no lo dice; los términos clave están en {nueva}"
+        elif llm is not None and not llm.simulado and a.veredicto != "cita_invalida":
             a = juzgar_llm(llm, a, fuentes)
         afirmaciones.append(a)
     conteo = {v: sum(a.veredicto == v for a in afirmaciones) for v in VEREDICTOS}
-    decididas = conteo["respaldada"] + conteo["parcial"] + conteo["no_respaldada"] + conteo["cita_invalida"]
+    decididas = sum(conteo[v] for v in ("respaldada", "cita_corregida", "parcial", "no_respaldada", "cita_invalida"))
     return {
         "afirmaciones": [a.como_dict() for a in afirmaciones],
         "conteo": conteo,
+        # tal como la escribió el modelo / después de corregir las citas corridas
         "tasa_respaldada": round(conteo["respaldada"] / decididas, 3) if decididas else None,
+        "tasa_tras_correccion": round((conteo["respaldada"] + conteo["cita_corregida"]) / decididas, 3)
+        if decididas else None,
     }
 
 

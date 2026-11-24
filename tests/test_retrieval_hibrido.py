@@ -81,6 +81,20 @@ def test_buscar_manual_prioriza_secciones_de_fallas_si_hay_codigo(denso):
     assert "prioridad" not in sin.filtros
 
 
+def test_buscar_manual_fusiona_consulta_reescrita_y_original(denso):
+    retr, store = denso
+    r = RetrieverHibrido(retr, BM25(store.payloads()), "bm25")
+    eq = Equipo("variador_frecuencia", ["variador_frecuencia"], "Demo", "Drive 100", None, [], True)
+    # la reescritura del router se fue por otro lado; la pregunta del técnico nombra el parámetro
+    solo = buscar_manual(r, "autotune nameplate", eq, k=2)
+    assert "c" not in [h.payload["chunk_id"] for h in solo.hits]
+    fusion = buscar_manual(r, "autotune nameplate", eq, k=2, consulta_original="qué hace el parámetro 161 Bus Reg Mode")
+    assert "c" in [h.payload["chunk_id"] for h in fusion.hits]
+    assert fusion.filtros["fusion"] == "consulta + pregunta original"
+    igual = buscar_manual(r, "Bus Reg Mode", eq, k=2, consulta_original="  bus reg  MODE ")
+    assert "fusion" not in igual.filtros  # misma consulta: no se busca dos veces
+
+
 def _cargar_script(nombre):
     spec = importlib.util.spec_from_file_location(nombre, REPO_ROOT / "scripts" / f"{nombre}.py")
     mod = importlib.util.module_from_spec(spec)
